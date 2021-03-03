@@ -29,7 +29,7 @@ public class UserRepository
         // no connection / offline
         if (connection == null)
         {
-            return new Pair<User, QueryOutcome>(user, QueryOutcome.OFFLINE);
+            return new Pair<>(user, QueryOutcome.OFFLINE);
         }
 
         try (Statement statament = connection.createStatement())
@@ -41,11 +41,11 @@ public class UserRepository
                 {
                     user.setIndexUser(resultset.getInt(1));
                     user.setAdminUser(resultset.getBoolean(2));
-                    return new Pair<User, QueryOutcome>(user, QueryOutcome.SUCCESS);
+                    return new Pair<>(user, QueryOutcome.SUCCESS);
                 }
 
                 // nothing found
-                return new Pair<User, QueryOutcome>(user, QueryOutcome.EMPTY);
+                return new Pair<>(user, QueryOutcome.EMPTY);
             }
         }
         catch (SQLException throwables)
@@ -63,6 +63,6 @@ public class UserRepository
         }
 
         // if we reached this point, something went wrong
-        return new Pair<User, QueryOutcome>(user, QueryOutcome.ERROR);
+        return new Pair<>(user, QueryOutcome.ERROR);
     }
 }
