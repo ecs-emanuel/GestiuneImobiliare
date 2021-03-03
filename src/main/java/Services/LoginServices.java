@@ -25,7 +25,7 @@ public class LoginServices
     private Agent authenticateUser(User user)
     {
         UserServices userServices = new UserServices();
-        user = userServices.authenticate(user);
+        //user = userServices.authenticate(user);
         QueryOutcome userQueryOutcome = userServices.getQueryOutcome();
 
         switch (userQueryOutcome)

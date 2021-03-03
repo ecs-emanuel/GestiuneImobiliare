@@ -53,6 +53,15 @@ public class UserRepository
             throwables.printStackTrace();
         }
 
+        try
+        {
+            connection.close();
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+
         // if we reached this point, something went wrong
         return new Pair<User, QueryOutcome>(user, QueryOutcome.ERROR);
     }

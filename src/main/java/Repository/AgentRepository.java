@@ -3,15 +3,19 @@ package Repository;
 import Utils.QueryOutcome;
 import Entities.Persoana.Agent;
 import Entities.Persoana.User;
+import javafx.util.Pair;
 
 import javax.sql.rowset.CachedRowSet;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class AgentRepository
 {
     private QueryOutcome queryOutcome;
 
-    public Agent getAgent(User user)
+    public Pair<Agent, QueryOutcome> getAggent(User user)
     {
         String sqlScript = String.format(
         "SELECT * " +
@@ -20,40 +24,47 @@ public class AgentRepository
         user.getIndexUser());
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        CachedRowSet rowset = databaseRepository.retrieveData(sqlScript);
-        QueryOutcome result = databaseRepository.getQueryOutcome();
+        Connection connection = databaseRepository.craeteConnection();
 
-        if (result != result.SUCCESS)
+        // no connection / offline
+        if (connection == null)
         {
-            this.queryOutcome = result;
-            return null;
+            return new Pair<Agent, QueryOutcome>(null, QueryOutcome.OFFLINE);
         }
 
-        try
+        try (Statement statament = connection.createStatement())
         {
-            if (rowset.first())
+            try (ResultSet resultset = statament.executeQuery(sqlScript))
             {
-                Agent agent = new Agent();
-                agent.setIndexAgent(rowset.getInt(1));
-                agent.setUserAgent(user);
-                this.queryOutcome = QueryOutcome.SUCCESS;
-                return agent;
-            }
-            else
-            {
-                this.queryOutcome = QueryOutcome.EMPTY;
+                // user found in database
+                if (resultset.first())
+                {
+                    Agent agent = new Agent();
+                    agent.setIndexAgent(resultset.getInt(1));
+                    agent.setUserAgent(user);
+                    return new Pair<Agent, QueryOutcome>(agent, QueryOutcome.SUCCESS);
+                }
+
+                // nothing found
+                return new Pair<Agent, QueryOutcome>(null, QueryOutcome.EMPTY);
             }
         }
         catch (SQLException throwables)
         {
-            this.queryOutcome = QueryOutcome.ERROR;
             throwables.printStackTrace();
         }
-        return null;
-    }
 
-    public QueryOutcome getQueryOutcome()
-    {
-        return this.queryOutcome;
+        try
+        {
+            connection.close();
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+
+        // if we reached this point, something went wrong
+        return new Pair<Agent, QueryOutcome>(null, QueryOutcome.ERROR);
+
     }
 }

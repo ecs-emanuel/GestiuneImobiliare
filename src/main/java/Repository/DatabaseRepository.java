@@ -14,7 +14,7 @@ public class DatabaseRepository
 
         try
         {
-            connection = DriverManager.getConnection("jdbc:mariadb://localhost/gestiuneimobiliara", "root", null)
+            connection = DriverManager.getConnection("jdbc:mariadb://localhost/gestiuneimobiliara", "root", null);
         }
         catch (SQLException throwables)
         {
