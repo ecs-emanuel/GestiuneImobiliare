@@ -29,7 +29,7 @@ public class AgentRepository
         // no connection / offline
         if (connection == null)
         {
-            return new Pair<Agent, QueryOutcome>(null, QueryOutcome.OFFLINE);
+            return new Pair<>(null, QueryOutcome.OFFLINE);
         }
 
         try (Statement statament = connection.createStatement())
@@ -42,11 +42,11 @@ public class AgentRepository
                     Agent agent = new Agent();
                     agent.setIndexAgent(resultset.getInt(1));
                     agent.setUserAgent(user);
-                    return new Pair<Agent, QueryOutcome>(agent, QueryOutcome.SUCCESS);
+                    return new Pair<>(agent, QueryOutcome.SUCCESS);
                 }
 
                 // nothing found
-                return new Pair<Agent, QueryOutcome>(null, QueryOutcome.EMPTY);
+                return new Pair<>(null, QueryOutcome.EMPTY);
             }
         }
         catch (SQLException throwables)
@@ -64,7 +64,7 @@ public class AgentRepository
         }
 
         // if we reached this point, something went wrong
-        return new Pair<Agent, QueryOutcome>(null, QueryOutcome.ERROR);
+        return new Pair<>(null, QueryOutcome.ERROR);
 
     }
 }
