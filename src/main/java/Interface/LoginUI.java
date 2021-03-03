@@ -3,7 +3,6 @@ package Interface;
 import Utils.QueryMessage;
 import Utils.QueryOutcome;
 import Entities.Persoana.User;
-import Services.LoginServices;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
