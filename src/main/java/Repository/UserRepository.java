@@ -11,7 +11,8 @@ public class UserRepository
 {
     public Pair<User, QueryOutcome> authenticate(User user)
     {
-        String sqlScript = String.format(
+        String sqlScript = String.format
+        (
             "SELECT indexUser, isAdminUser " +
             "FROM useri " +
             "WHERE nameUser = '%s' AND passUser = '%s'",
