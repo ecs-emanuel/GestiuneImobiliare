@@ -1,6 +1,6 @@
 package Entities.Locatie;
 
-public class Oras extends Judet
+public class Oras
 {
     private int indexOras;
     private String denumireOras;
@@ -11,20 +11,6 @@ public class Oras extends Judet
 
     public Oras(int indexOras, String denumireOras)
     {
-        this.indexOras = indexOras;
-        this.denumireOras = denumireOras;
-    }
-
-    public Oras(int indexJudet, String denumireJudet, int indexOras, String denumireOras)
-    {
-        super(indexJudet, denumireJudet);
-        this.indexOras = indexOras;
-        this.denumireOras = denumireOras;
-    }
-
-    public Oras(int indexLocatie, String denumireLocatie, int indexJudet, String denumireJudet, int indexOras, String denumireOras)
-    {
-        super(indexLocatie, denumireLocatie, indexJudet, denumireJudet);
         this.indexOras = indexOras;
         this.denumireOras = denumireOras;
     }
@@ -47,11 +33,5 @@ public class Oras extends Judet
     public void setDenumireOras(String denumireOras)
     {
         this.denumireOras = denumireOras;
-    }
-
-    @Override
-    public boolean hasInformationComplete()
-    {
-        return super.hasInformationComplete() && indexOras > 0 && !denumireOras.isEmpty();
     }
 }

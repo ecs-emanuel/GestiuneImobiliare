@@ -3,6 +3,8 @@ package Entities.Locatie;
 public class Locatie
 {
     private int indexLocatie;
+
+    private Judet judetLocatie;
     private String denumireLocatie;
 
     public Locatie()

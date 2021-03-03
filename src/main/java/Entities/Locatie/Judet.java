@@ -1,6 +1,6 @@
 package Entities.Locatie;
 
-public class Judet extends Locatie
+public class Judet
 {
     private int indexJudet;
     private String denumireJudet;
@@ -11,13 +11,6 @@ public class Judet extends Locatie
 
     public Judet(int indexJudet, String denumireJudet)
     {
-        this.indexJudet = indexJudet;
-        this.denumireJudet = denumireJudet;
-    }
-
-    public Judet(int indexLocatie, String denumireLocatie, int indexJudet, String denumireJudet)
-    {
-        super(indexLocatie, denumireLocatie);
         this.indexJudet = indexJudet;
         this.denumireJudet = denumireJudet;
     }
@@ -40,12 +33,6 @@ public class Judet extends Locatie
     public void setDenumireJudet(String denumireJudet)
     {
         this.denumireJudet = denumireJudet;
-    }
-
-    @Override
-    public boolean hasInformationComplete()
-    {
-        return super.hasInformationComplete() && indexJudet > 0 && !denumireJudet.isEmpty();
     }
 }
 
