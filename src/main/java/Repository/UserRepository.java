@@ -2,6 +2,7 @@ package Repository;
 
 import Utils.QueryOutcome;
 import Entities.Persoana.User;
+import javafx.util.Pair;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.*;
@@ -10,51 +11,49 @@ public class UserRepository
 {
     private QueryOutcome queryOutcome;
 
-    public User authenticate(User user)
+    public Pair<User, QueryOutcome> authenticate(User user)
     {
         String sqlScript = String.format(
             "SELECT indexUser, isAdminUser " +
             "FROM useri " +
             "WHERE nameUser = '%s' AND passUser = '%s'",
-            user.getNameUser(), user.getPassUser());
+            user.getNameUser(), user.getPassUser()
+        );
 
         user.setNameUser(null);
         user.setPassUser(null);
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        CachedRowSet rowset = databaseRepository.retrieveData(sqlScript);
-        QueryOutcome result = databaseRepository.getQueryOutcome();
+        Connection connection = databaseRepository.craeteConnection();
 
-        if (result != result.SUCCESS)
+        // no connection / offline
+        if (connection == null)
         {
-            this.queryOutcome = result;
-            return user;
+            return new Pair<User, QueryOutcome>(user, QueryOutcome.OFFLINE);
         }
 
-        try
+        try (Statement statament = connection.createStatement())
         {
-            if (rowset.first())
+            try (ResultSet resultset = statament.executeQuery(sqlScript))
             {
-                user.setIndexUser(rowset.getInt(1));
-                user.setAdminUser(rowset.getBoolean(2));
-                this.queryOutcome = QueryOutcome.SUCCESS;
-            }
-            else
-            {
-                this.queryOutcome = QueryOutcome.EMPTY;
+                // user found in database
+                if (resultset.first())
+                {
+                    user.setIndexUser(resultset.getInt(1));
+                    user.setAdminUser(resultset.getBoolean(2));
+                    return new Pair<User, QueryOutcome>(user, QueryOutcome.SUCCESS);
+                }
+
+                // nothing found
+                return new Pair<User, QueryOutcome>(user, QueryOutcome.EMPTY);
             }
         }
         catch (SQLException throwables)
         {
-            this.queryOutcome = QueryOutcome.ERROR;
             throwables.printStackTrace();
         }
 
-        return user;
-    }
-
-    public QueryOutcome getQueryOutcome()
-    {
-        return this.queryOutcome;
+        // if we reached this point, something went wrong
+        return new Pair<User, QueryOutcome>(user, QueryOutcome.ERROR);
     }
 }
