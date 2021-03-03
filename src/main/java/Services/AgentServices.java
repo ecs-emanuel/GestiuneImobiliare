@@ -9,7 +9,7 @@ import javafx.util.Pair;
 
 public class AgentServices
 {
-    public Pair<Agent, QueryOutcome> authenticate(User user)
+    public Pair<Agent, QueryOutcome> getAgent(User user)
     {
         AgentRepository agentRepository = new AgentRepository();
         return agentRepository.getAggent(user);
