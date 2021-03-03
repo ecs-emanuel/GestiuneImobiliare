@@ -9,8 +9,6 @@ import java.sql.*;
 
 public class UserRepository
 {
-    private QueryOutcome queryOutcome;
-
     public Pair<User, QueryOutcome> authenticate(User user)
     {
         String sqlScript = String.format(

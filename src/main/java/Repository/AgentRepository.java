@@ -13,8 +13,6 @@ import java.sql.Statement;
 
 public class AgentRepository
 {
-    private QueryOutcome queryOutcome;
-
     public Pair<Agent, QueryOutcome> getAggent(User user)
     {
         String sqlScript = String.format(
