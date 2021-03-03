@@ -65,6 +65,5 @@ public class AgentRepository
 
         // if we reached this point, something went wrong
         return new Pair<>(null, QueryOutcome.ERROR);
-
     }
 }
