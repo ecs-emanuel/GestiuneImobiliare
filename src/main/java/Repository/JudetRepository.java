@@ -21,20 +21,20 @@ public class JudetRepository
             "FROM judete"
         );
 
+        List<Judet> listaJudete = new ArrayList<>();
+
         DatabaseRepository databaseRepository = new DatabaseRepository();
         Connection connection = databaseRepository.craeteConnection();
 
         if (connection == null)
         {
-            return null;
+            return listaJudete;
         }
 
         try (Statement statament = connection.createStatement())
         {
             try (ResultSet resultset = statament.executeQuery(sqlScript))
             {
-                List<Judet> listaJudete = new ArrayList<>();
-
                 while (resultset.next())
                 {
                     Judet judet = new Judet();
@@ -42,8 +42,6 @@ public class JudetRepository
                     judet.setDenumireJudet(resultset.getString(2));
                     listaJudete.add(judet);
                 }
-
-                return listaJudete;
             }
         }
         catch (SQLException throwables)
@@ -59,6 +57,6 @@ public class JudetRepository
         {
             throwables.printStackTrace();
         }
-        return null;
+        return listaJudete;
     }
 }
