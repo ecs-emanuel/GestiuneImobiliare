@@ -42,5 +42,3 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 # other files
-*.lock
-*.bin
