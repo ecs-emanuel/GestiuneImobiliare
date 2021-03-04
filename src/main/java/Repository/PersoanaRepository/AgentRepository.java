@@ -1,26 +1,28 @@
-package Repository;
+package Repository.PersoanaRepository;
 
+import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
+import Entities.Persoana.Agent;
 import Entities.Persoana.User;
 import javafx.util.Pair;
 
 import javax.sql.rowset.CachedRowSet;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
-public class UserRepository
+public class AgentRepository
 {
-    public Pair<User, QueryOutcome> authenticate(User user)
+    public Pair<Agent, QueryOutcome> getAggent(User user)
     {
         String sqlScript = String.format
         (
-            "SELECT indexUser, isAdminUser " +
-            "FROM useri " +
-            "WHERE nameUser = '%s' AND passUser = '%s'",
-            user.getNameUser(), user.getPassUser()
+            "SELECT * " +
+            "FROM agenti " +
+            "WHERE userAgent = %d",
+            user.getIndexUser()
         );
-
-        user.setNameUser(null);
-        user.setPassUser(null);
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
         Connection connection = databaseRepository.craeteConnection();
@@ -28,7 +30,7 @@ public class UserRepository
         // no connection / offline
         if (connection == null)
         {
-            return new Pair<>(user, QueryOutcome.OFFLINE);
+            return new Pair<>(null, QueryOutcome.OFFLINE);
         }
 
         try (Statement statament = connection.createStatement())
@@ -38,13 +40,14 @@ public class UserRepository
                 // user found in database
                 if (resultset.first())
                 {
-                    user.setIndexUser(resultset.getInt(1));
-                    user.setAdminUser(resultset.getBoolean(2));
-                    return new Pair<>(user, QueryOutcome.SUCCESS);
+                    Agent agent = new Agent();
+                    agent.setIndexAgent(resultset.getInt(1));
+                    agent.setUserAgent(user);
+                    return new Pair<>(agent, QueryOutcome.SUCCESS);
                 }
 
                 // nothing found
-                return new Pair<>(user, QueryOutcome.EMPTY);
+                return new Pair<>(null, QueryOutcome.EMPTY);
             }
         }
         catch (SQLException throwables)
@@ -62,6 +65,6 @@ public class UserRepository
         }
 
         // if we reached this point, something went wrong
-        return new Pair<>(user, QueryOutcome.ERROR);
+        return new Pair<>(null, QueryOutcome.ERROR);
     }
 }

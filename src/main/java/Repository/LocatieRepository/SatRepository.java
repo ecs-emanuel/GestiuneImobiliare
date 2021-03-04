@@ -1,8 +1,8 @@
-package Repository;
+package Repository.LocatieRepository;
 
-import Entities.Locatie.Judet;
-import Utils.QueryOutcome;
-import javafx.util.Pair;
+import Entities.Locatie.Sat;
+import Entities.Locatie.Comuna;
+import Repository.DatabaseRepository;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,24 +11,26 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JudetRepository
+public class SatRepository
 {
-    public List<Judet> getListaJudete()
+    public List<Sat> getListaSate(Comuna comuna)
     {
         String sqlScript = String.format
         (
             "SELECT * " +
-            "FROM judete"
+            "FROM sate " +
+            "WHERE comunaSat = '%s'",
+            comuna.getIndexComuna()
         );
 
-        List<Judet> listaJudete = new ArrayList<>();
+        List<Sat> listaSate = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
         Connection connection = databaseRepository.craeteConnection();
 
         if (connection == null)
         {
-            return listaJudete;
+            return listaSate;
         }
 
         try (Statement statament = connection.createStatement())
@@ -37,10 +39,10 @@ public class JudetRepository
             {
                 while (resultset.next())
                 {
-                    Judet judet = new Judet();
-                    judet.setIndexJudet(resultset.getInt(1));
-                    judet.setDenumireJudet(resultset.getString(2));
-                    listaJudete.add(judet);
+                    Sat sat = new Sat();
+                    sat.setIndexSat(resultset.getInt(1));
+                    sat.setDenumireSat(resultset.getString(2));
+                    listaSate.add(sat);
                 }
             }
         }
@@ -57,6 +59,6 @@ public class JudetRepository
         {
             throwables.printStackTrace();
         }
-        return listaJudete;
+        return listaSate;
     }
 }

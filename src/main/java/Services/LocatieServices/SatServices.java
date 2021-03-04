@@ -1,8 +1,8 @@
-package Services;
+package Services.LocatieServices;
 
 import Entities.Locatie.Comuna;
 import Entities.Locatie.Sat;
-import Repository.SatRepository;
+import Repository.LocatieRepository.SatRepository;
 
 import java.util.List;
 

@@ -1,7 +1,9 @@
-package Repository;
+package Repository.LocatieRepository;
 
 import Entities.Locatie.Judet;
-import Entities.Locatie.Oras;
+import Repository.DatabaseRepository;
+import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -10,26 +12,24 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrasRepository
+public class JudetRepository
 {
-    public List<Oras> getListaOrase(Judet judet)
+    public List<Judet> getListaJudete()
     {
         String sqlScript = String.format
         (
             "SELECT * " +
-            "FROM orase " +
-            "WHERE judetOras = '%s'",
-            judet.getIndexJudet()
+            "FROM judete"
         );
 
-        List<Oras> listaOrase = new ArrayList<>();
+        List<Judet> listaJudete = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
         Connection connection = databaseRepository.craeteConnection();
 
         if (connection == null)
         {
-            return listaOrase;
+            return listaJudete;
         }
 
         try (Statement statament = connection.createStatement())
@@ -38,10 +38,10 @@ public class OrasRepository
             {
                 while (resultset.next())
                 {
-                    Oras oras = new Oras();
-                    oras.setIndexOras(resultset.getInt(1));
-                    oras.setDenumireOras(resultset.getString(2));
-                    listaOrase.add(oras);
+                    Judet judet = new Judet();
+                    judet.setIndexJudet(resultset.getInt(1));
+                    judet.setDenumireJudet(resultset.getString(2));
+                    listaJudete.add(judet);
                 }
             }
         }
@@ -58,6 +58,6 @@ public class OrasRepository
         {
             throwables.printStackTrace();
         }
-        return listaOrase;
+        return listaJudete;
     }
 }

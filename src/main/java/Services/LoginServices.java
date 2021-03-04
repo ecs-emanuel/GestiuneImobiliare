@@ -2,6 +2,8 @@ package Services;
 
 import Entities.Persoana.Agent;
 import Entities.Persoana.User;
+import Services.PersoanaServices.AgentServices;
+import Services.PersoanaServices.UserServices;
 import Utils.QueryMessage;
 import Utils.QueryOutcome;
 import javafx.util.Pair;

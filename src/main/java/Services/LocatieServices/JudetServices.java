@@ -1,9 +1,8 @@
-package Services;
+package Services.LocatieServices;
 
 import Entities.Locatie.Judet;
-import Repository.JudetRepository;
+import Repository.LocatieRepository.JudetRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class JudetServices

@@ -1,4 +1,4 @@
-package Repository;
+package Repository.PersoanaRepository;
 
 import Utils.QueryOutcome;
 import Entities.Persoana.Client;

@@ -1,5 +1,5 @@
 package Interface.HomeUI;
-import Services.*;
+import Services.LocatieServices.*;
 import Utils.CustomColor;
 import Entities.Locatie.*;
 

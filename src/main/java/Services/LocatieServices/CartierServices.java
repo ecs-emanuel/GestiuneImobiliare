@@ -1,8 +1,8 @@
-package Services;
+package Services.LocatieServices;
 
 import Entities.Locatie.Cartier;
 import Entities.Locatie.Oras;
-import Repository.CartierRepository;
+import Repository.LocatieRepository.CartierRepository;
 
 import java.util.List;
 

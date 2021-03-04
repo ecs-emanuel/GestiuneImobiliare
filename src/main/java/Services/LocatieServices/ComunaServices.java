@@ -1,8 +1,8 @@
-package Services;
+package Services.LocatieServices;
 
 import Entities.Locatie.Comuna;
 import Entities.Locatie.Judet;
-import Repository.ComunaRepository;
+import Repository.LocatieRepository.ComunaRepository;
 
 import java.util.List;
 

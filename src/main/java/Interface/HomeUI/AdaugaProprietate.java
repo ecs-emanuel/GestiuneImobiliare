@@ -2,7 +2,7 @@ package Interface.HomeUI;
 
 import Components.*;
 import Entities.Persoana.Client;
-import Services.*;
+import Services.LocatieServices.*;
 import Utils.CustomColor;
 import Entities.Locatie.*;
 

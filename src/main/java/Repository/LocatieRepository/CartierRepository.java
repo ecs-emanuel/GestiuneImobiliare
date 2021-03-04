@@ -1,7 +1,9 @@
-package Repository;
+package Repository.LocatieRepository;
 
 import Entities.Locatie.Judet;
-import Entities.Locatie.Comuna;
+import Entities.Locatie.Cartier;
+import Entities.Locatie.Oras;
+import Repository.DatabaseRepository;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -10,26 +12,26 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComunaRepository
+public class CartierRepository
 {
-    public List<Comuna> getListaComune(Judet judet)
+    public List<Cartier> getListaCartiere(Oras oras)
     {
         String sqlScript = String.format
         (
             "SELECT * " +
-            "FROM comune " +
-            "WHERE judetComuna = '%s'",
-            judet.getIndexJudet()
+            "FROM cartiere " +
+            "WHERE orasCartier = '%s'",
+            oras.getIndexOras()
         );
 
-        List<Comuna> listaComune = new ArrayList<>();
+        List<Cartier> listaCartiere = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
         Connection connection = databaseRepository.craeteConnection();
 
         if (connection == null)
         {
-            return listaComune;
+            return listaCartiere;
         }
 
         try (Statement statament = connection.createStatement())
@@ -38,10 +40,10 @@ public class ComunaRepository
             {
                 while (resultset.next())
                 {
-                    Comuna comuna = new Comuna();
-                    comuna.setIndexComuna(resultset.getInt(1));
-                    comuna.setDenumireComuna(resultset.getString(2));
-                    listaComune.add(comuna);
+                    Cartier cartier = new Cartier();
+                    cartier.setIndexCartier(resultset.getInt(1));
+                    cartier.setDenumireCartier(resultset.getString(2));
+                    listaCartiere.add(cartier);
                 }
             }
         }
@@ -58,6 +60,6 @@ public class ComunaRepository
         {
             throwables.printStackTrace();
         }
-        return listaComune;
+        return listaCartiere;
     }
 }

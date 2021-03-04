@@ -1,8 +1,8 @@
-package Services;
+package Services.PersoanaServices;
 
 import Utils.QueryOutcome;
 import Entities.Persoana.User;
-import Repository.UserRepository;
+import Repository.PersoanaRepository.UserRepository;
 import javafx.util.Pair;
 
 public class UserServices

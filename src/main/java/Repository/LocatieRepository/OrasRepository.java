@@ -1,7 +1,8 @@
-package Repository;
+package Repository.LocatieRepository;
 
-import Entities.Locatie.Sat;
-import Entities.Locatie.Comuna;
+import Entities.Locatie.Judet;
+import Entities.Locatie.Oras;
+import Repository.DatabaseRepository;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -10,26 +11,26 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SatRepository
+public class OrasRepository
 {
-    public List<Sat> getListaSate(Comuna comuna)
+    public List<Oras> getListaOrase(Judet judet)
     {
         String sqlScript = String.format
         (
             "SELECT * " +
-            "FROM sate " +
-            "WHERE comunaSat = '%s'",
-            comuna.getIndexComuna()
+            "FROM orase " +
+            "WHERE judetOras = '%s'",
+            judet.getIndexJudet()
         );
 
-        List<Sat> listaSate = new ArrayList<>();
+        List<Oras> listaOrase = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
         Connection connection = databaseRepository.craeteConnection();
 
         if (connection == null)
         {
-            return listaSate;
+            return listaOrase;
         }
 
         try (Statement statament = connection.createStatement())
@@ -38,10 +39,10 @@ public class SatRepository
             {
                 while (resultset.next())
                 {
-                    Sat sat = new Sat();
-                    sat.setIndexSat(resultset.getInt(1));
-                    sat.setDenumireSat(resultset.getString(2));
-                    listaSate.add(sat);
+                    Oras oras = new Oras();
+                    oras.setIndexOras(resultset.getInt(1));
+                    oras.setDenumireOras(resultset.getString(2));
+                    listaOrase.add(oras);
                 }
             }
         }
@@ -58,6 +59,6 @@ public class SatRepository
         {
             throwables.printStackTrace();
         }
-        return listaSate;
+        return listaOrase;
     }
 }
