@@ -218,7 +218,14 @@ public class AdaugaProprietate
                 }
 
                 enablePanelComponents(panelTeren);
-                enablePanelComponents(panelLocatie);
+
+                // We don't want to enable more
+                //enablePanelComponents(panelLocatie);
+                panelLocatie.setEnabled(true);
+                labelLocatie.setEnabled(true);
+                fieldLocatie.setEnabled(true);
+                labelJudet.setEnabled(true);
+                cboxJudet.setEnabled(true);
 
                 switch((CategorieProprietate) item)
                 {
