@@ -1,5 +1,5 @@
 package Interface.HomeUI;
-import Services.JudetServices;
+import Services.*;
 import Utils.CustomColor;
 import Entities.Locatie.*;
 
@@ -8,6 +8,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdaugaClient
@@ -150,9 +151,61 @@ public class AdaugaClient
             }
         });
 
+        // Select empty in combobox
+        cboxJudet.setSelectedIndex(-1);
+
+        // updateaza lista cu orase/comune cand se alege un judet
+        cboxJudet.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                List<Oras> listaOrase = new ArrayList<>();
+                List<Comuna> listaComune = new ArrayList<>();
+                Object selectedItem = cboxJudet.getSelectedItem();
+
+                // Judet selectat
+                if (selectedItem instanceof Judet)
+                {
+                    OrasServices orasServices = new OrasServices();
+                    listaOrase = orasServices.getListaOrase((Judet) selectedItem);
+
+                    ComunaServices comunaServices = new ComunaServices();
+                    listaComune = comunaServices.getListaComune((Judet) selectedItem);
+
+                    // Enable orase/comune
+                    rbuttonOras.setEnabled(true);
+                    rbuttonComuna.setEnabled(true);
+                }
+                else
+                {
+                    // Disable orase/comune
+                    rbuttonOras.setEnabled(false);
+                    rbuttonComuna.setEnabled(false);
+                }
+
+                cboxOras.removeAllItems();
+                cboxComuna.removeAllItems();
+
+                for (Oras oras : listaOrase)
+                {
+                    cboxOras.addItem(oras);
+                }
+
+                for (Comuna comuna : listaComune)
+                {
+                    cboxComuna.addItem(comuna);
+                }
+
+                cboxOras.setSelectedIndex(-1);
+                cboxComuna.setSelectedIndex(-1);
+            }
+        });
+
         rbuttonOras = new JRadioButton("Oras");
         panelLocatie.add(rbuttonOras);
         rbuttonsLocatie.add(rbuttonOras);
+        rbuttonOras.setEnabled(false);
         rbuttonOras.setBounds(265, 25, 215, 20);
 
         // lista orase
@@ -178,20 +231,51 @@ public class AdaugaClient
             }
         });
 
+        // updateaza lista cu cartiere cand un oras este selectat
+        cboxOras.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                List<Cartier> listaCartiere = new ArrayList<>();
+                Object selectedItem = cboxOras.getSelectedItem();
+
+                if (selectedItem instanceof Oras)
+                {
+                    CartierServices cartierServices = new CartierServices();
+                    listaCartiere = cartierServices.getListaCartiere((Oras) selectedItem);
+                }
+
+                cboxCartier.removeAllItems();
+
+                for (Cartier cartier : listaCartiere)
+                {
+                    cboxCartier.addItem(cartier);
+                }
+
+                cboxCartier.setSelectedIndex(-1);
+            }
+        });
+
         rbuttonOras.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 cboxOras.setEnabled(true);
+                labelCartier.setEnabled(true);
                 cboxCartier.setEnabled(true);
                 cboxComuna.setEnabled(false);
+                labelSat.setEnabled(false);
                 cboxSat.setEnabled(false);
+                cboxComuna.setSelectedIndex(-1);
+                cboxSat.setSelectedIndex(-1);
             }
         });
 
         labelCartier = new JLabel("Cartier");
         panelLocatie.add(labelCartier);
+        labelCartier.setEnabled(false);
         labelCartier.setBounds(265, 80, 215, 20);
 
         // lista cartiere
@@ -220,16 +304,22 @@ public class AdaugaClient
         rbuttonComuna = new JRadioButton("Comuna");
         panelLocatie.add(rbuttonComuna);
         rbuttonsLocatie.add(rbuttonComuna);
+        rbuttonComuna.setEnabled(false);
         rbuttonComuna.setBounds(510, 25, 215, 20);
         rbuttonComuna.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                cboxOras.setEnabled(false);
-                cboxCartier.setEnabled(false);
                 cboxComuna.setEnabled(true);
+                labelSat.setEnabled(true);
                 cboxSat.setEnabled(true);
+                cboxOras.setEnabled(false);
+                labelCartier.setEnabled(false);
+                cboxCartier.setEnabled(false);
+                cboxOras.setSelectedIndex(-1);
+                cboxCartier.setSelectedIndex(-1);
+
             }
         });
 
@@ -256,8 +346,35 @@ public class AdaugaClient
             }
         });
 
+        // updateaza lista cu sate cand o comuna este selectata
+        cboxComuna.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                List<Sat> listaSate = new ArrayList<>();
+                Object selectedItem = cboxComuna.getSelectedItem();
+
+                if (selectedItem instanceof Comuna)
+                {
+                    SatServices satServices = new SatServices();
+                    listaSate = satServices.getListaSate((Comuna) selectedItem);
+                }
+
+                cboxSat.removeAllItems();
+
+                for (Sat sat : listaSate)
+                {
+                    cboxSat.addItem(sat);
+                }
+
+                cboxSat.setSelectedIndex(-1);
+            }
+        });
+
         labelSat = new JLabel("Sat");
         panelLocatie.add(labelSat);
+        labelSat.setEnabled(false);
         labelSat.setBounds(510, 80, 215, 20);
 
         // lista sate

@@ -2,6 +2,7 @@ package Interface.HomeUI;
 
 import Components.*;
 import Entities.Persoana.Client;
+import Services.*;
 import Utils.CustomColor;
 import Entities.Locatie.*;
 
@@ -9,6 +10,8 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdaugaProprietate
 {
@@ -619,10 +622,8 @@ public class AdaugaProprietate
         panelLocatie.setBorder(new TitledBorder("Locatie"));
         panelLocatie.setBounds(10, 920, 735, 150);
 
-        // grup butoane oras/comuna
         rbuttonsLocatie = new ButtonGroup();
 
-        // strada
         labelLocatie = new JLabel("Strada");
         panelLocatie.add(labelLocatie);
         labelLocatie.setBounds(20, 25, 215, 20);
@@ -631,78 +632,289 @@ public class AdaugaProprietate
         panelLocatie.add(fieldLocatie);
         fieldLocatie.setBounds(15, 45, 215, 30);
 
-        // judet
         labelJudet = new JLabel("Judet");
         panelLocatie.add(labelJudet);
         labelJudet.setBounds(20, 80, 215, 20);
 
+        // lista judete
         cboxJudet = new JComboBox<>();
         panelLocatie.add(cboxJudet);
         cboxJudet.setBounds(15, 100, 215, 30);
 
-        // oras
+        // creaza lista judete
+        JudetServices judetServices = new JudetServices();
+        java.util.List<Judet> listaJudete = judetServices.getListaJudete();
+
+        for (Judet judet : listaJudete)
+        {
+            cboxJudet.addItem(judet);
+        }
+
+        // afiseaza numele judetelor in lista
+        cboxJudet.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Judet)
+                {
+                    Judet judet = (Judet) value;
+                    setText(judet.getDenumireJudet());
+                }
+                return this;
+            }
+        });
+
+        // Select empty in combobox
+        cboxJudet.setSelectedIndex(-1);
+
+        // updateaza lista cu orase/comune cand se alege un judet
+        cboxJudet.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                java.util.List<Oras> listaOrase = new ArrayList<>();
+                java.util.List<Comuna> listaComune = new ArrayList<>();
+                Object selectedItem = cboxJudet.getSelectedItem();
+
+                // Judet selectat
+                if (selectedItem instanceof Judet)
+                {
+                    OrasServices orasServices = new OrasServices();
+                    listaOrase = orasServices.getListaOrase((Judet) selectedItem);
+
+                    ComunaServices comunaServices = new ComunaServices();
+                    listaComune = comunaServices.getListaComune((Judet) selectedItem);
+
+                    // Enable orase/comune
+                    rbuttonOras.setEnabled(true);
+                    rbuttonComuna.setEnabled(true);
+                }
+                else
+                {
+                    // Disable orase/comune
+                    rbuttonOras.setEnabled(false);
+                    rbuttonComuna.setEnabled(false);
+                }
+
+                cboxOras.removeAllItems();
+                cboxComuna.removeAllItems();
+
+                for (Oras oras : listaOrase)
+                {
+                    cboxOras.addItem(oras);
+                }
+
+                for (Comuna comuna : listaComune)
+                {
+                    cboxComuna.addItem(comuna);
+                }
+
+                cboxOras.setSelectedIndex(-1);
+                cboxComuna.setSelectedIndex(-1);
+            }
+        });
+
         rbuttonOras = new JRadioButton("Oras");
         panelLocatie.add(rbuttonOras);
         rbuttonsLocatie.add(rbuttonOras);
+        rbuttonOras.setEnabled(false);
         rbuttonOras.setBounds(265, 25, 215, 20);
 
+        // lista orase
         cboxOras = new JComboBox<>();
         panelLocatie.add(cboxOras);
         cboxOras.setEnabled(false);
         cboxOras.setBounds(260, 45, 215, 30);
+
+        // afiseaza numele oraselor in lista
+        cboxOras.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Oras)
+                {
+                    Oras oras = (Oras) value;
+                    setText(oras.getDenumireOras());
+                }
+                return this;
+            }
+        });
+
+        // updateaza lista cu cartiere cand un oras este selectat
+        cboxOras.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                java.util.List<Cartier> listaCartiere = new ArrayList<>();
+                Object selectedItem = cboxOras.getSelectedItem();
+
+                if (selectedItem instanceof Oras)
+                {
+                    CartierServices cartierServices = new CartierServices();
+                    listaCartiere = cartierServices.getListaCartiere((Oras) selectedItem);
+                }
+
+                cboxCartier.removeAllItems();
+
+                for (Cartier cartier : listaCartiere)
+                {
+                    cboxCartier.addItem(cartier);
+                }
+
+                cboxCartier.setSelectedIndex(-1);
+            }
+        });
+
         rbuttonOras.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 cboxOras.setEnabled(true);
+                labelCartier.setEnabled(true);
                 cboxCartier.setEnabled(true);
                 cboxComuna.setEnabled(false);
+                labelSat.setEnabled(false);
                 cboxSat.setEnabled(false);
+                cboxComuna.setSelectedIndex(-1);
+                cboxSat.setSelectedIndex(-1);
             }
         });
 
-        // cartier
         labelCartier = new JLabel("Cartier");
         panelLocatie.add(labelCartier);
+        labelCartier.setEnabled(false);
         labelCartier.setBounds(265, 80, 215, 20);
 
+        // lista cartiere
         cboxCartier = new JComboBox<>();
         panelLocatie.add(cboxCartier);
         cboxCartier.setEnabled(false);
         cboxCartier.setBounds(260, 100, 215, 30);
 
-        // comuna
+        // afiseaza numele cartierelor in lista
+        cboxCartier.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Cartier)
+                {
+                    Cartier cartier = (Cartier) value;
+                    setText(cartier.getDenumireCartier());
+                }
+                return this;
+            }
+        });
+
         rbuttonComuna = new JRadioButton("Comuna");
         panelLocatie.add(rbuttonComuna);
         rbuttonsLocatie.add(rbuttonComuna);
+        rbuttonComuna.setEnabled(false);
         rbuttonComuna.setBounds(510, 25, 215, 20);
         rbuttonComuna.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                cboxOras.setEnabled(false);
-                cboxCartier.setEnabled(false);
                 cboxComuna.setEnabled(true);
+                labelSat.setEnabled(true);
                 cboxSat.setEnabled(true);
+                cboxOras.setEnabled(false);
+                labelCartier.setEnabled(false);
+                cboxCartier.setEnabled(false);
+                cboxOras.setSelectedIndex(-1);
+                cboxCartier.setSelectedIndex(-1);
+
             }
         });
 
+        // lista comune
         cboxComuna = new JComboBox<>();
         panelLocatie.add(cboxComuna);
         cboxComuna.setEnabled(false);
         cboxComuna.setBounds(505, 45, 215, 30);
 
-        // sat
+        // afiseaza numele comunelor in lista
+        cboxComuna.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Comuna)
+                {
+                    Comuna comuna = (Comuna) value;
+                    setText(comuna.getDenumireComuna());
+                }
+                return this;
+            }
+        });
+
+        // updateaza lista cu sate cand o comuna este selectata
+        cboxComuna.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                List<Sat> listaSate = new ArrayList<>();
+                Object selectedItem = cboxComuna.getSelectedItem();
+
+                if (selectedItem instanceof Comuna)
+                {
+                    SatServices satServices = new SatServices();
+                    listaSate = satServices.getListaSate((Comuna) selectedItem);
+                }
+
+                cboxSat.removeAllItems();
+
+                for (Sat sat : listaSate)
+                {
+                    cboxSat.addItem(sat);
+                }
+
+                cboxSat.setSelectedIndex(-1);
+            }
+        });
+
         labelSat = new JLabel("Sat");
         panelLocatie.add(labelSat);
+        labelSat.setEnabled(false);
         labelSat.setBounds(510, 80, 215, 20);
 
+        // lista sate
         cboxSat = new JComboBox<>();
         panelLocatie.add(cboxSat);
         cboxSat.setEnabled(false);
         cboxSat.setBounds(505, 100, 215, 30);
+
+        // afiseaza numele satelor in lista
+        cboxSat.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Sat)
+                {
+                    Sat sat = (Sat) value;
+                    setText(sat.getDenumireSat());
+                }
+                return this;
+            }
+        });
     }
 
     // butoane accept/anuleaza
