@@ -4,11 +4,13 @@ import Entities.Persoana.Agent;
 import Entities.Persoana.Client;
 
 import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 public class Programare
 {
     private int indexProgramare;
-    private Date data;
+    private Timestamp data;
     private Agent agent;
     private Client client;
 
@@ -16,7 +18,7 @@ public class Programare
     {
     }
 
-    public Programare(int indexProgramare, Date data, Agent agent, Client client)
+    public Programare(int indexProgramare, Timestamp data, Agent agent, Client client)
     {
         this.indexProgramare = indexProgramare;
         this.data = data;
@@ -34,12 +36,12 @@ public class Programare
         this.indexProgramare = indexProgramare;
     }
 
-    public Date getData()
+    public Timestamp getData()
     {
         return data;
     }
 
-    public void setData(Date data)
+    public void setData(Timestamp data)
     {
         this.data = data;
     }
