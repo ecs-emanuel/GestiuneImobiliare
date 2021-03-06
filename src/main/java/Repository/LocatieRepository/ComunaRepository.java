@@ -70,4 +70,49 @@ public class ComunaRepository
         }
         return new Pair<>(listaComune, QueryOutcome.ERROR);
     }
+
+    public Pair<Boolean, QueryOutcome> isComunaInDatabase(Comuna comuna)
+    {
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.craeteConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(null, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT * " +
+            "FROM comune " +
+            "WHERE indexComuna = %d",
+            comuna.getIndexComuna()
+        );
+
+        try (Statement statament = connection.createStatement())
+        {
+            try (ResultSet resultset = statament.executeQuery(sqlScript))
+            {
+                if (resultset.first())
+                {
+                    return new Pair<>(true, QueryOutcome.SUCCESS);
+                }
+                return new Pair<>(false, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+
+        try
+        {
+            connection.close();
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        return new Pair<>(null, QueryOutcome.ERROR);
+    }
 }

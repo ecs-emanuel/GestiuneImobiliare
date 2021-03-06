@@ -15,4 +15,10 @@ public class SatServices
         SatRepository satRepository = new SatRepository();
         return satRepository.getListaSate(comuna);
     }
+
+    public Pair<Boolean, QueryOutcome> isSatInDatabase(Sat sat)
+    {
+        SatRepository satRepository = new SatRepository();
+        return satRepository.isSatInDatabase(sat);
+    }
 }

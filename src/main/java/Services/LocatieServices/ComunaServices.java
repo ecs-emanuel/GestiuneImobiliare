@@ -15,4 +15,10 @@ public class ComunaServices
         ComunaRepository comunaRepository = new ComunaRepository();
         return comunaRepository.getListaComune(judet);
     }
+
+    public Pair<Boolean, QueryOutcome> isComunaInDatabase(Comuna comuna)
+    {
+        ComunaRepository comunaRepository = new ComunaRepository();
+        return comunaRepository.isComunaInDatabase(comuna);
+    }
 }

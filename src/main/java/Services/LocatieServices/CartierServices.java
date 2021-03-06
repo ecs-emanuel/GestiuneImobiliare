@@ -15,4 +15,10 @@ public class CartierServices
         CartierRepository cartierRepository = new CartierRepository();
         return cartierRepository.getListaCartiere(oras);
     }
+
+    public Pair<Boolean, QueryOutcome> isCartierInDatabase(Cartier cartier)
+    {
+        CartierRepository cartierRepository = new CartierRepository();
+        return cartierRepository.isCartierInDatabase(cartier);
+    }
 }

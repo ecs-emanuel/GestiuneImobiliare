@@ -15,4 +15,10 @@ public class OrasServices
         OrasRepository orasRepository = new OrasRepository();
         return orasRepository.getListaOrase(judet);
     }
+
+    public Pair<Boolean, QueryOutcome> isOrasInDatabase(Oras oras)
+    {
+        OrasRepository orasRepository = new OrasRepository();
+        return orasRepository.isOrasInDatabase(oras);
+    }
 }

@@ -14,4 +14,10 @@ public class JudetServices
         JudetRepository judetRepository = new JudetRepository();
         return judetRepository.getListaJudete();
     }
+
+    public Pair<Boolean, QueryOutcome> isJudetInDatabase(Judet judet)
+    {
+        JudetRepository judetRepository = new JudetRepository();
+        return judetRepository.isJudetInDatabase(judet);
+    }
 }

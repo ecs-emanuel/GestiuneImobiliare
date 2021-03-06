@@ -71,4 +71,49 @@ public class CartierRepository
         }
         return new Pair<>(listaCartiere, QueryOutcome.ERROR);
     }
+
+    public Pair<Boolean, QueryOutcome> isCartierInDatabase(Cartier cartier)
+    {
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.craeteConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(null, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT * " +
+            "FROM cartiere " +
+            "WHERE indexCartier = %d",
+            cartier.getIndexCartier()
+        );
+
+        try (Statement statament = connection.createStatement())
+        {
+            try (ResultSet resultset = statament.executeQuery(sqlScript))
+            {
+                if (resultset.first())
+                {
+                    return new Pair<>(true, QueryOutcome.SUCCESS);
+                }
+                return new Pair<>(false, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+
+        try
+        {
+            connection.close();
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        return new Pair<>(null, QueryOutcome.ERROR);
+    }
 }

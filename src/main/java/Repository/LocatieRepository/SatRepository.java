@@ -1,5 +1,6 @@
 package Repository.LocatieRepository;
 
+import Entities.Locatie.Judet;
 import Entities.Locatie.Sat;
 import Entities.Locatie.Comuna;
 import Repository.DatabaseRepository;
@@ -69,5 +70,50 @@ public class SatRepository
             throwables.printStackTrace();
         }
         return new Pair<>(listaSate, QueryOutcome.ERROR);
+    }
+
+    public Pair<Boolean, QueryOutcome> isSatInDatabase(Sat sat)
+    {
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.craeteConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(null, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT * " +
+            "FROM sate " +
+            "WHERE indexSat = %d",
+            sat.getIndexSat()
+        );
+
+        try (Statement statament = connection.createStatement())
+        {
+            try (ResultSet resultset = statament.executeQuery(sqlScript))
+            {
+                if (resultset.first())
+                {
+                    return new Pair<>(true, QueryOutcome.SUCCESS);
+                }
+                return new Pair<>(false, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+
+        try
+        {
+            connection.close();
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        return new Pair<>(null, QueryOutcome.ERROR);
     }
 }
