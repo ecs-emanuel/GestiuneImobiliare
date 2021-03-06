@@ -3,6 +3,8 @@ package Repository.LocatieRepository;
 import Entities.Locatie.Judet;
 import Entities.Locatie.Comuna;
 import Repository.DatabaseRepository;
+import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -13,16 +15,8 @@ import java.util.List;
 
 public class ComunaRepository
 {
-    public List<Comuna> getListaComune(Judet judet)
+    public Pair<List<Comuna>, QueryOutcome> getListaComune(Judet judet)
     {
-        String sqlScript = String.format
-        (
-            "SELECT * " +
-            "FROM comune " +
-            "WHERE judetComuna = '%s'",
-            judet.getIndexJudet()
-        );
-
         List<Comuna> listaComune = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
@@ -30,8 +24,16 @@ public class ComunaRepository
 
         if (connection == null)
         {
-            return listaComune;
+            return new Pair<>(listaComune, QueryOutcome.OFFLINE);
         }
+
+        String sqlScript = String.format
+        (
+            "SELECT * " +
+            "FROM comune " +
+            "WHERE judetComuna = '%s'",
+            judet.getIndexJudet()
+        );
 
         try (Statement statament = connection.createStatement())
         {
@@ -44,6 +46,13 @@ public class ComunaRepository
                     comuna.setDenumireComuna(resultset.getString(2));
                     listaComune.add(comuna);
                 }
+
+                if (listaComune.size() <= 0)
+                {
+                    return new Pair<>(listaComune, QueryOutcome.EMPTY);
+                }
+
+                return new Pair<>(listaComune, QueryOutcome.SUCCESS);
             }
         }
         catch (SQLException throwables)
@@ -59,6 +68,6 @@ public class ComunaRepository
         {
             throwables.printStackTrace();
         }
-        return listaComune;
+        return new Pair<>(listaComune, QueryOutcome.ERROR);
     }
 }

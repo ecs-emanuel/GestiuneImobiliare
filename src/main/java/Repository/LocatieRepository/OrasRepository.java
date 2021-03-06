@@ -3,6 +3,8 @@ package Repository.LocatieRepository;
 import Entities.Locatie.Judet;
 import Entities.Locatie.Oras;
 import Repository.DatabaseRepository;
+import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -13,16 +15,8 @@ import java.util.List;
 
 public class OrasRepository
 {
-    public List<Oras> getListaOrase(Judet judet)
+    public Pair<List<Oras>, QueryOutcome> getListaOrase(Judet judet)
     {
-        String sqlScript = String.format
-        (
-            "SELECT * " +
-            "FROM orase " +
-            "WHERE judetOras = '%s'",
-            judet.getIndexJudet()
-        );
-
         List<Oras> listaOrase = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
@@ -30,8 +24,16 @@ public class OrasRepository
 
         if (connection == null)
         {
-            return listaOrase;
+            return new Pair<>(listaOrase, QueryOutcome.OFFLINE);
         }
+
+        String sqlScript = String.format
+        (
+            "SELECT * " +
+            "FROM orase " +
+            "WHERE judetOras = '%s'",
+            judet.getIndexJudet()
+        );
 
         try (Statement statament = connection.createStatement())
         {
@@ -44,6 +46,13 @@ public class OrasRepository
                     oras.setDenumireOras(resultset.getString(2));
                     listaOrase.add(oras);
                 }
+
+                if (listaOrase.size() <= 0)
+                {
+                    return new Pair<>(listaOrase, QueryOutcome.EMPTY);
+                }
+
+                return new Pair<>(listaOrase, QueryOutcome.SUCCESS);
             }
         }
         catch (SQLException throwables)
@@ -59,6 +68,6 @@ public class OrasRepository
         {
             throwables.printStackTrace();
         }
-        return listaOrase;
+        return new Pair<>(listaOrase, QueryOutcome.ERROR);
     }
 }

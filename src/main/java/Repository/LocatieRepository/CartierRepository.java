@@ -4,6 +4,8 @@ import Entities.Locatie.Judet;
 import Entities.Locatie.Cartier;
 import Entities.Locatie.Oras;
 import Repository.DatabaseRepository;
+import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -14,16 +16,8 @@ import java.util.List;
 
 public class CartierRepository
 {
-    public List<Cartier> getListaCartiere(Oras oras)
+    public Pair<List<Cartier>, QueryOutcome> getListaCartiere(Oras oras)
     {
-        String sqlScript = String.format
-        (
-            "SELECT * " +
-            "FROM cartiere " +
-            "WHERE orasCartier = '%s'",
-            oras.getIndexOras()
-        );
-
         List<Cartier> listaCartiere = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
@@ -31,8 +25,16 @@ public class CartierRepository
 
         if (connection == null)
         {
-            return listaCartiere;
+            return new Pair<>(listaCartiere, QueryOutcome.OFFLINE);
         }
+
+        String sqlScript = String.format
+        (
+            "SELECT * " +
+            "FROM cartiere " +
+            "WHERE orasCartier = '%s'",
+            oras.getIndexOras()
+        );
 
         try (Statement statament = connection.createStatement())
         {
@@ -45,6 +47,13 @@ public class CartierRepository
                     cartier.setDenumireCartier(resultset.getString(2));
                     listaCartiere.add(cartier);
                 }
+
+                if (listaCartiere.size() <= 0)
+                {
+                    return new Pair<>(listaCartiere, QueryOutcome.EMPTY);
+                }
+
+                return new Pair<>(listaCartiere, QueryOutcome.SUCCESS);
             }
         }
         catch (SQLException throwables)
@@ -60,6 +69,6 @@ public class CartierRepository
         {
             throwables.printStackTrace();
         }
-        return listaCartiere;
+        return new Pair<>(listaCartiere, QueryOutcome.ERROR);
     }
 }

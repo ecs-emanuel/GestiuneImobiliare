@@ -3,12 +3,14 @@ package Services.LocatieServices;
 import Entities.Locatie.Comuna;
 import Entities.Locatie.Judet;
 import Repository.LocatieRepository.ComunaRepository;
+import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 import java.util.List;
 
 public class ComunaServices
 {
-    public List<Comuna> getListaComune(Judet judet)
+    public Pair<List<Comuna>, QueryOutcome> getListaComune(Judet judet)
     {
         ComunaRepository comunaRepository = new ComunaRepository();
         return comunaRepository.getListaComune(judet);

@@ -14,14 +14,8 @@ import java.util.List;
 
 public class JudetRepository
 {
-    public List<Judet> getListaJudete()
+    public Pair<List<Judet>, QueryOutcome> getListaJudete()
     {
-        String sqlScript = String.format
-        (
-            "SELECT * " +
-            "FROM judete"
-        );
-
         List<Judet> listaJudete = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
@@ -29,8 +23,14 @@ public class JudetRepository
 
         if (connection == null)
         {
-            return listaJudete;
+            return new Pair<>(listaJudete, QueryOutcome.OFFLINE);
         }
+
+        String sqlScript = String.format
+        (
+            "SELECT * " +
+            "FROM judete"
+        );
 
         try (Statement statament = connection.createStatement())
         {
@@ -43,6 +43,13 @@ public class JudetRepository
                     judet.setDenumireJudet(resultset.getString(2));
                     listaJudete.add(judet);
                 }
+
+                if (listaJudete.size() <= 0)
+                {
+                    return new Pair<>(listaJudete, QueryOutcome.EMPTY);
+                }
+
+                return new Pair<>(listaJudete, QueryOutcome.SUCCESS);
             }
         }
         catch (SQLException throwables)
@@ -58,6 +65,6 @@ public class JudetRepository
         {
             throwables.printStackTrace();
         }
-        return listaJudete;
+        return new Pair<>(listaJudete, QueryOutcome.ERROR);
     }
 }

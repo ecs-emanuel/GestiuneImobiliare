@@ -650,7 +650,7 @@ public class AdaugaProprietate
 
         // creaza lista judete
         JudetServices judetServices = new JudetServices();
-        java.util.List<Judet> listaJudete = judetServices.getListaJudete();
+        java.util.List<Judet> listaJudete = judetServices.getListaJudete().getKey();
 
         for (Judet judet : listaJudete)
         {
@@ -691,10 +691,10 @@ public class AdaugaProprietate
                 if (selectedItem instanceof Judet)
                 {
                     OrasServices orasServices = new OrasServices();
-                    listaOrase = orasServices.getListaOrase((Judet) selectedItem);
+                    listaOrase = orasServices.getListaOrase((Judet) selectedItem).getKey();
 
                     ComunaServices comunaServices = new ComunaServices();
-                    listaComune = comunaServices.getListaComune((Judet) selectedItem);
+                    listaComune = comunaServices.getListaComune((Judet) selectedItem).getKey();
 
                     // Enable orase/comune
                     rbuttonOras.setEnabled(true);
@@ -766,7 +766,7 @@ public class AdaugaProprietate
                 if (selectedItem instanceof Oras)
                 {
                     CartierServices cartierServices = new CartierServices();
-                    listaCartiere = cartierServices.getListaCartiere((Oras) selectedItem);
+                    listaCartiere = cartierServices.getListaCartiere((Oras) selectedItem).getKey();
                 }
 
                 cboxCartier.removeAllItems();
@@ -881,7 +881,7 @@ public class AdaugaProprietate
                 if (selectedItem instanceof Comuna)
                 {
                     SatServices satServices = new SatServices();
-                    listaSate = satServices.getListaSate((Comuna) selectedItem);
+                    listaSate = satServices.getListaSate((Comuna) selectedItem).getKey();
                 }
 
                 cboxSat.removeAllItems();

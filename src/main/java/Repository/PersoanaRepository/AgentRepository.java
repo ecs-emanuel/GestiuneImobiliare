@@ -16,14 +16,6 @@ public class AgentRepository
 {
     public Pair<Agent, QueryOutcome> getAggent(User user)
     {
-        String sqlScript = String.format
-        (
-            "SELECT * " +
-            "FROM agenti " +
-            "WHERE userAgent = %d",
-            user.getIndexUser()
-        );
-
         DatabaseRepository databaseRepository = new DatabaseRepository();
         Connection connection = databaseRepository.craeteConnection();
 
@@ -32,6 +24,14 @@ public class AgentRepository
         {
             return new Pair<>(null, QueryOutcome.OFFLINE);
         }
+        
+        String sqlScript = String.format
+        (
+            "SELECT * " +
+            "FROM agenti " +
+            "WHERE userAgent = %d",
+            user.getIndexUser()
+        );
 
         try (Statement statament = connection.createStatement())
         {

@@ -3,6 +3,8 @@ package Repository.LocatieRepository;
 import Entities.Locatie.Sat;
 import Entities.Locatie.Comuna;
 import Repository.DatabaseRepository;
+import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -13,16 +15,8 @@ import java.util.List;
 
 public class SatRepository
 {
-    public List<Sat> getListaSate(Comuna comuna)
+    public Pair<List<Sat>, QueryOutcome> getListaSate(Comuna comuna)
     {
-        String sqlScript = String.format
-        (
-            "SELECT * " +
-            "FROM sate " +
-            "WHERE comunaSat = '%s'",
-            comuna.getIndexComuna()
-        );
-
         List<Sat> listaSate = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
@@ -30,8 +24,16 @@ public class SatRepository
 
         if (connection == null)
         {
-            return listaSate;
+            return new Pair<>(listaSate, QueryOutcome.OFFLINE);
         }
+
+        String sqlScript = String.format
+        (
+            "SELECT * " +
+            "FROM sate " +
+            "WHERE comunaSat = '%s'",
+            comuna.getIndexComuna()
+        );
 
         try (Statement statament = connection.createStatement())
         {
@@ -44,6 +46,13 @@ public class SatRepository
                     sat.setDenumireSat(resultset.getString(2));
                     listaSate.add(sat);
                 }
+
+                if (listaSate.size() <= 0)
+                {
+                    return new Pair<>(listaSate, QueryOutcome.EMPTY);
+                }
+
+                return new Pair<>(listaSate, QueryOutcome.SUCCESS);
             }
         }
         catch (SQLException throwables)
@@ -59,6 +68,6 @@ public class SatRepository
         {
             throwables.printStackTrace();
         }
-        return listaSate;
+        return new Pair<>(listaSate, QueryOutcome.ERROR);
     }
 }
