@@ -16,13 +16,15 @@ public class AgentRepository
 {
     public Pair<Agent, QueryOutcome> getAggent(User user)
     {
+        Agent agent = new Agent();
+
         DatabaseRepository databaseRepository = new DatabaseRepository();
         Connection connection = databaseRepository.craeteConnection();
 
         // no connection / offline
         if (connection == null)
         {
-            return new Pair<>(null, QueryOutcome.OFFLINE);
+            return new Pair<>(agent, QueryOutcome.OFFLINE);
         }
         
         String sqlScript = String.format
@@ -40,14 +42,13 @@ public class AgentRepository
                 // user found in database
                 if (resultset.first())
                 {
-                    Agent agent = new Agent();
                     agent.setIndexAgent(resultset.getInt(1));
                     agent.setUserAgent(user);
                     return new Pair<>(agent, QueryOutcome.SUCCESS);
                 }
 
                 // nothing found
-                return new Pair<>(null, QueryOutcome.EMPTY);
+                return new Pair<>(agent, QueryOutcome.EMPTY);
             }
         }
         catch (SQLException throwables)
@@ -65,6 +66,6 @@ public class AgentRepository
         }
 
         // if we reached this point, something went wrong
-        return new Pair<>(null, QueryOutcome.ERROR);
+        return new Pair<>(agent, QueryOutcome.ERROR);
     }
 }
