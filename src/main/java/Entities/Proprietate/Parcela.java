@@ -78,7 +78,7 @@ public class Parcela
         return hasCanalizare;
     }
 
-    public void hasCanalizare(boolean hasCanalizare)
+    public void sethasCanalizare(boolean hasCanalizare)
     {
         this.hasCanalizare = hasCanalizare;
     }
