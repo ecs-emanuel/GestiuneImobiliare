@@ -57,7 +57,7 @@ public class AdaugaProprietate
     private JLabel labelEtajConstructie;
     private JComboBox<EtajApartament> cboxEtajConstructie;
     private JLabel labelInaltimeConstructie;
-    private JComboBox<String> cboxInaltimeConstructie;
+    private JComboBox<Integer> cboxInaltimeConstructie;
     private JLabel labelDispozitieActuala;
     private JComboBox<DispozitieConstructie> cboxDispozitieActuala;
     private JLabel labelDispozitiePredare;
@@ -66,37 +66,37 @@ public class AdaugaProprietate
     // Panel compartimentare
     private JPanel panelCompartimentare;
     private JLabel labelOpenspace;
-    private JComboBox<String> cboxOpenspace;
+    private JComboBox<Integer> cboxOpenspace;
     private JLabel labelLiving;
-    private JComboBox<String> cboxLiving;
+    private JComboBox<Integer> cboxLiving;
     private JLabel labelDormitor;
-    private JComboBox<String> cboxDormitor;
+    private JComboBox<Integer> cboxDormitor;
     private JLabel labelDressing;
-    private JComboBox<String> cboxDressing;
+    private JComboBox<Integer> cboxDressing;
     private JLabel labelBucatarie;
-    private JComboBox<String> cboxBucatarie;
+    private JComboBox<Integer> cboxBucatarie;
     private JLabel labelDebara;
-    private JComboBox<String> cboxDebara;
+    private JComboBox<Integer> cboxDebara;
     private JLabel labelBaie;
-    private JComboBox<String> cboxBaie;
+    private JComboBox<Integer> cboxBaie;
     private JLabel labelHol;
-    private JComboBox<String> cboxHol;
+    private JComboBox<Integer> cboxHol;
     private JLabel labelMansarda;
-    private JComboBox<String> cboxMansarda;
+    private JComboBox<Integer> cboxMansarda;
     private JLabel labelBalcon;
-    private JComboBox<String> cboxBalcon;
+    private JComboBox<Integer> cboxBalcon;
     private JLabel labelTerasa;
-    private JComboBox<String> cboxTerasa;
+    private JComboBox<Integer> cboxTerasa;
     private JLabel labelGradina;
-    private JComboBox<String> cboxGradina;
+    private JComboBox<Integer> cboxGradina;
     private JLabel labelParcare;
-    private JComboBox<String> cboxParcare;
+    private JComboBox<Integer> cboxParcare;
     private JLabel labelGaraj;
-    private JComboBox<String> cboxGaraj;
+    private JComboBox<Integer> cboxGaraj;
     private JLabel labelBoxa;
-    private JComboBox<String> cboxBoxa;
+    private JComboBox<Integer> cboxBoxa;
     private JLabel labelPod;
-    private JComboBox<String> cboxPod;
+    private JComboBox<Integer> cboxPod;
 
     // Panel locatie
     private JPanel panelLocatie;
@@ -406,7 +406,7 @@ public class AdaugaProprietate
 
         for (int i = 0; i <= 20; i++)
         {
-            cboxInaltimeConstructie.addItem(String.valueOf(i));
+            cboxInaltimeConstructie.addItem(i);
         }
         cboxInaltimeConstructie.setSelectedIndex(-1);
 
@@ -598,24 +598,22 @@ public class AdaugaProprietate
 
         for (int i = 0; i <= 10; i++)
         {
-            String item = String.valueOf(i);
-
-            cboxOpenspace.addItem(item);
-            cboxLiving.addItem(item);
-            cboxDormitor.addItem(item);
-            cboxDressing.addItem(item);
-            cboxBucatarie.addItem(item);
-            cboxDebara.addItem(item);
-            cboxBaie.addItem(item);
-            cboxHol.addItem(item);
-            cboxMansarda.addItem(item);
-            cboxBalcon.addItem(item);
-            cboxTerasa.addItem(item);
-            cboxGradina.addItem(item);
-            cboxParcare.addItem(item);
-            cboxGaraj.addItem(item);
-            cboxBoxa.addItem(item);
-            cboxPod.addItem(item);
+            cboxOpenspace.addItem(i);
+            cboxLiving.addItem(i);
+            cboxDormitor.addItem(i);
+            cboxDressing.addItem(i);
+            cboxBucatarie.addItem(i);
+            cboxDebara.addItem(i);
+            cboxBaie.addItem(i);
+            cboxHol.addItem(i);
+            cboxMansarda.addItem(i);
+            cboxBalcon.addItem(i);
+            cboxTerasa.addItem(i);
+            cboxGradina.addItem(i);
+            cboxParcare.addItem(i);
+            cboxGaraj.addItem(i);
+            cboxBoxa.addItem(i);
+            cboxPod.addItem(i);
         }
     }
 
@@ -1031,20 +1029,20 @@ public class AdaugaProprietate
                 // and structura constructie selected
                 cboxStructuraConstructie.getSelectedItem() instanceof StructuraConstructie &&
                 // and inaltime constructie selected
-                cboxInaltimeConstructie.getSelectedItem() instanceof String &&
+                cboxInaltimeConstructie.getSelectedItem() instanceof Integer &&
                 // and dispozitie actuala selected
                 cboxDispozitieActuala.getSelectedItem() instanceof DispozitieConstructie &&
                 // and dispozitie predare selected
                 cboxDispozitiePredare.getSelectedItem() instanceof DispozitieConstructie &&
                 // and all fields from compartimentare selected
-                cboxOpenspace.getSelectedItem() instanceof String && cboxLiving.getSelectedItem() instanceof String &&
-                cboxDormitor.getSelectedItem() instanceof String && cboxDressing.getSelectedItem() instanceof String &&
-                cboxBucatarie.getSelectedItem() instanceof String && cboxDebara.getSelectedItem() instanceof String &&
-                cboxBaie.getSelectedItem() instanceof String && cboxHol.getSelectedItem() instanceof String &&
-                cboxMansarda.getSelectedItem() instanceof String && cboxBalcon.getSelectedItem() instanceof String &&
-                cboxTerasa.getSelectedItem() instanceof String && cboxGradina.getSelectedItem() instanceof String &&
-                cboxParcare.getSelectedItem() instanceof String && cboxGaraj.getSelectedItem() instanceof String &&
-                cboxBoxa.getSelectedItem() instanceof String && cboxPod.getSelectedItem() instanceof String &&
+                cboxOpenspace.getSelectedItem() instanceof Integer && cboxLiving.getSelectedItem() instanceof Integer &&
+                cboxDormitor.getSelectedItem() instanceof Integer && cboxDressing.getSelectedItem() instanceof Integer &&
+                cboxBucatarie.getSelectedItem() instanceof Integer && cboxDebara.getSelectedItem() instanceof Integer &&
+                cboxBaie.getSelectedItem() instanceof Integer && cboxHol.getSelectedItem() instanceof Integer &&
+                cboxMansarda.getSelectedItem() instanceof Integer && cboxBalcon.getSelectedItem() instanceof Integer &&
+                cboxTerasa.getSelectedItem() instanceof Integer && cboxGradina.getSelectedItem() instanceof Integer &&
+                cboxParcare.getSelectedItem() instanceof Integer && cboxGaraj.getSelectedItem() instanceof Integer &&
+                cboxBoxa.getSelectedItem() instanceof Integer && cboxPod.getSelectedItem() instanceof Integer &&
                 // and form teren completed
                 isFormTerenCompleted();
     }
