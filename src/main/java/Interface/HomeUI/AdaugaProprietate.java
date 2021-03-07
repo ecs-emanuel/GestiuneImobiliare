@@ -943,7 +943,21 @@ public class AdaugaProprietate
             {
                 if  (isFormCompleted())
                 {
-                   // add
+                    // create locatie
+                    Locatie locatie = new Locatie();
+                    locatie.setJudetLocatie((Judet) cboxJudet.getSelectedItem());
+
+                    if (rbuttonOras.isSelected())
+                    {
+                        locatie.setOrasLocatie((Oras) cboxOras.getSelectedItem());
+                        locatie.setCartierLocatie((Cartier) cboxCartier.getSelectedItem());
+                    }
+                    else if (rbuttonComuna.isSelected())
+                    {
+                        locatie.setComunaLocatie((Comuna) cboxComuna.getSelectedItem());
+                        locatie.setSatLocatie((Sat) cboxSat.getSelectedItem());
+                    }
+                    locatie.setDenumireLocatie(fieldLocatie.getText());
                 }
             }
         });

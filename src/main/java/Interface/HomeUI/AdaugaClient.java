@@ -419,7 +419,29 @@ public class AdaugaClient
             {
                 if (isFormCompleted())
                 {
-                    
+                    Locatie locatie = new Locatie();
+                    locatie.setJudetLocatie((Judet) cboxJudet.getSelectedItem());
+
+                    if (cboxOras.getSelectedItem() instanceof Oras)
+                    {
+                        locatie.setOrasLocatie((Oras) cboxOras.getSelectedItem());
+                        locatie.setCartierLocatie((Cartier) cboxCartier.getSelectedItem());
+                    }
+
+                    if (cboxComuna.getSelectedItem() instanceof Comuna)
+                    {
+                        locatie.setComunaLocatie((Comuna) cboxComuna.getSelectedItem());
+                        locatie.setSatLocatie((Sat) cboxSat.getSelectedItem());
+                    }
+
+                    locatie.setDenumireLocatie(fieldLocatie.getText());
+
+                    Client client = new Client();
+                    client.setNumePersoana(fieldNume.getText());
+                    client.setPrenumePersoana(fieldPrenume.getText());
+                    client.setTelefonPersoana(fieldTelefon.getText());
+                    client.setEmailPersoana(fieldEmail.getText());
+                    client.setDomiciliuPersoana(locatie);
 
                     // add to database
                 }

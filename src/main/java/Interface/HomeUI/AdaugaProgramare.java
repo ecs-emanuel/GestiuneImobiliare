@@ -93,7 +93,20 @@ public class AdaugaProgramare
             {
                 if (isFormCompleted())
                 {
+                    Date data = (Date) spinnerData.getValue();
+                    Date ora = (Date) spinnerOra.getValue();
 
+                    LocalDate localDate = data.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalTime localTime = ora.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+                    LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+                    Timestamp timeStamp = Timestamp.valueOf(localDateTime);
+
+                    Client client = (Client) cboxClient.getSelectedItem();
+
+                    Programare programare = new Programare();
+                    programare.setAgent(homeUI.mainAgent);
+                    programare.setClient(client);
+                    programare.setData(timeStamp);
 
                     // add
                 }
