@@ -1,8 +1,9 @@
 package Interface.HomeUI;
 
 import Components.*;
+import Entities.Persoana.Agent;
 import Entities.Persoana.Client;
-import Entities.Proprietate.Compartimentare;
+import Entities.Proprietate.*;
 import Services.LocatieServices.*;
 import Utils.CustomColor;
 import Entities.Locatie.*;
@@ -11,6 +12,7 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,8 +56,8 @@ public class AdaugaProprietate
     private JTextField fieldAnConstructie;
     private JLabel labelStructuraConstructie;
     private JComboBox<StructuraConstructie> cboxStructuraConstructie;
-    private JLabel labelEtajConstructie;
-    private JComboBox<EtajApartament> cboxEtajConstructie;
+    private JLabel labelEtajApartament;
+    private JComboBox<EtajApartament> cboxEtajApartament;
     private JLabel labelInaltimeConstructie;
     private JComboBox<Integer> cboxInaltimeConstructie;
     private JLabel labelDispozitieActuala;
@@ -243,8 +245,8 @@ public class AdaugaProprietate
                         labelDispozitieTeren.setEnabled(false);
                         cboxDispozitieTeren.setEnabled(false);
                         cboxDispozitieTeren.setSelectedItem(DispozitieTeren.Intravilan);
-                        labelEtajConstructie.setEnabled(false);
-                        cboxEtajConstructie.setEnabled(false);
+                        labelEtajApartament.setEnabled(false);
+                        cboxEtajApartament.setEnabled(false);
                         break;
 
                     case Apartament:
@@ -253,8 +255,8 @@ public class AdaugaProprietate
                         labelDispozitieTeren.setEnabled(false);
                         cboxDispozitieTeren.setEnabled(false);
                         cboxDispozitieTeren.setSelectedItem(DispozitieTeren.Intravilan);
-                        labelEtajConstructie.setEnabled(true);
-                        cboxEtajConstructie.setEnabled(true);
+                        labelEtajApartament.setEnabled(true);
+                        cboxEtajApartament.setEnabled(true);
                         break;
                 }
             }
@@ -381,19 +383,19 @@ public class AdaugaProprietate
         cboxStructuraConstructie.setSelectedIndex(-1);
 
         // etaj apartament
-        labelEtajConstructie = new JLabel("Etaj");
-        panelConstructie.add(labelEtajConstructie);
-        labelEtajConstructie.setBounds(20, 80, 154, 20);
+        labelEtajApartament = new JLabel("Etaj");
+        panelConstructie.add(labelEtajApartament);
+        labelEtajApartament.setBounds(20, 80, 154, 20);
 
-        cboxEtajConstructie = new JComboBox<>();
-        panelConstructie.add(cboxEtajConstructie);
-        cboxEtajConstructie.setBounds(15, 100, 154, 30);
+        cboxEtajApartament = new JComboBox<>();
+        panelConstructie.add(cboxEtajApartament);
+        cboxEtajApartament.setBounds(15, 100, 154, 30);
 
         for (EtajApartament item : EtajApartament.values())
         {
-            cboxEtajConstructie.addItem(item);
+            cboxEtajApartament.addItem(item);
         }
-        cboxEtajConstructie.setSelectedIndex(-1);
+        cboxEtajApartament.setSelectedIndex(-1);
 
         // inaltime constructie
         labelInaltimeConstructie = new JLabel("Inaltime");
@@ -956,6 +958,107 @@ public class AdaugaProprietate
                         locatie.setSatLocatie((Sat) cboxSat.getSelectedItem());
                     }
                     locatie.setDenumireLocatie(fieldLocatie.getText());
+
+                    // create parcela
+                    Parcela parcela = new Parcela();
+                    parcela.setSuprafataParcela(Integer.parseInt(fieldSuprafataParcela.getText()));
+                    parcela.setHasApa(checkbApa.isSelected());
+                    parcela.setHasGaz(checkbGaz.isSelected());
+                    parcela.setHasElectricitate(checkbElectricitate.isSelected());
+                    parcela.sethasCanalizare(checkbCanalizare.isSelected());
+
+                    // teren
+                    if (cboxCategorieProprietate.getSelectedItem() == CategorieProprietate.Teren)
+                    {
+                        // creare teren
+                        Teren teren = new Teren();
+                        teren.setDispozitieTeren((DispozitieTeren) cboxDispozitieTeren.getSelectedItem());
+                        teren.setParcelaTeren(parcela);
+
+                        // proprietate
+                        teren.setTitluProprietate(fieldTitlu.getText());
+                        teren.setDescriereProprietate(areaDescriere.getText());
+                        teren.setPretProprietate(Integer.parseInt(fieldPret.getText()));
+                        teren.setLocatieProprietate(locatie);
+                        teren.setProprietarProprietate((Client) cboxProprietar.getSelectedItem());
+                        teren.setAgentProprietate(homeUI.mainAgent);
+                        teren.setDispozitieProprietate(DispozitieProprietate.Activ);
+                        teren.setDataProprietate(new Date(System.currentTimeMillis()));
+
+                        // add
+                        return;
+                    }
+
+                    // create constructie
+                    Constructie constructie = new Constructie();
+                    constructie.setSuprafataUtilizabila(Integer.parseInt(fieldSuprafataUtilizabila.getText()));
+                    constructie.setSuprafataConstructie(Integer.parseInt(fieldSuprafataConstructie.getText()));
+                    constructie.setAnConstructie(Integer.parseInt(fieldAnConstructie.getText()));
+                    constructie.setStructuraConstructie((StructuraConstructie) cboxStructuraConstructie.getSelectedItem());
+                    constructie.setInaltimeConstructie((Integer) cboxInaltimeConstructie.getSelectedItem());
+                    constructie.setDispozitieActuala((DispozitieConstructie) cboxDispozitieActuala.getSelectedItem());
+                    constructie.setDispozitiePredare((DispozitieConstructie) cboxDispozitiePredare.getSelectedItem());
+                    constructie.setParcelaConstructie(parcela);
+
+                    // create compartimentare
+                    Compartimentare compartimentare = new Compartimentare();
+                    compartimentare.setOpenspace((Integer) cboxOpenspace.getSelectedItem());
+                    compartimentare.setLiving((Integer) cboxOpenspace.getSelectedItem());
+                    compartimentare.setDormitor((Integer) cboxDormitor.getSelectedItem());
+                    compartimentare.setDressing((Integer) cboxDressing.getSelectedItem());
+                    compartimentare.setBucatarie((Integer) cboxBucatarie.getSelectedItem());
+                    compartimentare.setDebara((Integer) cboxDebara.getSelectedItem());
+                    compartimentare.setBaie((Integer) cboxBaie.getSelectedItem());
+                    compartimentare.setHol((Integer) cboxHol.getSelectedItem());
+                    compartimentare.setMansarda((Integer) cboxMansarda.getSelectedItem());
+                    compartimentare.setBalcon((Integer) cboxBalcon.getSelectedItem());
+                    compartimentare.setTerasa((Integer) cboxTerasa.getSelectedItem());
+                    compartimentare.setGradina((Integer) cboxGradina.getSelectedItem());
+                    compartimentare.setParcare((Integer) cboxParcare.getSelectedItem());
+                    compartimentare.setGaraj((Integer) cboxGaraj.getSelectedItem());
+                    compartimentare.setBoxa((Integer) cboxBoxa.getSelectedItem());
+                    compartimentare.setPod((Integer) cboxPod.getSelectedItem());
+
+                    if (cboxCategorieProprietate.getSelectedItem() == CategorieProprietate.Casa)
+                    {
+                        Casa casa = new Casa();
+                        casa.setConstructieCasa(constructie);
+                        casa.setCompartimentareCasa(compartimentare);
+
+                        // proprietate
+                        casa.setTitluProprietate(fieldTitlu.getText());
+                        casa.setDescriereProprietate(areaDescriere.getText());
+                        casa.setPretProprietate(Integer.parseInt(fieldPret.getText()));
+                        casa.setLocatieProprietate(locatie);
+                        casa.setProprietarProprietate((Client) cboxProprietar.getSelectedItem());
+                        casa.setAgentProprietate(homeUI.mainAgent);
+                        casa.setDispozitieProprietate(DispozitieProprietate.Activ);
+                        casa.setDataProprietate(new Date(System.currentTimeMillis()));
+
+                        // add
+                        return;
+
+                    }
+
+                    if (cboxCategorieProprietate.getSelectedItem() == CategorieProprietate.Apartament)
+                    {
+                        Apartament apartament = new Apartament();
+                        apartament.setEtajApartament((EtajApartament) cboxEtajApartament.getSelectedItem());
+                        apartament.setConstructieApartament(constructie);
+                        apartament.setCompartimentareApartament(compartimentare);
+
+                        // proprietate
+                        apartament.setTitluProprietate(fieldTitlu.getText());
+                        apartament.setDescriereProprietate(areaDescriere.getText());
+                        apartament.setPretProprietate(Integer.parseInt(fieldPret.getText()));
+                        apartament.setLocatieProprietate(locatie);
+                        apartament.setProprietarProprietate((Client) cboxProprietar.getSelectedItem());
+                        apartament.setAgentProprietate(homeUI.mainAgent);
+                        apartament.setDispozitieProprietate(DispozitieProprietate.Activ);
+                        apartament.setDataProprietate(new Date(System.currentTimeMillis()));
+
+                        // add
+                    }
                 }
             }
         });
@@ -1050,7 +1153,7 @@ public class AdaugaProprietate
     private boolean isFormApartamentCompleted()
     {
         // etaj selected and form casa completed;
-        return cboxEtajConstructie.getSelectedItem() instanceof EtajApartament && isFormCasaCompleted();
+        return cboxEtajApartament.getSelectedItem() instanceof EtajApartament && isFormCasaCompleted();
     }
 
 }
