@@ -1,4 +1,5 @@
 package Interface.HomeUI;
+import Entities.Persoana.Client;
 import Services.LocatieServices.*;
 import Utils.CustomColor;
 import Entities.Locatie.*;
@@ -405,14 +406,37 @@ public class AdaugaClient
     {
         separatorButtons = new JSeparator(SwingConstants.HORIZONTAL);
         homeUI.panelContent.add(separatorButtons);
-        separatorButtons.setBounds(15, 535, 730, 3);
+        separatorButtons.setBounds(15, 515, 730, 3);
 
         buttonAccepta = new JButton("Accepta");
         homeUI.panelContent.add(buttonAccepta);
-        buttonAccepta.setBounds(160, 555, 200, 35);
+        buttonAccepta.setBounds(160, 535, 200, 35);
+
+        buttonAccepta.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (isFormCompleted())
+                {
+                    
+
+                    // add to database
+                }
+            }
+        });
 
         buttonAnuleaza = new JButton("Anuleaza");
         homeUI.panelContent.add(buttonAnuleaza);
-        buttonAnuleaza.setBounds(375, 555, 200, 35);
+        buttonAnuleaza.setBounds(375, 535, 200, 35);
+    }
+
+    private boolean isFormCompleted()
+    {
+        return !fieldNume.getText().isEmpty() && !fieldPrenume.getText().isEmpty() &&
+                !fieldTelefon.getText().isEmpty() && !fieldEmail.getText().isEmpty() &&
+                !fieldLocatie.getText().isEmpty() && cboxJudet.getSelectedItem() instanceof Judet &&
+                ((cboxOras.getSelectedItem() instanceof Oras && cboxCartier.getSelectedItem() instanceof Cartier) ||
+                cboxComuna.getSelectedItem() instanceof Comuna && cboxSat.getSelectedItem() instanceof Sat);
     }
 }

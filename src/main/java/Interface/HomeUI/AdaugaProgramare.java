@@ -1,11 +1,20 @@
 package Interface.HomeUI;
 
+import Entities.Programare;
 import Utils.CustomColor;
 import Entities.Persoana.Client;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class AdaugaProgramare
 {
@@ -77,8 +86,27 @@ public class AdaugaProgramare
         homeUI.panelContent.add(buttonAccepta);
         buttonAccepta.setBounds(160, 555, 200, 35);
 
+        buttonAccepta.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (isFormCompleted())
+                {
+
+
+                    // add
+                }
+            }
+        });
+
         buttonAnuleaza = new JButton("Anuleaza");
         homeUI.panelContent.add(buttonAnuleaza);
         buttonAnuleaza.setBounds(375, 555, 200, 35);
+    }
+
+    private boolean isFormCompleted()
+    {
+        return cboxClient.getSelectedItem() instanceof Client;
     }
 }

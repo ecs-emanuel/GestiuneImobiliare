@@ -2,6 +2,7 @@ package Interface.HomeUI;
 
 import Components.*;
 import Entities.Persoana.Client;
+import Entities.Proprietate.Compartimentare;
 import Services.LocatieServices.*;
 import Utils.CustomColor;
 import Entities.Locatie.*;
@@ -935,6 +936,18 @@ public class AdaugaProprietate
         homeUI.panelContent.add(buttonAccepta);
         buttonAccepta.setBounds(160, 1100, 200, 35);
 
+        buttonAccepta.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if  (isFormCompleted())
+                {
+                   // add
+                }
+            }
+        });
+
         buttonAnuleaza = new JButton("Anuleaza");
         homeUI.panelContent.add(buttonAnuleaza);
         buttonAnuleaza.setBounds(375, 1100, 200, 35);
@@ -961,4 +974,71 @@ public class AdaugaProprietate
 
         panel.setEnabled(false);
     }
+
+    private boolean isFormCompleted()
+    {
+                // title/pret/descriere not empty
+        return !fieldTitlu.getText().isEmpty() && !fieldPret.getText().isEmpty() && !areaDescriere.getText().isEmpty() &&
+                // and locatie not empty, judet selected
+                !fieldLocatie.getText().isEmpty() && cboxJudet.getSelectedItem() instanceof Judet &&
+                // and tip oras selected and oras/cartier selected
+                ((rbuttonOras.isSelected() &&
+                cboxOras.getSelectedItem() instanceof Oras && cboxCartier.getSelectedItem() instanceof Cartier) ||
+                // or tip comuna selected and comuna/sat selected
+                (rbuttonComuna.isSelected() &&
+                cboxComuna.getSelectedItem() instanceof Comuna && cboxSat.getSelectedItem() instanceof Sat)) &&
+                // and categorie proprietate selected
+                cboxCategorieProprietate.getSelectedItem() instanceof CategorieProprietate &&
+                // and proprietar selected
+                cboxProprietar.getSelectedItem() instanceof Client &&
+                // and categorie teren selected and form teren completed
+                ((cboxCategorieProprietate.getSelectedItem() == (CategorieProprietate) CategorieProprietate.Teren &&
+                isFormTerenCompleted()) ||
+                 // or categorie casa selected and form casa completed
+                (cboxCategorieProprietate.getSelectedItem() == (CategorieProprietate) CategorieProprietate.Apartament &&
+                isFormCasaCompleted()) ||
+                // or categorie apartament selected and form apartament completed
+                (cboxCategorieProprietate.getSelectedItem() == (CategorieProprietate) CategorieProprietate.Apartament &&
+                isFormApartamentCompleted()));
+    }
+
+    private boolean isFormTerenCompleted()
+    {
+        // suprafata parcela not empty and dispozitie teren selected
+        return !fieldSuprafataParcela.getText().isEmpty() && cboxDispozitieTeren.getSelectedItem() instanceof DispozitieTeren;
+    }
+
+    private boolean isFormCasaCompleted()
+    {
+             // suprafata utila/construita not empty
+        return !fieldSuprafataUtilizabila.getText().isEmpty() && !fieldSuprafataConstructie.getText().isEmpty() &&
+                // and an not empty
+                !fieldAnConstructie.getText().isEmpty() &&
+                // and structura constructie selected
+                cboxStructuraConstructie.getSelectedItem() instanceof StructuraConstructie &&
+                // and inaltime constructie selected
+                cboxInaltimeConstructie.getSelectedItem() instanceof String &&
+                // and dispozitie actuala selected
+                cboxDispozitieActuala.getSelectedItem() instanceof DispozitieConstructie &&
+                // and dispozitie predare selected
+                cboxDispozitiePredare.getSelectedItem() instanceof DispozitieConstructie &&
+                // and all fields from compartimentare selected
+                cboxOpenspace.getSelectedItem() instanceof String && cboxLiving.getSelectedItem() instanceof String &&
+                cboxDormitor.getSelectedItem() instanceof String && cboxDressing.getSelectedItem() instanceof String &&
+                cboxBucatarie.getSelectedItem() instanceof String && cboxDebara.getSelectedItem() instanceof String &&
+                cboxBaie.getSelectedItem() instanceof String && cboxHol.getSelectedItem() instanceof String &&
+                cboxMansarda.getSelectedItem() instanceof String && cboxBalcon.getSelectedItem() instanceof String &&
+                cboxTerasa.getSelectedItem() instanceof String && cboxGradina.getSelectedItem() instanceof String &&
+                cboxParcare.getSelectedItem() instanceof String && cboxGaraj.getSelectedItem() instanceof String &&
+                cboxBoxa.getSelectedItem() instanceof String && cboxPod.getSelectedItem() instanceof String &&
+                // and form teren completed
+                isFormTerenCompleted();
+    }
+
+    private boolean isFormApartamentCompleted()
+    {
+        // etaj selected and form casa completed;
+        return cboxEtajConstructie.getSelectedItem() instanceof EtajApartament && isFormCasaCompleted();
+    }
+
 }
