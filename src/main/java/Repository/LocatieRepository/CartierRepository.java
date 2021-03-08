@@ -60,14 +60,9 @@ public class CartierRepository
         {
             throwables.printStackTrace();
         }
-
-        try
+        finally
         {
-            connection.close();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
+            databaseRepository.closeConnection(connection);
         }
         return new Pair<>(listaCartiere, QueryOutcome.ERROR);
     }
@@ -105,15 +100,11 @@ public class CartierRepository
         {
             throwables.printStackTrace();
         }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
 
-        try
-        {
-            connection.close();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-        }
         return new Pair<>(null, QueryOutcome.ERROR);
     }
 }

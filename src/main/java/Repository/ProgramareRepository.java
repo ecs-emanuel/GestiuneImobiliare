@@ -37,14 +37,7 @@ public class ProgramareRepository
         }
         finally
         {
-            try
-            {
-                connection.close();
-            }
-            catch (SQLException throwables)
-            {
-                throwables.printStackTrace();
-            }
+            databaseRepository.closeConnection(connection);
         }
         return QueryOutcome.ERROR;
     }

@@ -56,15 +56,11 @@ public class JudetRepository
         {
             throwables.printStackTrace();
         }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
 
-        try
-        {
-            connection.close();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-        }
         return new Pair<>(listaJudete, QueryOutcome.ERROR);
     }
 
@@ -101,15 +97,11 @@ public class JudetRepository
         {
             throwables.printStackTrace();
         }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
 
-        try
-        {
-            connection.close();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-        }
         return new Pair<>(null, QueryOutcome.ERROR);
     }
 }

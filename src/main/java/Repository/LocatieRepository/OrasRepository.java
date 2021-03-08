@@ -59,15 +59,11 @@ public class OrasRepository
         {
             throwables.printStackTrace();
         }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
 
-        try
-        {
-            connection.close();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-        }
         return new Pair<>(listaOrase, QueryOutcome.ERROR);
     }
 
@@ -104,15 +100,11 @@ public class OrasRepository
         {
             throwables.printStackTrace();
         }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
 
-        try
-        {
-            connection.close();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-        }
         return new Pair<>(null, QueryOutcome.ERROR);
     }
 }

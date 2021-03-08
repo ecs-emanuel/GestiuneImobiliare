@@ -52,14 +52,9 @@ public class UserRepository
         {
             throwables.printStackTrace();
         }
-
-        try
+        finally
         {
-            connection.close();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
+            databaseRepository.closeConnection(connection);
         }
 
         // if we reached this point, something went wrong

@@ -83,14 +83,9 @@ public class ClientRepository
         {
             throwables.printStackTrace();
         }
-
-        try
+        finally
         {
-            connection.close();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
+            databaseRepository.closeConnection(connection);
         }
 
         return QueryOutcome.ERROR;
@@ -201,14 +196,9 @@ public class ClientRepository
         {
             throwables.printStackTrace();
         }
-
-        try
+        finally
         {
-            connection.close();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
+            databaseRepository.closeConnection(connection);
         }
 
         return new Pair<>(listaClienti, QueryOutcome.ERROR);
