@@ -1,11 +1,26 @@
 package Interface.HomeUI;
 
+import Entities.Programare;
+import Services.PersoanaServices.ClientServices;
+import Services.ProgramareServices;
 import Utils.CustomColor;
 import Entities.Persoana.Client;
+import Utils.QueryOutcome;
+import javafx.util.Pair;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+
 
 public class AdaugaProgramare
 {
@@ -48,6 +63,37 @@ public class AdaugaProgramare
         panelProgramare.add(cboxClient);
         cboxClient.setBounds(15, 45, 337, 30);
 
+        cboxClient.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Client)
+                {
+                    Client client = (Client) value;
+                    setText(String.format("%s %s - %s", client.getNumePersoana(), client.getPrenumePersoana(), client.getTelefonPersoana()));
+                }
+                return this;
+            }
+        });
+
+        ClientServices clientServices = new ClientServices();
+        Pair<List<Client>, QueryOutcome> queryOutcomePair = clientServices.getListaClienti();
+
+        if (queryOutcomePair.getValue() == QueryOutcome.SUCCESS)
+        {
+            List<Client> listaClienti = queryOutcomePair.getKey();
+
+            for (Client client : listaClienti)
+            {
+                cboxClient.addItem(client);
+            }
+
+            cboxClient.setSelectedIndex(-1);
+        }
+
         labelData = new JLabel("Data");
         panelProgramare.add(labelData);
         labelData.setBounds(387, 25, 154, 20);
@@ -77,8 +123,41 @@ public class AdaugaProgramare
         homeUI.panelContent.add(buttonAccepta);
         buttonAccepta.setBounds(160, 555, 200, 35);
 
+        buttonAccepta.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (isFormCompleted())
+                {
+                    Date data = (Date) spinnerData.getValue();
+                    Date ora = (Date) spinnerOra.getValue();
+
+                    LocalDate localDate = data.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalTime localTime = ora.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+                    LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+                    Timestamp timeStamp = Timestamp.valueOf(localDateTime);
+
+                    Client client = (Client) cboxClient.getSelectedItem();
+
+                    Programare programare = new Programare();
+                    programare.setAgent(homeUI.mainAgent);
+                    programare.setClient(client);
+                    programare.setData(timeStamp);
+
+                    ProgramareServices programareServices = new ProgramareServices();
+                    programareServices.addProgramare(programare);
+                }
+            }
+        });
+
         buttonAnuleaza = new JButton("Anuleaza");
         homeUI.panelContent.add(buttonAnuleaza);
         buttonAnuleaza.setBounds(375, 555, 200, 35);
+    }
+
+    private boolean isFormCompleted()
+    {
+        return cboxClient.getSelectedItem() instanceof Client;
     }
 }

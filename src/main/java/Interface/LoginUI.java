@@ -1,9 +1,11 @@
 package Interface;
 
-import Utils.QueryMessage;
-import Utils.QueryOutcome;
-import Entities.Persoana.User;
+import Entities.Persoana.Agent;
+import Interface.HomeUI.HomeUI;
 import Services.LoginServices;
+import Utils.QueryMessage;
+import Entities.Persoana.User;
+import javafx.util.Pair;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -86,7 +88,11 @@ public class LoginUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                actionButtonSignIn();
+                User user = new User();
+                user.setNameUser(fieldUsername.getText());
+                user.setPassUser(String.valueOf(fieldPassword.getPassword()));
+
+                trySignIn(user);
             }
         });
 
@@ -104,21 +110,24 @@ public class LoginUI
         labelResult.setBounds(90, 130, 200, 25);
     }
 
-    private void actionButtonSignIn()
+    private void trySignIn(User user)
     {
-        User user = new User();
-        user.setNameUser(fieldUsername.getText());
-        user.setPassUser(String.valueOf(fieldPassword.getPassword()));
-
         LoginServices loginServices = new LoginServices();
-        loginServices.SignIn(user);
+        Pair<Agent, QueryMessage> agentQueryMessagePair = loginServices.signIn(user);
 
-        if (loginServices.getQueryOutcome() == QueryOutcome.SUCCESS)
+        Agent agent = agentQueryMessagePair.getKey();
+        QueryMessage queryMessage = agentQueryMessagePair.getValue();
+
+        if (agent != null)
         {
+            HomeUI homeUI = new HomeUI();
+            homeUI.displayInterface(agent);
             mainFrame.dispose();
-            return;
         }
-        displayMessage(loginServices.getQueryMessage());
+        else
+        {
+            displayMessage(queryMessage);
+        }
     }
 
     private void displayMessage(QueryMessage queryMessage)

@@ -1,94 +1,47 @@
 package Services;
 
-import Utils.QueryMessage;
-import Utils.QueryOutcome;
 import Entities.Persoana.Agent;
 import Entities.Persoana.User;
-import Interface.HomeUI.HomeUI;
+import Services.PersoanaServices.AgentServices;
+import Services.PersoanaServices.UserServices;
+import Utils.QueryMessage;
+import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 public class LoginServices
 {
-    private QueryOutcome queryOutcome;
-    private QueryMessage queryMessage;
-
-    public void SignIn(User user)
+    public Pair<Agent, QueryMessage> signIn(User user)
     {
-        Agent agent = authenticateUser(user);
-
-        if (agent != null)
-        {
-            HomeUI homeUI = new HomeUI();
-            homeUI.displayInterface(agent);
-        }
+        return authenticateUser(user);
     }
 
-    private Agent authenticateUser(User user)
+    private Pair<Agent, QueryMessage> authenticateUser(User user)
     {
         UserServices userServices = new UserServices();
-        user = userServices.authenticate(user);
-        QueryOutcome userQueryOutcome = userServices.getQueryOutcome();
+        Pair<User, QueryOutcome> userQueryOutcomePair = userServices.authenticate(user);
 
-        switch (userQueryOutcome)
+        switch (userQueryOutcomePair.getValue())
         {
-            case SUCCESS:
-                return retrieveAgent(user);
-
-            case EMPTY:
-                this.queryOutcome = userQueryOutcome;
-                this.queryMessage = QueryMessage.ACCOUNT_WRONG;
-                break;
-
-            case ERROR:
-                this.queryOutcome = userQueryOutcome;
-                this.queryMessage = QueryMessage.DATABASE_ERROR;
-                break;
-
-            case OFFLINE:
-                this.queryOutcome = userQueryOutcome;
-                this.queryMessage = QueryMessage.DATABASE_OFFLINE;
-                break;
+            case OFFLINE: return new Pair<>(null, QueryMessage.DATABASE_OFFLINE);
+            case ERROR: return new Pair<>(null, QueryMessage.DATABASE_ERROR);
+            case EMPTY: return new Pair<>(null, QueryMessage.ACCOUNT_WRONG);
+            case SUCCESS: return retrieveAgent(user);
         }
-        return null;
+        return new Pair<>(null, QueryMessage.DATABASE_ERROR);
     }
 
-    private Agent retrieveAgent(User user)
+    private Pair<Agent, QueryMessage> retrieveAgent(User user)
     {
         AgentServices agentServices = new AgentServices();
-        Agent agent = agentServices.getAgent(user);
-        QueryOutcome agentQueryOutcome = agentServices.getQueryOutcome();
+        Pair<Agent, QueryOutcome> agentQueryOutcomePair = agentServices.getAgent(user);
 
-        switch (agentQueryOutcome)
+        switch (agentQueryOutcomePair.getValue())
         {
-            case SUCCESS:
-                this.queryOutcome = agentQueryOutcome;
-                this.queryMessage = QueryMessage.QUERY_SUCCESS;
-                return agent;
-
-            case EMPTY:
-                this.queryOutcome = agentQueryOutcome;
-                this.queryMessage = QueryMessage.ACCOUNT_CURRUPTED;
-                break;
-
-            case ERROR:
-                this.queryOutcome = agentQueryOutcome;
-                this.queryMessage = QueryMessage.DATABASE_ERROR;
-                break;
-
-            case OFFLINE:
-                this.queryOutcome = agentQueryOutcome;
-                this.queryMessage = QueryMessage.DATABASE_OFFLINE;
-                break;
+            case OFFLINE: return new Pair<>(null, QueryMessage.DATABASE_OFFLINE);
+            case ERROR: return new Pair<>(null, QueryMessage.DATABASE_ERROR);
+            case EMPTY: return new Pair<>(null, QueryMessage.ACCOUNT_CURRUPTED);
+            case SUCCESS: return new Pair<>(agentQueryOutcomePair.getKey(), QueryMessage.QUERY_SUCCESS);
         }
-        return null;
-    }
-
-    public QueryOutcome getQueryOutcome()
-    {
-        return this.queryOutcome;
-    }
-
-    public QueryMessage getQueryMessage()
-    {
-        return this.queryMessage;
+        return new Pair<>(null, QueryMessage.DATABASE_ERROR);
     }
 }

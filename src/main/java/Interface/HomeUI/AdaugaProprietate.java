@@ -2,13 +2,23 @@ package Interface.HomeUI;
 
 import Components.*;
 import Entities.Persoana.Client;
+import Entities.Proprietate.*;
+import Services.LocatieServices.*;
+import Services.PersoanaServices.ClientServices;
 import Utils.CustomColor;
 import Entities.Locatie.*;
+import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.NumberFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Date;
+
 
 public class AdaugaProprietate
 {
@@ -17,7 +27,7 @@ public class AdaugaProprietate
     private JLabel labelTitlu;
     private JTextField fieldTitlu;
     private JLabel labelPret;
-    private JTextField fieldPret;
+    private JFormattedTextField fieldPret;
     private JLabel labelDescriere;
     private JTextArea areaDescriere;
     private JScrollPane scrollDescriere;
@@ -32,7 +42,7 @@ public class AdaugaProprietate
     // Panel teren
     private JPanel panelTeren;
     private JLabel labelSuprafataParcela;
-    private JTextField fieldSuprafataParcela;
+    private JFormattedTextField fieldSuprafataParcela;
     private JLabel labelDispozitieTeren;
     private JComboBox<DispozitieTeren> cboxDispozitieTeren;
     private JCheckBox checkbApa;
@@ -43,17 +53,17 @@ public class AdaugaProprietate
     // Panel constructie
     private JPanel panelConstructie;
     private JLabel labelSuprafataUtilizabila;
-    private JTextField fieldSuprafataUtilizabila;
+    private JFormattedTextField fieldSuprafataUtilizabila;
     private JLabel labelSuprafataConstructie;
-    private JTextField fieldSuprafataConstructie;
+    private JFormattedTextField fieldSuprafataConstructie;
     private JLabel labelAnConstructie;
-    private JTextField fieldAnConstructie;
+    private JFormattedTextField fieldAnConstructie;
     private JLabel labelStructuraConstructie;
     private JComboBox<StructuraConstructie> cboxStructuraConstructie;
-    private JLabel labelEtajConstructie;
-    private JComboBox<EtajApartament> cboxEtajConstructie;
+    private JLabel labelEtajApartament;
+    private JComboBox<EtajApartament> cboxEtajApartament;
     private JLabel labelInaltimeConstructie;
-    private JComboBox<String> cboxInaltimeConstructie;
+    private JComboBox<Integer> cboxInaltimeConstructie;
     private JLabel labelDispozitieActuala;
     private JComboBox<DispozitieConstructie> cboxDispozitieActuala;
     private JLabel labelDispozitiePredare;
@@ -62,37 +72,37 @@ public class AdaugaProprietate
     // Panel compartimentare
     private JPanel panelCompartimentare;
     private JLabel labelOpenspace;
-    private JComboBox<String> cboxOpenspace;
+    private JComboBox<Integer> cboxOpenspace;
     private JLabel labelLiving;
-    private JComboBox<String> cboxLiving;
+    private JComboBox<Integer> cboxLiving;
     private JLabel labelDormitor;
-    private JComboBox<String> cboxDormitor;
+    private JComboBox<Integer> cboxDormitor;
     private JLabel labelDressing;
-    private JComboBox<String> cboxDressing;
+    private JComboBox<Integer> cboxDressing;
     private JLabel labelBucatarie;
-    private JComboBox<String> cboxBucatarie;
+    private JComboBox<Integer> cboxBucatarie;
     private JLabel labelDebara;
-    private JComboBox<String> cboxDebara;
+    private JComboBox<Integer> cboxDebara;
     private JLabel labelBaie;
-    private JComboBox<String> cboxBaie;
+    private JComboBox<Integer> cboxBaie;
     private JLabel labelHol;
-    private JComboBox<String> cboxHol;
+    private JComboBox<Integer> cboxHol;
     private JLabel labelMansarda;
-    private JComboBox<String> cboxMansarda;
+    private JComboBox<Integer> cboxMansarda;
     private JLabel labelBalcon;
-    private JComboBox<String> cboxBalcon;
+    private JComboBox<Integer> cboxBalcon;
     private JLabel labelTerasa;
-    private JComboBox<String> cboxTerasa;
+    private JComboBox<Integer> cboxTerasa;
     private JLabel labelGradina;
-    private JComboBox<String> cboxGradina;
+    private JComboBox<Integer> cboxGradina;
     private JLabel labelParcare;
-    private JComboBox<String> cboxParcare;
+    private JComboBox<Integer> cboxParcare;
     private JLabel labelGaraj;
-    private JComboBox<String> cboxGaraj;
+    private JComboBox<Integer> cboxGaraj;
     private JLabel labelBoxa;
-    private JComboBox<String> cboxBoxa;
+    private JComboBox<Integer> cboxBoxa;
     private JLabel labelPod;
-    private JComboBox<String> cboxPod;
+    private JComboBox<Integer> cboxPod;
 
     // Panel locatie
     private JPanel panelLocatie;
@@ -159,7 +169,10 @@ public class AdaugaProprietate
         panelDescriere.add(labelPret);
         labelPret.setBounds(557, 25, 165, 20);
 
-        fieldPret = new JTextField(10);
+        NumberFormatter numberFormatter = new NumberFormatter();
+        numberFormatter.setAllowsInvalid(false);
+
+        fieldPret = new JFormattedTextField(numberFormatter);
         panelDescriere.add(fieldPret);
         fieldPret.setBounds(552, 45, 165, 30);
 
@@ -215,7 +228,14 @@ public class AdaugaProprietate
                 }
 
                 enablePanelComponents(panelTeren);
-                enablePanelComponents(panelLocatie);
+
+                // We don't want to enable more
+                //enablePanelComponents(panelLocatie);
+                panelLocatie.setEnabled(true);
+                labelLocatie.setEnabled(true);
+                fieldLocatie.setEnabled(true);
+                labelJudet.setEnabled(true);
+                cboxJudet.setEnabled(true);
 
                 switch((CategorieProprietate) item)
                 {
@@ -232,8 +252,8 @@ public class AdaugaProprietate
                         labelDispozitieTeren.setEnabled(false);
                         cboxDispozitieTeren.setEnabled(false);
                         cboxDispozitieTeren.setSelectedItem(DispozitieTeren.Intravilan);
-                        labelEtajConstructie.setEnabled(false);
-                        cboxEtajConstructie.setEnabled(false);
+                        labelEtajApartament.setEnabled(false);
+                        cboxEtajApartament.setEnabled(false);
                         break;
 
                     case Apartament:
@@ -242,8 +262,8 @@ public class AdaugaProprietate
                         labelDispozitieTeren.setEnabled(false);
                         cboxDispozitieTeren.setEnabled(false);
                         cboxDispozitieTeren.setSelectedItem(DispozitieTeren.Intravilan);
-                        labelEtajConstructie.setEnabled(true);
-                        cboxEtajConstructie.setEnabled(true);
+                        labelEtajApartament.setEnabled(true);
+                        cboxEtajApartament.setEnabled(true);
                         break;
                 }
             }
@@ -258,6 +278,36 @@ public class AdaugaProprietate
         cboxProprietar = new JComboBox<>();
         panelProprietate.add(cboxProprietar);
         cboxProprietar.setBounds(210, 45, 507, 30);
+
+        cboxProprietar.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Client)
+                {
+                    Client client = (Client) value;
+                    setText(String.format("%s %s - %s", client.getNumePersoana(), client.getPrenumePersoana(), client.getTelefonPersoana()));
+                }
+                return this;
+            }
+        });
+
+        ClientServices clientServices = new ClientServices();
+        Pair<List<Client>, QueryOutcome> queryOutcome = clientServices.getListaClienti();
+
+        if (queryOutcome.getValue() == QueryOutcome.SUCCESS)
+        {
+            List<Client> listaClienti = queryOutcome.getKey();
+
+            for (Client client : listaClienti)
+            {
+                cboxProprietar.addItem(client);
+            }
+            cboxProprietar.setSelectedIndex(-1);
+        }
     }
 
     private void addPanelTeren(HomeUI homeUI)
@@ -276,7 +326,10 @@ public class AdaugaProprietate
         panelTeren.add(labelSuprafataParcela);
         labelSuprafataParcela.setBounds(20, 25, 154, 20);
 
-        fieldSuprafataParcela = new JTextField(10);
+        NumberFormatter numberFormatter = new NumberFormatter(null);
+        numberFormatter.setAllowsInvalid(false);
+
+        fieldSuprafataParcela = new JFormattedTextField(numberFormatter);
         panelTeren.add(fieldSuprafataParcela);
         fieldSuprafataParcela.setBounds(15, 45, 154, 30);
 
@@ -327,12 +380,16 @@ public class AdaugaProprietate
         panelConstructie.setBorder(new TitledBorder("Constructie"));
         panelConstructie.setBounds(10, 480, 735, 160);
 
+        // formatter for number only text fields
+        NumberFormatter numberFormatter = new NumberFormatter(null);
+        numberFormatter.setAllowsInvalid(false);
+
         // suprafata utilizabila
         labelSuprafataUtilizabila = new JLabel("Suprafata Utilizabila");
         panelConstructie.add(labelSuprafataUtilizabila);
         labelSuprafataUtilizabila.setBounds(20, 25, 154, 20);
 
-        fieldSuprafataUtilizabila = new JTextField(10);
+        fieldSuprafataUtilizabila = new JFormattedTextField(numberFormatter);
         panelConstructie.add(fieldSuprafataUtilizabila);
         fieldSuprafataUtilizabila.setBounds(15, 45, 154, 30);
 
@@ -341,7 +398,7 @@ public class AdaugaProprietate
         panelConstructie.add(labelSuprafataConstructie);
         labelSuprafataConstructie.setBounds(204, 25, 154, 20);
 
-        fieldSuprafataConstructie = new JTextField(10);
+        fieldSuprafataConstructie = new JFormattedTextField(numberFormatter);
         panelConstructie.add(fieldSuprafataConstructie);
         fieldSuprafataConstructie.setBounds(199, 45, 154, 30);
 
@@ -350,7 +407,7 @@ public class AdaugaProprietate
         panelConstructie.add(labelAnConstructie);
         labelAnConstructie.setBounds(388, 25, 154, 20);
 
-        fieldAnConstructie = new JTextField(10);
+        fieldAnConstructie = new JFormattedTextField(numberFormatter);
         panelConstructie.add(fieldAnConstructie);
         fieldAnConstructie.setBounds(383, 45, 154, 30);
 
@@ -370,19 +427,19 @@ public class AdaugaProprietate
         cboxStructuraConstructie.setSelectedIndex(-1);
 
         // etaj apartament
-        labelEtajConstructie = new JLabel("Etaj");
-        panelConstructie.add(labelEtajConstructie);
-        labelEtajConstructie.setBounds(20, 80, 154, 20);
+        labelEtajApartament = new JLabel("Etaj");
+        panelConstructie.add(labelEtajApartament);
+        labelEtajApartament.setBounds(20, 80, 154, 20);
 
-        cboxEtajConstructie = new JComboBox<>();
-        panelConstructie.add(cboxEtajConstructie);
-        cboxEtajConstructie.setBounds(15, 100, 154, 30);
+        cboxEtajApartament = new JComboBox<>();
+        panelConstructie.add(cboxEtajApartament);
+        cboxEtajApartament.setBounds(15, 100, 154, 30);
 
         for (EtajApartament item : EtajApartament.values())
         {
-            cboxEtajConstructie.addItem(item);
+            cboxEtajApartament.addItem(item);
         }
-        cboxEtajConstructie.setSelectedIndex(-1);
+        cboxEtajApartament.setSelectedIndex(-1);
 
         // inaltime constructie
         labelInaltimeConstructie = new JLabel("Inaltime");
@@ -395,7 +452,7 @@ public class AdaugaProprietate
 
         for (int i = 0; i <= 20; i++)
         {
-            cboxInaltimeConstructie.addItem(String.valueOf(i));
+            cboxInaltimeConstructie.addItem(i);
         }
         cboxInaltimeConstructie.setSelectedIndex(-1);
 
@@ -587,24 +644,22 @@ public class AdaugaProprietate
 
         for (int i = 0; i <= 10; i++)
         {
-            String item = String.valueOf(i);
-
-            cboxOpenspace.addItem(item);
-            cboxLiving.addItem(item);
-            cboxDormitor.addItem(item);
-            cboxDressing.addItem(item);
-            cboxBucatarie.addItem(item);
-            cboxDebara.addItem(item);
-            cboxBaie.addItem(item);
-            cboxHol.addItem(item);
-            cboxMansarda.addItem(item);
-            cboxBalcon.addItem(item);
-            cboxTerasa.addItem(item);
-            cboxGradina.addItem(item);
-            cboxParcare.addItem(item);
-            cboxGaraj.addItem(item);
-            cboxBoxa.addItem(item);
-            cboxPod.addItem(item);
+            cboxOpenspace.addItem(i);
+            cboxLiving.addItem(i);
+            cboxDormitor.addItem(i);
+            cboxDressing.addItem(i);
+            cboxBucatarie.addItem(i);
+            cboxDebara.addItem(i);
+            cboxBaie.addItem(i);
+            cboxHol.addItem(i);
+            cboxMansarda.addItem(i);
+            cboxBalcon.addItem(i);
+            cboxTerasa.addItem(i);
+            cboxGradina.addItem(i);
+            cboxParcare.addItem(i);
+            cboxGaraj.addItem(i);
+            cboxBoxa.addItem(i);
+            cboxPod.addItem(i);
         }
     }
 
@@ -619,10 +674,8 @@ public class AdaugaProprietate
         panelLocatie.setBorder(new TitledBorder("Locatie"));
         panelLocatie.setBounds(10, 920, 735, 150);
 
-        // grup butoane oras/comuna
         rbuttonsLocatie = new ButtonGroup();
 
-        // strada
         labelLocatie = new JLabel("Strada");
         panelLocatie.add(labelLocatie);
         labelLocatie.setBounds(20, 25, 215, 20);
@@ -631,78 +684,313 @@ public class AdaugaProprietate
         panelLocatie.add(fieldLocatie);
         fieldLocatie.setBounds(15, 45, 215, 30);
 
-        // judet
         labelJudet = new JLabel("Judet");
         panelLocatie.add(labelJudet);
         labelJudet.setBounds(20, 80, 215, 20);
 
+        // lista judete
         cboxJudet = new JComboBox<>();
         panelLocatie.add(cboxJudet);
         cboxJudet.setBounds(15, 100, 215, 30);
 
-        // oras
+        // afiseaza numele judetelor in lista
+        cboxJudet.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Judet)
+                {
+                    Judet judet = (Judet) value;
+                    setText(judet.getDenumireJudet());
+                }
+                return this;
+            }
+        });
+
+        // creaza lista judete
+        JudetServices judetServices = new JudetServices();
+        Pair<List<Judet>, QueryOutcome> queryOutcomePairJudet = judetServices.getListaJudete();
+
+        if (queryOutcomePairJudet.getValue() == QueryOutcome.SUCCESS)
+        {
+            List<Judet> listaJudete = queryOutcomePairJudet.getKey();
+
+            for (Judet judet : listaJudete)
+            {
+                cboxJudet.addItem(judet);
+            }
+
+            cboxJudet.setSelectedIndex(-1);
+        }
+
+        // updateaza lista cu orase/comune cand se alege un judet
+        cboxJudet.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                // clear lists
+                cboxOras.removeAllItems();
+                cboxComuna.removeAllItems();
+
+                // disable orase/comune
+                rbuttonOras.setEnabled(false);
+                rbuttonComuna.setEnabled(false);
+
+                Object selectedItem = cboxJudet.getSelectedItem();
+
+                // Judet selectat
+                if (selectedItem instanceof Judet)
+                {
+                    OrasServices orasServices = new OrasServices();
+                    Pair<List<Oras>, QueryOutcome> queryOutcomePairOras = orasServices.getListaOrase((Judet) selectedItem);
+
+                    if (queryOutcomePairOras.getValue() == QueryOutcome.SUCCESS)
+                    {
+                        List<Oras> listaOrase = queryOutcomePairOras.getKey();
+
+                        for (Oras oras : listaOrase)
+                        {
+                            cboxOras.addItem(oras);
+                        }
+
+                        cboxOras.setSelectedIndex(-1);
+
+                        // enable orase
+                        rbuttonOras.setEnabled(true);
+                    }
+
+                    ComunaServices comunaServices = new ComunaServices();
+                    Pair<List<Comuna>, QueryOutcome> queryOutcomePairComuna = comunaServices.getListaComune((Judet) selectedItem);
+
+                    if (queryOutcomePairComuna.getValue() == QueryOutcome.SUCCESS)
+                    {
+                        List<Comuna> listaComune = queryOutcomePairComuna.getKey();
+
+                        for (Comuna comuna : listaComune)
+                        {
+                            cboxComuna.addItem(comuna);
+                        }
+
+                        cboxComuna.setSelectedIndex(-1);
+
+                        // enable comune
+                        rbuttonComuna.setEnabled(true);
+                    }
+                }
+            }
+        });
+
         rbuttonOras = new JRadioButton("Oras");
         panelLocatie.add(rbuttonOras);
         rbuttonsLocatie.add(rbuttonOras);
+        rbuttonOras.setEnabled(false);
         rbuttonOras.setBounds(265, 25, 215, 20);
 
+        // lista orase
         cboxOras = new JComboBox<>();
         panelLocatie.add(cboxOras);
         cboxOras.setEnabled(false);
         cboxOras.setBounds(260, 45, 215, 30);
+
+        // afiseaza numele oraselor in lista
+        cboxOras.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Oras)
+                {
+                    Oras oras = (Oras) value;
+                    setText(oras.getDenumireOras());
+                }
+                return this;
+            }
+        });
+
+        // updateaza lista cu cartiere cand un oras este selectat
+        cboxOras.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                // clear lists
+                cboxCartier.removeAllItems();
+
+                Object selectedItem = cboxOras.getSelectedItem();
+
+                if (selectedItem instanceof Oras)
+                {
+                    CartierServices cartierServices = new CartierServices();
+                    Pair<List<Cartier>, QueryOutcome> queryOutcomePairCartier = cartierServices.getListaCartiere((Oras) selectedItem);
+
+                    if (queryOutcomePairCartier.getValue() == QueryOutcome.SUCCESS)
+                    {
+                        List<Cartier> listaCartiere = queryOutcomePairCartier.getKey();
+
+                        for (Cartier cartier : listaCartiere)
+                        {
+                            cboxCartier.addItem(cartier);
+                        }
+
+                        cboxCartier.setSelectedIndex(-1);
+                    }
+                }
+            }
+        });
+
         rbuttonOras.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 cboxOras.setEnabled(true);
+                labelCartier.setEnabled(true);
                 cboxCartier.setEnabled(true);
                 cboxComuna.setEnabled(false);
+                labelSat.setEnabled(false);
                 cboxSat.setEnabled(false);
+                cboxComuna.setSelectedIndex(-1);
+                cboxSat.setSelectedIndex(-1);
             }
         });
 
-        // cartier
         labelCartier = new JLabel("Cartier");
         panelLocatie.add(labelCartier);
+        labelCartier.setEnabled(false);
         labelCartier.setBounds(265, 80, 215, 20);
 
+        // lista cartiere
         cboxCartier = new JComboBox<>();
         panelLocatie.add(cboxCartier);
         cboxCartier.setEnabled(false);
         cboxCartier.setBounds(260, 100, 215, 30);
 
-        // comuna
+        // afiseaza numele cartierelor in lista
+        cboxCartier.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Cartier)
+                {
+                    Cartier cartier = (Cartier) value;
+                    setText(cartier.getDenumireCartier());
+                }
+                return this;
+            }
+        });
+
         rbuttonComuna = new JRadioButton("Comuna");
         panelLocatie.add(rbuttonComuna);
         rbuttonsLocatie.add(rbuttonComuna);
+        rbuttonComuna.setEnabled(false);
         rbuttonComuna.setBounds(510, 25, 215, 20);
         rbuttonComuna.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                cboxOras.setEnabled(false);
-                cboxCartier.setEnabled(false);
                 cboxComuna.setEnabled(true);
+                labelSat.setEnabled(true);
                 cboxSat.setEnabled(true);
+                cboxOras.setEnabled(false);
+                labelCartier.setEnabled(false);
+                cboxCartier.setEnabled(false);
+                cboxOras.setSelectedIndex(-1);
+                cboxCartier.setSelectedIndex(-1);
+
             }
         });
 
+        // lista comune
         cboxComuna = new JComboBox<>();
         panelLocatie.add(cboxComuna);
         cboxComuna.setEnabled(false);
         cboxComuna.setBounds(505, 45, 215, 30);
 
-        // sat
+        // afiseaza numele comunelor in lista
+        cboxComuna.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Comuna)
+                {
+                    Comuna comuna = (Comuna) value;
+                    setText(comuna.getDenumireComuna());
+                }
+                return this;
+            }
+        });
+
+        // updateaza lista cu sate cand o comuna este selectata
+        cboxComuna.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                // clear lists
+                cboxSat.removeAllItems();
+
+                Object selectedItem = cboxComuna.getSelectedItem();
+
+                if (selectedItem instanceof Comuna)
+                {
+                    SatServices satServices = new SatServices();
+                    Pair<List<Sat>, QueryOutcome> queryOutcomePairSat = satServices.getListaSate((Comuna) selectedItem);
+
+                    if (queryOutcomePairSat.getValue() == QueryOutcome.SUCCESS)
+                    {
+                        List<Sat> listaSate = queryOutcomePairSat.getKey();
+
+                        for (Sat sat : listaSate)
+                        {
+                            cboxSat.addItem(sat);
+                        }
+
+                        cboxSat.setSelectedIndex(-1);
+                    }
+                }
+            }
+        });
+
         labelSat = new JLabel("Sat");
         panelLocatie.add(labelSat);
+        labelSat.setEnabled(false);
         labelSat.setBounds(510, 80, 215, 20);
 
+        // lista sate
         cboxSat = new JComboBox<>();
         panelLocatie.add(cboxSat);
         cboxSat.setEnabled(false);
         cboxSat.setBounds(505, 100, 215, 30);
+
+        // afiseaza numele satelor in lista
+        cboxSat.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Sat)
+                {
+                    Sat sat = (Sat) value;
+                    setText(sat.getDenumireSat());
+                }
+                return this;
+            }
+        });
     }
 
     // butoane accept/anuleaza
@@ -715,6 +1003,133 @@ public class AdaugaProprietate
         buttonAccepta = new JButton("Accepta");
         homeUI.panelContent.add(buttonAccepta);
         buttonAccepta.setBounds(160, 1100, 200, 35);
+
+        buttonAccepta.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if  (isFormCompleted())
+                {
+                    // create locatie
+                    Locatie locatie = new Locatie();
+                    locatie.setJudetLocatie((Judet) cboxJudet.getSelectedItem());
+
+                    if (rbuttonOras.isSelected())
+                    {
+                        locatie.setOrasLocatie((Oras) cboxOras.getSelectedItem());
+                        locatie.setCartierLocatie((Cartier) cboxCartier.getSelectedItem());
+                    }
+                    else if (rbuttonComuna.isSelected())
+                    {
+                        locatie.setComunaLocatie((Comuna) cboxComuna.getSelectedItem());
+                        locatie.setSatLocatie((Sat) cboxSat.getSelectedItem());
+                    }
+                    locatie.setDenumireLocatie(fieldLocatie.getText());
+
+                    // create parcela
+                    Parcela parcela = new Parcela();
+                    parcela.setSuprafataParcela(Integer.parseInt(fieldSuprafataParcela.getText()));
+                    parcela.setHasApa(checkbApa.isSelected());
+                    parcela.setHasGaz(checkbGaz.isSelected());
+                    parcela.setHasElectricitate(checkbElectricitate.isSelected());
+                    parcela.sethasCanalizare(checkbCanalizare.isSelected());
+
+                    // teren
+                    if (cboxCategorieProprietate.getSelectedItem() == CategorieProprietate.Teren)
+                    {
+                        // creare teren
+                        Teren teren = new Teren();
+                        teren.setDispozitieTeren((DispozitieTeren) cboxDispozitieTeren.getSelectedItem());
+                        teren.setParcelaTeren(parcela);
+
+                        // proprietate
+                        teren.setTitluProprietate(fieldTitlu.getText());
+                        teren.setDescriereProprietate(areaDescriere.getText());
+                        teren.setPretProprietate(Integer.parseInt(fieldPret.getText()));
+                        teren.setLocatieProprietate(locatie);
+                        teren.setProprietarProprietate((Client) cboxProprietar.getSelectedItem());
+                        teren.setAgentProprietate(homeUI.mainAgent);
+                        teren.setDispozitieProprietate(DispozitieProprietate.Activ);
+                        teren.setDataProprietate(new Date(System.currentTimeMillis()));
+
+                        // add
+                        return;
+                    }
+
+                    // create constructie
+                    Constructie constructie = new Constructie();
+                    constructie.setSuprafataUtilizabila(Integer.parseInt(fieldSuprafataUtilizabila.getText()));
+                    constructie.setSuprafataConstructie(Integer.parseInt(fieldSuprafataConstructie.getText()));
+                    constructie.setAnConstructie(Integer.parseInt(fieldAnConstructie.getText()));
+                    constructie.setStructuraConstructie((StructuraConstructie) cboxStructuraConstructie.getSelectedItem());
+                    constructie.setInaltimeConstructie((Integer) cboxInaltimeConstructie.getSelectedItem());
+                    constructie.setDispozitieActuala((DispozitieConstructie) cboxDispozitieActuala.getSelectedItem());
+                    constructie.setDispozitiePredare((DispozitieConstructie) cboxDispozitiePredare.getSelectedItem());
+                    constructie.setParcelaConstructie(parcela);
+
+                    // create compartimentare
+                    Compartimentare compartimentare = new Compartimentare();
+                    compartimentare.setOpenspace((Integer) cboxOpenspace.getSelectedItem());
+                    compartimentare.setLiving((Integer) cboxOpenspace.getSelectedItem());
+                    compartimentare.setDormitor((Integer) cboxDormitor.getSelectedItem());
+                    compartimentare.setDressing((Integer) cboxDressing.getSelectedItem());
+                    compartimentare.setBucatarie((Integer) cboxBucatarie.getSelectedItem());
+                    compartimentare.setDebara((Integer) cboxDebara.getSelectedItem());
+                    compartimentare.setBaie((Integer) cboxBaie.getSelectedItem());
+                    compartimentare.setHol((Integer) cboxHol.getSelectedItem());
+                    compartimentare.setMansarda((Integer) cboxMansarda.getSelectedItem());
+                    compartimentare.setBalcon((Integer) cboxBalcon.getSelectedItem());
+                    compartimentare.setTerasa((Integer) cboxTerasa.getSelectedItem());
+                    compartimentare.setGradina((Integer) cboxGradina.getSelectedItem());
+                    compartimentare.setParcare((Integer) cboxParcare.getSelectedItem());
+                    compartimentare.setGaraj((Integer) cboxGaraj.getSelectedItem());
+                    compartimentare.setBoxa((Integer) cboxBoxa.getSelectedItem());
+                    compartimentare.setPod((Integer) cboxPod.getSelectedItem());
+
+                    if (cboxCategorieProprietate.getSelectedItem() == CategorieProprietate.Casa)
+                    {
+                        Casa casa = new Casa();
+                        casa.setConstructieCasa(constructie);
+                        casa.setCompartimentareCasa(compartimentare);
+
+                        // proprietate
+                        casa.setTitluProprietate(fieldTitlu.getText());
+                        casa.setDescriereProprietate(areaDescriere.getText());
+                        casa.setPretProprietate(Integer.parseInt(fieldPret.getText()));
+                        casa.setLocatieProprietate(locatie);
+                        casa.setProprietarProprietate((Client) cboxProprietar.getSelectedItem());
+                        casa.setAgentProprietate(homeUI.mainAgent);
+                        casa.setDispozitieProprietate(DispozitieProprietate.Activ);
+                        casa.setDataProprietate(new Date(System.currentTimeMillis()));
+
+                        // add
+                        return;
+
+                    }
+
+                    if (cboxCategorieProprietate.getSelectedItem() == CategorieProprietate.Apartament)
+                    {
+                        Apartament apartament = new Apartament();
+                        apartament.setEtajApartament((EtajApartament) cboxEtajApartament.getSelectedItem());
+                        apartament.setConstructieApartament(constructie);
+                        apartament.setCompartimentareApartament(compartimentare);
+
+                        // proprietate
+                        apartament.setTitluProprietate(fieldTitlu.getText());
+                        apartament.setDescriereProprietate(areaDescriere.getText());
+                        apartament.setPretProprietate(Integer.parseInt(fieldPret.getText()));
+                        apartament.setLocatieProprietate(locatie);
+                        apartament.setProprietarProprietate((Client) cboxProprietar.getSelectedItem());
+                        apartament.setAgentProprietate(homeUI.mainAgent);
+                        apartament.setDispozitieProprietate(DispozitieProprietate.Activ);
+                        apartament.setDataProprietate(new Date(System.currentTimeMillis()));
+
+                        // add
+                    }
+                }
+            }
+        });
 
         buttonAnuleaza = new JButton("Anuleaza");
         homeUI.panelContent.add(buttonAnuleaza);
@@ -742,4 +1157,71 @@ public class AdaugaProprietate
 
         panel.setEnabled(false);
     }
+
+    private boolean isFormCompleted()
+    {
+                // title/pret/descriere not empty
+        return !fieldTitlu.getText().isEmpty() && !fieldPret.getText().isEmpty() && !areaDescriere.getText().isEmpty() &&
+                // and locatie not empty, judet selected
+                !fieldLocatie.getText().isEmpty() && cboxJudet.getSelectedItem() instanceof Judet &&
+                // and tip oras selected and oras/cartier selected
+                ((rbuttonOras.isSelected() &&
+                cboxOras.getSelectedItem() instanceof Oras && cboxCartier.getSelectedItem() instanceof Cartier) ^
+                // or tip comuna selected and comuna/sat selected
+                (rbuttonComuna.isSelected() &&
+                cboxComuna.getSelectedItem() instanceof Comuna && cboxSat.getSelectedItem() instanceof Sat)) &&
+                // and categorie proprietate selected
+                cboxCategorieProprietate.getSelectedItem() instanceof CategorieProprietate &&
+                // and proprietar selected
+                cboxProprietar.getSelectedItem() instanceof Client &&
+                // and categorie teren selected and form teren completed
+                ((cboxCategorieProprietate.getSelectedItem() == (CategorieProprietate) CategorieProprietate.Teren &&
+                isFormTerenCompleted()) ||
+                 // or categorie casa selected and form casa completed
+                (cboxCategorieProprietate.getSelectedItem() == (CategorieProprietate) CategorieProprietate.Apartament &&
+                isFormCasaCompleted()) ||
+                // or categorie apartament selected and form apartament completed
+                (cboxCategorieProprietate.getSelectedItem() == (CategorieProprietate) CategorieProprietate.Apartament &&
+                isFormApartamentCompleted()));
+    }
+
+    private boolean isFormTerenCompleted()
+    {
+        // suprafata parcela not empty and dispozitie teren selected
+        return !fieldSuprafataParcela.getText().isEmpty() && cboxDispozitieTeren.getSelectedItem() instanceof DispozitieTeren;
+    }
+
+    private boolean isFormCasaCompleted()
+    {
+             // suprafata utila/construita not empty
+        return !fieldSuprafataUtilizabila.getText().isEmpty() && !fieldSuprafataConstructie.getText().isEmpty() &&
+                // and an not empty
+                !fieldAnConstructie.getText().isEmpty() &&
+                // and structura constructie selected
+                cboxStructuraConstructie.getSelectedItem() instanceof StructuraConstructie &&
+                // and inaltime constructie selected
+                cboxInaltimeConstructie.getSelectedItem() instanceof Integer &&
+                // and dispozitie actuala selected
+                cboxDispozitieActuala.getSelectedItem() instanceof DispozitieConstructie &&
+                // and dispozitie predare selected
+                cboxDispozitiePredare.getSelectedItem() instanceof DispozitieConstructie &&
+                // and all fields from compartimentare selected
+                cboxOpenspace.getSelectedItem() instanceof Integer && cboxLiving.getSelectedItem() instanceof Integer &&
+                cboxDormitor.getSelectedItem() instanceof Integer && cboxDressing.getSelectedItem() instanceof Integer &&
+                cboxBucatarie.getSelectedItem() instanceof Integer && cboxDebara.getSelectedItem() instanceof Integer &&
+                cboxBaie.getSelectedItem() instanceof Integer && cboxHol.getSelectedItem() instanceof Integer &&
+                cboxMansarda.getSelectedItem() instanceof Integer && cboxBalcon.getSelectedItem() instanceof Integer &&
+                cboxTerasa.getSelectedItem() instanceof Integer && cboxGradina.getSelectedItem() instanceof Integer &&
+                cboxParcare.getSelectedItem() instanceof Integer && cboxGaraj.getSelectedItem() instanceof Integer &&
+                cboxBoxa.getSelectedItem() instanceof Integer && cboxPod.getSelectedItem() instanceof Integer &&
+                // and form teren completed
+                isFormTerenCompleted();
+    }
+
+    private boolean isFormApartamentCompleted()
+    {
+        // etaj selected and form casa completed;
+        return cboxEtajApartament.getSelectedItem() instanceof EtajApartament && isFormCasaCompleted();
+    }
+
 }

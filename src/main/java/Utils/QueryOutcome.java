@@ -5,5 +5,7 @@ public enum QueryOutcome
     SUCCESS,
     EMPTY,
     ERROR,
-    OFFLINE
+    OFFLINE,
+    INFO_CORRUPT,
+    INFO_INCOMPLETE
 }

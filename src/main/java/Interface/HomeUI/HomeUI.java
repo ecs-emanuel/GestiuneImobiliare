@@ -1,5 +1,6 @@
 package Interface.HomeUI;
 
+import Interface.LoginUI;
 import Utils.CustomColor;
 import Entities.Persoana.Agent;
 
@@ -87,6 +88,17 @@ public class HomeUI
         buttonLogout.setVisible(true);
         buttonLogout.setFocusPainted(false);
         buttonLogout.setBounds(855, 10, 100, 30);
+
+        buttonLogout.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                LoginUI loginUI = new LoginUI();
+                loginUI.displayInterface();
+                mainFrame.dispose();
+            }
+        });
     }
 
     private void addPanelUser()
