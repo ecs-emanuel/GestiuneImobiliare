@@ -151,34 +151,35 @@ public class ClientRepository
 
                     Locatie domiciliu = new Locatie();
                     domiciliu.setIndexLocatie(resultSet.getInt(7));
+                    domiciliu.setDenumireLocatie(resultSet.getString(8));
 
                     Judet judet = new Judet();
-                    judet.setIndexJudet(resultSet.getInt(8));
-                    judet.setDenumireJudet(resultSet.getString(9));
+                    judet.setIndexJudet(resultSet.getInt(9));
+                    judet.setDenumireJudet(resultSet.getString(10));
                     domiciliu.setJudetLocatie(judet);
 
-                    if (resultSet.getInt(10) > 0)
+                    if (resultSet.getInt(11) > 0)
                     {
                         Oras oras = new Oras();
-                        oras.setIndexOras(resultSet.getInt(10));
-                        oras.setDenumireOras(resultSet.getString(11));
+                        oras.setIndexOras(resultSet.getInt(11));
+                        oras.setDenumireOras(resultSet.getString(12));
                         domiciliu.setOrasLocatie(oras);
 
                         Cartier cartier = new Cartier();
-                        cartier.setIndexCartier(resultSet.getInt(12));
-                        cartier.setDenumireCartier(resultSet.getString(13));
+                        cartier.setIndexCartier(resultSet.getInt(13));
+                        cartier.setDenumireCartier(resultSet.getString(14));
                         domiciliu.setCartierLocatie(cartier);
                     }
                     else
                     {
                         Comuna comuna = new Comuna();
-                        comuna.setIndexComuna(resultSet.getInt(14));
-                        comuna.setDenumireComuna(resultSet.getString(15));
+                        comuna.setIndexComuna(resultSet.getInt(15));
+                        comuna.setDenumireComuna(resultSet.getString(16));
                         domiciliu.setComunaLocatie(comuna);
 
                         Sat sat = new Sat();
-                        sat.setIndexSat(resultSet.getInt(16));
-                        sat.setDenumireSat(resultSet.getString(17));
+                        sat.setIndexSat(resultSet.getInt(17));
+                        sat.setDenumireSat(resultSet.getString(18));
                         domiciliu.setSatLocatie(sat);
                     }
 
