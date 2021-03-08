@@ -14,8 +14,8 @@ public class UserRepository
     {
         String sqlScript = String.format
         (
-            "SELECT indexUser, isAdminUser " +
-            "FROM useri " +
+            "SELECT indexUser, isAdminUser\n" +
+            "FROM useri\n" +
             "WHERE nameUser = '%s' AND passUser = '%s'",
             user.getNameUser(), user.getPassUser()
         );
