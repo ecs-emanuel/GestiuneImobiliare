@@ -23,4 +23,16 @@ public class DatabaseRepository
 
         return connection;
     }
+
+    public void closeConnection(Connection connection)
+    {
+        try
+        {
+            connection.close();
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+    }
 }
