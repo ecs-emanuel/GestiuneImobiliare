@@ -5,8 +5,11 @@ import Entities.Persoana.Agent;
 import Entities.Persoana.Client;
 import Entities.Proprietate.*;
 import Services.LocatieServices.*;
+import Services.PersoanaServices.ClientServices;
 import Utils.CustomColor;
 import Entities.Locatie.*;
+import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -276,6 +279,37 @@ public class AdaugaProprietate
         cboxProprietar = new JComboBox<>();
         panelProprietate.add(cboxProprietar);
         cboxProprietar.setBounds(210, 45, 507, 30);
+
+        cboxProprietar.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Client)
+                {
+                    Client client = (Client) value;
+                    setText(String.format("%s %s - %s", client.getNumePersoana(), client.getPrenumePersoana(), client.getTelefonPersoana()));
+                }
+                return this;
+            }
+        });
+
+        ClientServices clientServices = new ClientServices();
+        Pair<List<Client>, QueryOutcome> queryOutcome = clientServices.getListaClienti();
+
+        if (queryOutcome.getValue() == QueryOutcome.SUCCESS)
+        {
+            List<Client> listaClienti = queryOutcome.getKey();
+
+            for (Client client : listaClienti)
+            {
+                cboxProprietar.addItem(client);
+            }
+        }
+
+        cboxProprietar.setSelectedIndex(-1);
     }
 
     private void addPanelTeren(HomeUI homeUI)

@@ -1,8 +1,11 @@
 package Interface.HomeUI;
 
 import Entities.Programare;
+import Services.PersoanaServices.ClientServices;
 import Utils.CustomColor;
 import Entities.Persoana.Client;
+import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -15,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 
 public class AdaugaProgramare
 {
@@ -56,6 +60,37 @@ public class AdaugaProgramare
         cboxClient = new JComboBox<>();
         panelProgramare.add(cboxClient);
         cboxClient.setBounds(15, 45, 337, 30);
+
+        cboxClient.setRenderer(new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if(value instanceof Client)
+                {
+                    Client client = (Client) value;
+                    setText(String.format("%s %s - %s", client.getNumePersoana(), client.getPrenumePersoana(), client.getTelefonPersoana()));
+                }
+                return this;
+            }
+        });
+
+        ClientServices clientServices = new ClientServices();
+        Pair<java.util.List<Client>, QueryOutcome> queryOutcome = clientServices.getListaClienti();
+
+        if (queryOutcome.getValue() == QueryOutcome.SUCCESS)
+        {
+            List<Client> listaClienti = queryOutcome.getKey();
+
+            for (Client client : listaClienti)
+            {
+                cboxClient.addItem(client);
+            }
+        }
+
+        cboxClient.setSelectedIndex(-1);
 
         labelData = new JLabel("Data");
         panelProgramare.add(labelData);
