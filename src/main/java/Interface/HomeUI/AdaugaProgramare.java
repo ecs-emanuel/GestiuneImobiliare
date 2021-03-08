@@ -5,6 +5,7 @@ import Services.PersoanaServices.ClientServices;
 import Services.ProgramareServices;
 import Utils.CustomColor;
 import Entities.Persoana.Client;
+import Utils.QueryMessage;
 import Utils.QueryOutcome;
 import javafx.util.Pair;
 import java.util.Date;
@@ -33,10 +34,11 @@ public class AdaugaProgramare
     protected JLabel labelClient;
     protected JComboBox<Client> cboxClient;
 
-    // butoane actiune
+    private JPanel panelButtons;
     private JSeparator separatorButtons;
     private JButton buttonAccepta;
     private JButton buttonAnuleaza;
+    private JLabel labelResult;
 
     public void create(HomeUI homeUI)
     {
@@ -115,13 +117,20 @@ public class AdaugaProgramare
 
     private void addButtons(HomeUI homeUI)
     {
+        panelButtons = new JPanel();
+        homeUI.panelContent.add(panelButtons);
+        panelButtons.setLayout(null);
+        panelButtons.setVisible(true);
+        panelButtons.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
+        panelButtons.setBounds(10, 515, 735, 150);
+
         separatorButtons = new JSeparator(SwingConstants.HORIZONTAL);
-        homeUI.panelContent.add(separatorButtons);
-        separatorButtons.setBounds(15, 535, 730, 3);
+        panelButtons.add(separatorButtons);
+        separatorButtons.setBounds(15, 0, 710, 3);
 
         buttonAccepta = new JButton("Accepta");
-        homeUI.panelContent.add(buttonAccepta);
-        buttonAccepta.setBounds(160, 555, 200, 35);
+        panelButtons.add(buttonAccepta);
+        buttonAccepta.setBounds(160, 12, 200, 35);
 
         buttonAccepta.addActionListener(new ActionListener()
         {
@@ -146,14 +155,45 @@ public class AdaugaProgramare
                     programare.setData(timeStamp);
 
                     ProgramareServices programareServices = new ProgramareServices();
-                    programareServices.addProgramare(programare);
+                    QueryOutcome queryOutcome = programareServices.addProgramare(programare);
+
+                    switch (queryOutcome)
+                    {
+                        case SUCCESS:
+                            displayMessage(QueryMessage.INSERT_SUCCESS);
+                            break;
+
+                        case OFFLINE:
+                            displayMessage(QueryMessage.DATABASE_OFFLINE);
+                            break;
+
+                        case ERROR:
+                            displayMessage(QueryMessage.DATABASE_ERROR);
+                            break;
+                    }
+                }
+                else
+                {
+                    displayMessage(QueryMessage.FORM_INCOMPLETE);
                 }
             }
         });
 
         buttonAnuleaza = new JButton("Anuleaza");
-        homeUI.panelContent.add(buttonAnuleaza);
-        buttonAnuleaza.setBounds(375, 555, 200, 35);
+        panelButtons.add(buttonAnuleaza);
+        buttonAnuleaza.setBounds(375, 12, 200, 35);
+
+        labelResult = new JLabel("", JLabel.CENTER);
+        panelButtons.add(labelResult);
+        labelResult.setBorder(BorderFactory.createLineBorder(CustomColor.GRAY_LIGHTSTEEL.getColor()));
+        labelResult.setBounds(170, 57, 395, 25);
+    }
+
+    private void displayMessage(QueryMessage queryMessage)
+    {
+        labelResult.setText(queryMessage.getMessage());
+        labelResult.setForeground(queryMessage.getColor());
+        labelResult.setVisible(true);
     }
 
     private boolean isFormCompleted()
