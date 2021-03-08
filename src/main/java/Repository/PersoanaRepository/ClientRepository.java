@@ -76,6 +76,8 @@ public class ClientRepository
 
             statement.executeBatch();
             connection.commit();
+
+            return QueryOutcome.SUCCESS;
         }
         catch (SQLException throwables)
         {
