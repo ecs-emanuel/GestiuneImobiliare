@@ -1,6 +1,7 @@
 package Interface.HomeUI;
 import Entities.Persoana.Client;
 import Services.LocatieServices.*;
+import Services.PersoanaServices.ClientServices;
 import Utils.CustomColor;
 import Entities.Locatie.*;
 
@@ -443,7 +444,12 @@ public class AdaugaClient
                     client.setEmailPersoana(fieldEmail.getText());
                     client.setDomiciliuPersoana(locatie);
 
-                    // add to database
+                    ClientServices clientServices = new ClientServices();
+                    clientServices.addClient(client);
+                }
+                else
+                {
+                    System.out.println("failed");
                 }
             }
         });

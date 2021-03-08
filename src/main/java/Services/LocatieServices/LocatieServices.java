@@ -7,7 +7,7 @@ import javafx.util.Pair;
 
 public class LocatieServices
 {
-    public Pair<Locatie, QueryOutcome> addLocatie(Locatie locatie)
+    public QueryOutcome addLocatie(Locatie locatie)
     {
         LocatieRepository locatieRepository = new LocatieRepository();
         return locatieRepository.addLocatie(locatie);

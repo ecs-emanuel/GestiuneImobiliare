@@ -12,14 +12,14 @@ import java.util.List;
 
 public class LocatieRepository
 {
-    public Pair<Locatie, QueryOutcome> addLocatie(Locatie locatie)
+    public QueryOutcome addLocatie(Locatie locatie)
     {
         DatabaseRepository databaseRepository = new DatabaseRepository();
         Connection connection = databaseRepository.craeteConnection();
 
         if (connection == null)
         {
-            return new Pair<>(locatie, QueryOutcome.OFFLINE);
+            return QueryOutcome.OFFLINE;
         }
 
         String sqlScript = String.format
@@ -30,20 +30,10 @@ public class LocatieRepository
             locatie.getComunaLocatie().getIndexComuna(), locatie.getSatLocatie().getIndexSat(), locatie.getDenumireLocatie()
         );
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlScript, Statement.RETURN_GENERATED_KEYS))
+        try (Statement statement = connection.createStatement())
         {
-            preparedStatement.executeUpdate();
-
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys())
-            {
-                if (resultSet.first())
-                {
-                    locatie.setIndexLocatie(resultSet.getInt(1));
-                    return new Pair<>(locatie, QueryOutcome.SUCCESS);
-                }
-                return new Pair<>(locatie, QueryOutcome.EMPTY);
-            }
-
+            statement.executeUpdate(sqlScript);
+            return QueryOutcome.SUCCESS;
         }
         catch (SQLException throwables)
         {
@@ -58,6 +48,6 @@ public class LocatieRepository
         {
             throwables.printStackTrace();
         }
-        return new Pair<>(locatie, QueryOutcome.ERROR);
+        return QueryOutcome.ERROR;
     }
 }
