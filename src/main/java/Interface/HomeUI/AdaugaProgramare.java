@@ -6,6 +6,8 @@ import Utils.CustomColor;
 import Entities.Persoana.Client;
 import Utils.QueryOutcome;
 import javafx.util.Pair;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -17,8 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
+
 
 public class AdaugaProgramare
 {
@@ -78,19 +79,19 @@ public class AdaugaProgramare
         });
 
         ClientServices clientServices = new ClientServices();
-        Pair<java.util.List<Client>, QueryOutcome> queryOutcome = clientServices.getListaClienti();
+        Pair<List<Client>, QueryOutcome> queryOutcomePair = clientServices.getListaClienti();
 
-        if (queryOutcome.getValue() == QueryOutcome.SUCCESS)
+        if (queryOutcomePair.getValue() == QueryOutcome.SUCCESS)
         {
-            List<Client> listaClienti = queryOutcome.getKey();
+            List<Client> listaClienti = queryOutcomePair.getKey();
 
             for (Client client : listaClienti)
             {
                 cboxClient.addItem(client);
             }
-        }
 
-        cboxClient.setSelectedIndex(-1);
+            cboxClient.setSelectedIndex(-1);
+        }
 
         labelData = new JLabel("Data");
         panelProgramare.add(labelData);

@@ -1,7 +1,6 @@
 package Interface.HomeUI;
 
 import Components.*;
-import Entities.Persoana.Agent;
 import Entities.Persoana.Client;
 import Entities.Proprietate.*;
 import Services.LocatieServices.*;
@@ -14,12 +13,12 @@ import javafx.util.Pair;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.NumberFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.Date;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class AdaugaProprietate
 {
@@ -307,9 +306,8 @@ public class AdaugaProprietate
             {
                 cboxProprietar.addItem(client);
             }
+            cboxProprietar.setSelectedIndex(-1);
         }
-
-        cboxProprietar.setSelectedIndex(-1);
     }
 
     private void addPanelTeren(HomeUI homeUI)
@@ -695,15 +693,6 @@ public class AdaugaProprietate
         panelLocatie.add(cboxJudet);
         cboxJudet.setBounds(15, 100, 215, 30);
 
-        // creaza lista judete
-        JudetServices judetServices = new JudetServices();
-        java.util.List<Judet> listaJudete = judetServices.getListaJudete().getKey();
-
-        for (Judet judet : listaJudete)
-        {
-            cboxJudet.addItem(judet);
-        }
-
         // afiseaza numele judetelor in lista
         cboxJudet.setRenderer(new DefaultListCellRenderer()
         {
@@ -721,8 +710,21 @@ public class AdaugaProprietate
             }
         });
 
-        // Select empty in combobox
-        cboxJudet.setSelectedIndex(-1);
+        // creaza lista judete
+        JudetServices judetServices = new JudetServices();
+        Pair<List<Judet>, QueryOutcome> queryOutcomePairJudet = judetServices.getListaJudete();
+
+        if (queryOutcomePairJudet.getValue() == QueryOutcome.SUCCESS)
+        {
+            List<Judet> listaJudete = queryOutcomePairJudet.getKey();
+
+            for (Judet judet : listaJudete)
+            {
+                cboxJudet.addItem(judet);
+            }
+
+            cboxJudet.setSelectedIndex(-1);
+        }
 
         // updateaza lista cu orase/comune cand se alege un judet
         cboxJudet.addActionListener(new ActionListener()
@@ -730,45 +732,55 @@ public class AdaugaProprietate
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                java.util.List<Oras> listaOrase = new ArrayList<>();
-                java.util.List<Comuna> listaComune = new ArrayList<>();
+                // clear lists
+                cboxOras.removeAllItems();
+                cboxComuna.removeAllItems();
+
+                // disable orase/comune
+                rbuttonOras.setEnabled(false);
+                rbuttonComuna.setEnabled(false);
+
                 Object selectedItem = cboxJudet.getSelectedItem();
 
                 // Judet selectat
                 if (selectedItem instanceof Judet)
                 {
                     OrasServices orasServices = new OrasServices();
-                    listaOrase = orasServices.getListaOrase((Judet) selectedItem).getKey();
+                    Pair<List<Oras>, QueryOutcome> queryOutcomePairOras = orasServices.getListaOrase((Judet) selectedItem);
+
+                    if (queryOutcomePairOras.getValue() == QueryOutcome.SUCCESS)
+                    {
+                        List<Oras> listaOrase = queryOutcomePairOras.getKey();
+
+                        for (Oras oras : listaOrase)
+                        {
+                            cboxOras.addItem(oras);
+                        }
+
+                        cboxOras.setSelectedIndex(-1);
+
+                        // enable orase
+                        rbuttonOras.setEnabled(true);
+                    }
 
                     ComunaServices comunaServices = new ComunaServices();
-                    listaComune = comunaServices.getListaComune((Judet) selectedItem).getKey();
+                    Pair<List<Comuna>, QueryOutcome> queryOutcomePairComuna = comunaServices.getListaComune((Judet) selectedItem);
 
-                    // Enable orase/comune
-                    rbuttonOras.setEnabled(true);
-                    rbuttonComuna.setEnabled(true);
+                    if (queryOutcomePairComuna.getValue() == QueryOutcome.SUCCESS)
+                    {
+                        List<Comuna> listaComune = queryOutcomePairComuna.getKey();
+
+                        for (Comuna comuna : listaComune)
+                        {
+                            cboxComuna.addItem(comuna);
+                        }
+
+                        cboxComuna.setSelectedIndex(-1);
+
+                        // enable comune
+                        rbuttonComuna.setEnabled(true);
+                    }
                 }
-                else
-                {
-                    // Disable orase/comune
-                    rbuttonOras.setEnabled(false);
-                    rbuttonComuna.setEnabled(false);
-                }
-
-                cboxOras.removeAllItems();
-                cboxComuna.removeAllItems();
-
-                for (Oras oras : listaOrase)
-                {
-                    cboxOras.addItem(oras);
-                }
-
-                for (Comuna comuna : listaComune)
-                {
-                    cboxComuna.addItem(comuna);
-                }
-
-                cboxOras.setSelectedIndex(-1);
-                cboxComuna.setSelectedIndex(-1);
             }
         });
 
@@ -807,23 +819,28 @@ public class AdaugaProprietate
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                java.util.List<Cartier> listaCartiere = new ArrayList<>();
+                // clear lists
+                cboxCartier.removeAllItems();
+
                 Object selectedItem = cboxOras.getSelectedItem();
 
                 if (selectedItem instanceof Oras)
                 {
                     CartierServices cartierServices = new CartierServices();
-                    listaCartiere = cartierServices.getListaCartiere((Oras) selectedItem).getKey();
+                    Pair<List<Cartier>, QueryOutcome> queryOutcomePairCartier = cartierServices.getListaCartiere((Oras) selectedItem);
+
+                    if (queryOutcomePairCartier.getValue() == QueryOutcome.SUCCESS)
+                    {
+                        List<Cartier> listaCartiere = queryOutcomePairCartier.getKey();
+
+                        for (Cartier cartier : listaCartiere)
+                        {
+                            cboxCartier.addItem(cartier);
+                        }
+
+                        cboxCartier.setSelectedIndex(-1);
+                    }
                 }
-
-                cboxCartier.removeAllItems();
-
-                for (Cartier cartier : listaCartiere)
-                {
-                    cboxCartier.addItem(cartier);
-                }
-
-                cboxCartier.setSelectedIndex(-1);
             }
         });
 
@@ -922,23 +939,28 @@ public class AdaugaProprietate
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                List<Sat> listaSate = new ArrayList<>();
+                // clear lists
+                cboxSat.removeAllItems();
+
                 Object selectedItem = cboxComuna.getSelectedItem();
 
                 if (selectedItem instanceof Comuna)
                 {
                     SatServices satServices = new SatServices();
-                    listaSate = satServices.getListaSate((Comuna) selectedItem).getKey();
+                    Pair<List<Sat>, QueryOutcome> queryOutcomePairSat = satServices.getListaSate((Comuna) selectedItem);
+
+                    if (queryOutcomePairSat.getValue() == QueryOutcome.SUCCESS)
+                    {
+                        List<Sat> listaSate = queryOutcomePairSat.getKey();
+
+                        for (Sat sat : listaSate)
+                        {
+                            cboxSat.addItem(sat);
+                        }
+
+                        cboxSat.setSelectedIndex(-1);
+                    }
                 }
-
-                cboxSat.removeAllItems();
-
-                for (Sat sat : listaSate)
-                {
-                    cboxSat.addItem(sat);
-                }
-
-                cboxSat.setSelectedIndex(-1);
             }
         });
 
