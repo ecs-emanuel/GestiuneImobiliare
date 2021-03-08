@@ -9,7 +9,9 @@ public enum QueryMessage
     DATABASE_ERROR("Ceva nu a mers bine", CustomColor.RED_STRONG),
     DATABASE_OFFLINE("Nu s-a putut efectua conexiunea", CustomColor.RED_STRONG),
     ACCOUNT_WRONG("Credentiale gresite", CustomColor.RED_STRONG),
-    ACCOUNT_CURRUPTED("Credentiale corupte", CustomColor.RED_STRONG);
+    ACCOUNT_CURRUPTED("Credentiale corupte", CustomColor.RED_STRONG),
+    INSERT_SUCCESS("Datele s-au introdus cu succes", CustomColor.GREEN_STRONG),
+    FORM_INCOMPLETE("Formularul nu este complet", CustomColor.RED_STRONG);
 
     String message;
     CustomColor color;
