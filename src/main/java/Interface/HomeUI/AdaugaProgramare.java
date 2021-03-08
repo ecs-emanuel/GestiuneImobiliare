@@ -2,6 +2,7 @@ package Interface.HomeUI;
 
 import Entities.Programare;
 import Services.PersoanaServices.ClientServices;
+import Services.ProgramareServices;
 import Utils.CustomColor;
 import Entities.Persoana.Client;
 import Utils.QueryOutcome;
@@ -144,7 +145,8 @@ public class AdaugaProgramare
                     programare.setClient(client);
                     programare.setData(timeStamp);
 
-                    // add
+                    ProgramareServices programareServices = new ProgramareServices();
+                    programareServices.addProgramare(programare);
                 }
             }
         });
