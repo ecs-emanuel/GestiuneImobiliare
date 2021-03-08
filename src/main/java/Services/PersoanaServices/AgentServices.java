@@ -11,6 +11,6 @@ public class AgentServices
     public Pair<Agent, QueryOutcome> getAgent(User user)
     {
         AgentRepository agentRepository = new AgentRepository();
-        return agentRepository.getAggent(user);
+        return agentRepository.getAgent(user);
     }
 }

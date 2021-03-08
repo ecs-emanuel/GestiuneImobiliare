@@ -13,7 +13,7 @@ import java.sql.Statement;
 
 public class AgentRepository
 {
-    public Pair<Agent, QueryOutcome> getAggent(User user)
+    public Pair<Agent, QueryOutcome> getAgent(User user)
     {
         Agent agent = new Agent();
 
@@ -62,7 +62,6 @@ public class AgentRepository
                 // agent found in database
                 if (resultset.first())
                 {
-                    System.out.println("test");
                     agent.setIndexAgent(resultset.getInt(1));
                     agent.setUserAgent(user);
                     agent.setIndexPersoana(resultset.getInt(2));
