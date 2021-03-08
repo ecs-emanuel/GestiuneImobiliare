@@ -132,7 +132,8 @@ public class ClientRepository
             "LEFT JOIN comune co \n" +
             "ON l.comunaLocatie = co.indexComuna\n" +
             "LEFT JOIN sate s \n" +
-            "ON l.satLocatie = s.indexSat;"
+            "ON l.satLocatie = s.indexSat\n" +
+            "ORDER BY p.numePersoana, p.prenumePersoana, p.telefonPersoana, p.emailPersoana;"
         );
 
         try (Statement statement = connection.createStatement())
