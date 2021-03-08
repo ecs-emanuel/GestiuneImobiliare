@@ -170,7 +170,8 @@ public class AgentRepository
             "LEFT JOIN comune c\n" +
             "ON l.comunaLocatie = co.indexComuna\n" +
             "LEFT JOIN sate s\n" +
-            "ON l.satLocatie = s.indexSat\n"
+            "ON l.satLocatie = s.indexSat\n" +
+            "ORDER BY p.numePersoana, p.prenumePersoana, p.telefonPersoana, p.emailPersoana;"
         );
 
         try (Statement statament = connection.createStatement())
