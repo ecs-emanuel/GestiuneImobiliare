@@ -11,48 +11,68 @@ import java.sql.*;
 public class ClientRepository
 {
 
-    public Pair<Client, QueryOutcome> addClient(Client client)
+    public QueryOutcome addClient(Client client)
     {
         DatabaseRepository databaseRepository = new DatabaseRepository();
         Connection connection = databaseRepository.craeteConnection();
 
         if (connection == null)
         {
-            return new Pair<>(client, QueryOutcome.OFFLINE);
+            return QueryOutcome.OFFLINE;
         }
 
-        Locatie domiciliu = client.getDomiciliuPersoana();
-
-        String sqlScript = String.format
-        (
-            "START TRANSACTION;\n" +
-            "INSERT INTO locatii (judetLocatie, orasLocatie, cartierLocatie, comunaLocatie, satLocatie, denumireLocatie) VALUES\n" +
-            "(%d, %d, %d, %d, %d, '%s');\n" +
-            "INSERT INTO persoane (numePersoana, prenumePersoana, telefonPersoana, emailPersoana, domiciliuPersoana) VALUES\n" +
-            "('%s', '%s', '%s', '%s', LAST_INSERT_ID());\n" +
-            "INSERT INTO clienti (persoanaClient) VALUES\n" +
-            "(LAST_INSERT_ID());\n" +
-            "COMMIT;",
-            domiciliu.getJudetLocatie().getIndexJudet(),
-            domiciliu.getOrasLocatie().getIndexOras(), domiciliu.getCartierLocatie().getIndexCartier(),
-            domiciliu.getComunaLocatie().getIndexComuna(), domiciliu.getSatLocatie().getIndexSat(),
-            client.getNumePersoana(), client.getPrenumePersoana(), client.getTelefonPersoana(), client.getEmailPersoana()
-        );
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlScript, Statement.RETURN_GENERATED_KEYS))
+        try (Statement statement = connection.createStatement())
         {
-            preparedStatement.executeUpdate();
+            connection.setAutoCommit(false);
 
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys())
+            String sqlScript1 = null;
+            Locatie domiciliu = client.getDomiciliuPersoana();
+
+            // add locatie
+            if (domiciliu.getOrasLocatie() != null)
             {
-                if (resultSet.first())
-                {
-                    client.setIndexClient(resultSet.getInt(1));
-                    return new Pair<>(client, QueryOutcome.SUCCESS);
-                }
-                return new Pair<>(client, QueryOutcome.EMPTY);
+                sqlScript1 = String.format
+                (
+                    "INSERT INTO locatii (judetLocatie, orasLocatie, cartierLocatie, denumireLocatie) VALUES\n" +
+                    "(%d, %d, %d, '%s');\n",
+                    domiciliu.getJudetLocatie().getIndexJudet(),
+                    domiciliu.getOrasLocatie().getIndexOras(), domiciliu.getCartierLocatie().getIndexCartier(), domiciliu.getDenumireLocatie()
+                );
+            }
+            else
+            {
+                sqlScript1 = String.format
+                (
+                    "INSERT INTO locatii (judetLocatie, comunaLocatie, satLocatie, denumireLocatie) VALUES\n" +
+                    "(%d, %d, %d, '%s');\n",
+                    domiciliu.getJudetLocatie().getIndexJudet(),
+                    domiciliu.getComunaLocatie().getIndexComuna(), domiciliu.getSatLocatie().getIndexSat(), domiciliu.getDenumireLocatie()
+                );
             }
 
+            statement.addBatch(sqlScript1);
+
+            // add persoana
+            String sqlScript2 = String.format
+            (
+                "INSERT INTO persoane (numePersoana, prenumePersoana, telefonPersoana, emailPersoana, domiciliuPersoana) VALUES\n" +
+                "('%s', '%s', '%s', '%s', LAST_INSERT_ID());\n",
+                client.getNumePersoana(), client.getPrenumePersoana(), client.getTelefonPersoana(), client.getEmailPersoana()
+            );
+
+            statement.addBatch(sqlScript2);
+
+            // add client
+            String sqlScript3 = String.format
+            (
+                "INSERT INTO clienti (persoanaClient) VALUES\n" +
+                "(LAST_INSERT_ID());"
+            );
+
+            statement.addBatch(sqlScript3);
+
+            statement.executeBatch();
+            connection.commit();
         }
         catch (SQLException throwables)
         {
@@ -67,6 +87,6 @@ public class ClientRepository
         {
             throwables.printStackTrace();
         }
-        return new Pair<>(client, QueryOutcome.ERROR);
+        return QueryOutcome.ERROR;
     }
 }
