@@ -171,7 +171,7 @@ public class ClientRepository
                         cartier.setDenumireCartier(resultSet.getString(14));
                         domiciliu.setCartierLocatie(cartier);
                     }
-                    else
+                    else if (resultSet.getInt(15) > 0)
                     {
                         Comuna comuna = new Comuna();
                         comuna.setIndexComuna(resultSet.getInt(15));
