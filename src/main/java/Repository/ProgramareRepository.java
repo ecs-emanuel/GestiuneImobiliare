@@ -12,7 +12,7 @@ public class ProgramareRepository
     public QueryOutcome addProgramare(Programare programare)
     {
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         if (connection == null)
         {
@@ -35,16 +35,17 @@ public class ProgramareRepository
         {
             throwables.printStackTrace();
         }
-
-        try
+        finally
         {
-            connection.close();
+            try
+            {
+                connection.close();
+            }
+            catch (SQLException throwables)
+            {
+                throwables.printStackTrace();
+            }
         }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-        }
-
         return QueryOutcome.ERROR;
     }
 }

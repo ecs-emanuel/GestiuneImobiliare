@@ -24,7 +24,7 @@ public class UserRepository
         user.setPassUser(null);
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         // no connection / offline
         if (connection == null)

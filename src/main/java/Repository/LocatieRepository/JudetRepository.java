@@ -19,7 +19,7 @@ public class JudetRepository
         List<Judet> listaJudete = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         if (connection == null)
         {
@@ -71,7 +71,7 @@ public class JudetRepository
     public Pair<Boolean, QueryOutcome> isJudetInDatabase(Judet judet)
     {
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         if (connection == null)
         {

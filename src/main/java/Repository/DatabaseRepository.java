@@ -8,7 +8,7 @@ import java.sql.*;
 
 public class DatabaseRepository
 {
-    public Connection craeteConnection()
+    public Connection createConnection()
     {
         Connection connection = null;
 

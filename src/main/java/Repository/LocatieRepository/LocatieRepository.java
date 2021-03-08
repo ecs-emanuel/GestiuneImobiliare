@@ -15,7 +15,7 @@ public class LocatieRepository
     public QueryOutcome addLocatie(Locatie locatie)
     {
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         if (connection == null)
         {

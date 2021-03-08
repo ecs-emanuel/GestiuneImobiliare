@@ -17,7 +17,7 @@ public class ClientRepository
     public QueryOutcome addClient(Client client)
     {
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         if (connection == null)
         {
@@ -101,7 +101,7 @@ public class ClientRepository
         List<Client> listaClienti = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         if (connection == null)
         {

@@ -21,7 +21,7 @@ public class CartierRepository
         List<Cartier> listaCartiere = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         if (connection == null)
         {
@@ -75,7 +75,7 @@ public class CartierRepository
     public Pair<Boolean, QueryOutcome> isCartierInDatabase(Cartier cartier)
     {
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         if (connection == null)
         {

@@ -20,7 +20,7 @@ public class AgentRepository
         Agent agent = new Agent();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         // no connection / offline
         if (connection == null)
@@ -138,7 +138,7 @@ public class AgentRepository
         List<Agent> listaAgenti = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         // no connection / offline
         if (connection == null)

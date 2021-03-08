@@ -21,7 +21,7 @@ public class SatRepository
         List<Sat> listaSate = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         if (connection == null)
         {
@@ -75,7 +75,7 @@ public class SatRepository
     public Pair<Boolean, QueryOutcome> isSatInDatabase(Sat sat)
     {
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         if (connection == null)
         {

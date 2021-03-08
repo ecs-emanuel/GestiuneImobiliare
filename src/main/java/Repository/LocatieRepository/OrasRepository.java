@@ -20,7 +20,7 @@ public class OrasRepository
         List<Oras> listaOrase = new ArrayList<>();
 
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         if (connection == null)
         {
@@ -74,7 +74,7 @@ public class OrasRepository
     public Pair<Boolean, QueryOutcome> isOrasInDatabase(Oras oras)
     {
         DatabaseRepository databaseRepository = new DatabaseRepository();
-        Connection connection = databaseRepository.craeteConnection();
+        Connection connection = databaseRepository.createConnection();
 
         if (connection == null)
         {
