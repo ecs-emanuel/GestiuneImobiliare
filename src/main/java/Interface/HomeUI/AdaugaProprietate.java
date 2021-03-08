@@ -1110,7 +1110,7 @@ public class AdaugaProprietate
                 !fieldLocatie.getText().isEmpty() && cboxJudet.getSelectedItem() instanceof Judet &&
                 // and tip oras selected and oras/cartier selected
                 ((rbuttonOras.isSelected() &&
-                cboxOras.getSelectedItem() instanceof Oras && cboxCartier.getSelectedItem() instanceof Cartier) ||
+                cboxOras.getSelectedItem() instanceof Oras && cboxCartier.getSelectedItem() instanceof Cartier) ^
                 // or tip comuna selected and comuna/sat selected
                 (rbuttonComuna.isSelected() &&
                 cboxComuna.getSelectedItem() instanceof Comuna && cboxSat.getSelectedItem() instanceof Sat)) &&

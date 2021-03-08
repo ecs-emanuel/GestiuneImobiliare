@@ -464,7 +464,7 @@ public class AdaugaClient
         return !fieldNume.getText().isEmpty() && !fieldPrenume.getText().isEmpty() &&
                 !fieldTelefon.getText().isEmpty() && !fieldEmail.getText().isEmpty() &&
                 !fieldLocatie.getText().isEmpty() && cboxJudet.getSelectedItem() instanceof Judet &&
-                ((cboxOras.getSelectedItem() instanceof Oras && cboxCartier.getSelectedItem() instanceof Cartier) ||
+                ((cboxOras.getSelectedItem() instanceof Oras && cboxCartier.getSelectedItem() instanceof Cartier) ^
                 cboxComuna.getSelectedItem() instanceof Comuna && cboxSat.getSelectedItem() instanceof Sat);
     }
 }
