@@ -24,7 +24,7 @@ public class LocatieRepository
 
         String sqlScript = String.format
         (
-            "INSERT INTO locatii(judetLocatie, orasLocatie, cartierLocatie, comunaLocatie, satLocatie, denumireLocatie) VALUES" +
+            "INSERT INTO locatii(judetLocatie, orasLocatie, cartierLocatie, comunaLocatie, satLocatie, denumireLocatie) VALUES\n" +
             "(%d, %d, %d, %d, %d, '%s')",
             locatie.getJudetLocatie().getIndexJudet(), locatie.getOrasLocatie().getIndexOras(), locatie.getCartierLocatie().getIndexCartier(),
             locatie.getComunaLocatie().getIndexComuna(), locatie.getSatLocatie().getIndexSat(), locatie.getDenumireLocatie()

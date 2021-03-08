@@ -83,8 +83,8 @@ public class OrasRepository
 
         String sqlScript = String.format
         (
-            "SELECT * " +
-            "FROM orase " +
+            "SELECT *\n" +
+            "FROM orase\n" +
             "WHERE indexOras = %d",
             oras.getIndexOras()
         );

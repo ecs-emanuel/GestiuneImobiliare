@@ -84,8 +84,8 @@ public class CartierRepository
 
         String sqlScript = String.format
         (
-            "SELECT * " +
-            "FROM cartiere " +
+            "SELECT *\n" +
+            "FROM cartiere\n" +
             "WHERE indexCartier = %d",
             cartier.getIndexCartier()
         );

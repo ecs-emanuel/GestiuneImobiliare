@@ -80,8 +80,8 @@ public class JudetRepository
 
         String sqlScript = String.format
         (
-            "SELECT * " +
-            "FROM judete " +
+            "SELECT *\n" +
+            "FROM judete\n" +
             "WHERE indexJudet = %d",
             judet.getIndexJudet()
         );

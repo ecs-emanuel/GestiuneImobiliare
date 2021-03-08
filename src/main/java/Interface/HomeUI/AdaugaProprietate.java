@@ -10,9 +10,11 @@ import Entities.Locatie.*;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.Date;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class AdaugaProprietate
     private JLabel labelTitlu;
     private JTextField fieldTitlu;
     private JLabel labelPret;
-    private JTextField fieldPret;
+    private JFormattedTextField fieldPret;
     private JLabel labelDescriere;
     private JTextArea areaDescriere;
     private JScrollPane scrollDescriere;
@@ -38,7 +40,7 @@ public class AdaugaProprietate
     // Panel teren
     private JPanel panelTeren;
     private JLabel labelSuprafataParcela;
-    private JTextField fieldSuprafataParcela;
+    private JFormattedTextField fieldSuprafataParcela;
     private JLabel labelDispozitieTeren;
     private JComboBox<DispozitieTeren> cboxDispozitieTeren;
     private JCheckBox checkbApa;
@@ -49,11 +51,11 @@ public class AdaugaProprietate
     // Panel constructie
     private JPanel panelConstructie;
     private JLabel labelSuprafataUtilizabila;
-    private JTextField fieldSuprafataUtilizabila;
+    private JFormattedTextField fieldSuprafataUtilizabila;
     private JLabel labelSuprafataConstructie;
-    private JTextField fieldSuprafataConstructie;
+    private JFormattedTextField fieldSuprafataConstructie;
     private JLabel labelAnConstructie;
-    private JTextField fieldAnConstructie;
+    private JFormattedTextField fieldAnConstructie;
     private JLabel labelStructuraConstructie;
     private JComboBox<StructuraConstructie> cboxStructuraConstructie;
     private JLabel labelEtajApartament;
@@ -165,7 +167,10 @@ public class AdaugaProprietate
         panelDescriere.add(labelPret);
         labelPret.setBounds(557, 25, 165, 20);
 
-        fieldPret = new JTextField(10);
+        NumberFormatter numberFormatter = new NumberFormatter();
+        numberFormatter.setAllowsInvalid(false);
+
+        fieldPret = new JFormattedTextField(numberFormatter);
         panelDescriere.add(fieldPret);
         fieldPret.setBounds(552, 45, 165, 30);
 
@@ -289,7 +294,10 @@ public class AdaugaProprietate
         panelTeren.add(labelSuprafataParcela);
         labelSuprafataParcela.setBounds(20, 25, 154, 20);
 
-        fieldSuprafataParcela = new JTextField(10);
+        NumberFormatter numberFormatter = new NumberFormatter(null);
+        numberFormatter.setAllowsInvalid(false);
+
+        fieldSuprafataParcela = new JFormattedTextField(numberFormatter);
         panelTeren.add(fieldSuprafataParcela);
         fieldSuprafataParcela.setBounds(15, 45, 154, 30);
 
@@ -340,12 +348,16 @@ public class AdaugaProprietate
         panelConstructie.setBorder(new TitledBorder("Constructie"));
         panelConstructie.setBounds(10, 480, 735, 160);
 
+        // formatter for number only text fields
+        NumberFormatter numberFormatter = new NumberFormatter(null);
+        numberFormatter.setAllowsInvalid(false);
+
         // suprafata utilizabila
         labelSuprafataUtilizabila = new JLabel("Suprafata Utilizabila");
         panelConstructie.add(labelSuprafataUtilizabila);
         labelSuprafataUtilizabila.setBounds(20, 25, 154, 20);
 
-        fieldSuprafataUtilizabila = new JTextField(10);
+        fieldSuprafataUtilizabila = new JFormattedTextField(numberFormatter);
         panelConstructie.add(fieldSuprafataUtilizabila);
         fieldSuprafataUtilizabila.setBounds(15, 45, 154, 30);
 
@@ -354,7 +366,7 @@ public class AdaugaProprietate
         panelConstructie.add(labelSuprafataConstructie);
         labelSuprafataConstructie.setBounds(204, 25, 154, 20);
 
-        fieldSuprafataConstructie = new JTextField(10);
+        fieldSuprafataConstructie = new JFormattedTextField(numberFormatter);
         panelConstructie.add(fieldSuprafataConstructie);
         fieldSuprafataConstructie.setBounds(199, 45, 154, 30);
 
@@ -363,7 +375,7 @@ public class AdaugaProprietate
         panelConstructie.add(labelAnConstructie);
         labelAnConstructie.setBounds(388, 25, 154, 20);
 
-        fieldAnConstructie = new JTextField(10);
+        fieldAnConstructie = new JFormattedTextField(numberFormatter);
         panelConstructie.add(fieldAnConstructie);
         fieldAnConstructie.setBounds(383, 45, 154, 30);
 

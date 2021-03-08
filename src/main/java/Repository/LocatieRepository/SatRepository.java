@@ -84,8 +84,8 @@ public class SatRepository
 
         String sqlScript = String.format
         (
-            "SELECT * " +
-            "FROM sate " +
+            "SELECT *\n" +
+            "FROM sate\n" +
             "WHERE indexSat = %d",
             sat.getIndexSat()
         );

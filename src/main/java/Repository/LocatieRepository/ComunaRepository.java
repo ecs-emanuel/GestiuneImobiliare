@@ -83,8 +83,8 @@ public class ComunaRepository
 
         String sqlScript = String.format
         (
-            "SELECT * " +
-            "FROM comune " +
+            "SELECT *\n" +
+            "FROM comune\n" +
             "WHERE indexComuna = %d",
             comuna.getIndexComuna()
         );
