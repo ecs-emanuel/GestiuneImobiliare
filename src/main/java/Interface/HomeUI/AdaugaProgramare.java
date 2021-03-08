@@ -34,6 +34,7 @@ public class AdaugaProgramare
     protected JLabel labelClient;
     protected JComboBox<Client> cboxClient;
 
+    // panel buttons
     private JPanel panelButtons;
     private JSeparator separatorButtons;
     private JButton buttonAccepta;
