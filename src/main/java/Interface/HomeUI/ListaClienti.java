@@ -9,6 +9,7 @@ import javafx.util.Pair;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -18,10 +19,7 @@ import java.util.List;
 
 public class ListaClienti
 {
-    private JTable tableClienti;
-    private JScrollPane scrollTableClienti;
-
-    private final int LIST_ITEM_HEIGHT = 30;
+    private JTable tableContent;
 
     public void create(HomeUI homeUI)
     {
@@ -35,16 +33,25 @@ public class ListaClienti
 
         List<Client> listaClienti = queryOutcomePair.getKey();
 
-        String[] columnNames = {"Nume", "Prenume", "Telefon", "Email", "Judet", "Oras/Comuna", "Cartier/Sat", "Strada" };
+        String[] columnNames = {"Nume", "Prenume", "Telefon", "Email", "Judet", "Oras/Comuna"};
 
-        int[] columnSizes = {50, 150, 70, 120, 100, 100, 100, 150 };
+        int[] columnSizes = {100, 150, 120, 200, 80, 108 };
         int totalColumns = columnNames.length;
 
-        JTable table = new JTable(listaClienti.size(), totalColumns);
+        tableContent = new JTable(listaClienti.size(), totalColumns)
+        {
+            public boolean isCellEditable(int row, int column)
+            {
+                return false;
+            }
+        };
 
-        table.setRowHeight(25);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        TableColumnModel columnModel = table.getColumnModel();
+        tableContent.setRowHeight(30);
+        tableContent.setShowGrid(false);
+        tableContent.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tableContent.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+        TableColumnModel columnModel = tableContent.getColumnModel();
 
         for (int i = 0; i < totalColumns; i++)
         {
@@ -59,30 +66,21 @@ public class ListaClienti
             Client client = listaClienti.get(i);
             Locatie domiciliu = client.getDomiciliuPersoana();
 
-            table.setValueAt(client.getNumePersoana(), i , 0);
-            table.setValueAt(client.getPrenumePersoana(), i, 1);
-            table.setValueAt(client.getTelefonPersoana(), i, 2);
-            table.setValueAt(client.getEmailPersoana(), i, 3);
-            table.setValueAt(domiciliu.getJudetLocatie().getDenumireJudet(), i, 4);
+            tableContent.setValueAt(client.getNumePersoana(), i , 0);
+            tableContent.setValueAt(client.getPrenumePersoana(), i, 1);
+            tableContent.setValueAt(client.getTelefonPersoana(), i, 2);
+            tableContent.setValueAt(client.getEmailPersoana(), i, 3);
+            tableContent.setValueAt(domiciliu.getJudetLocatie().getDenumireJudet(), i, 4);
 
             if (domiciliu.getOrasLocatie() != null)
             {
-                table.setValueAt(domiciliu.getOrasLocatie().getDenumireOras(), i, 5);
-                table.setValueAt(domiciliu.getCartierLocatie().getDenumireCartier(), i, 6);
+                tableContent.setValueAt(domiciliu.getOrasLocatie().getDenumireOras(), i, 5);
             }
             else if (domiciliu.getComunaLocatie() != null)
             {
-                table.setValueAt(domiciliu.getComunaLocatie().getDenumireComuna(), i, 5);
-                table.setValueAt(domiciliu.getSatLocatie().getDenumireSat(), i, 6);
+                tableContent.setValueAt(domiciliu.getComunaLocatie().getDenumireComuna(), i, 5);
             }
-
-            table.setValueAt(domiciliu.getDenumireLocatie(), i, 7);
         }
-
-        scrollTableClienti = new JScrollPane(table);
-        //scrollTableClienti.getViewport().add(table);
-        homeUI.panelContent.add(scrollTableClienti);
-        scrollTableClienti.setBounds(10, 12, 735, 430);
-
+        homeUI.scrollContent.setViewportView(tableContent);
     }
 }

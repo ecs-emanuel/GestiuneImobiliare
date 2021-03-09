@@ -167,10 +167,24 @@ public class HomeUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                clearPanel(scrollContent);
-                ListaClienti listaClienti = new ListaClienti();
-                listaClienti.create(HomeUI.this);
+                ButtonModel selectedButtonModel = buttonsMenu.getSelection();
 
+                if (selectedButtonModel == buttonProprietati.getModel())
+                {
+
+                }
+
+                else if (selectedButtonModel == buttonClienti.getModel())
+                {
+                    ListaClienti listaClienti = new ListaClienti();
+                    listaClienti.create(HomeUI.this);
+                }
+
+                else if (selectedButtonModel == buttonProgramari.getModel())
+                {
+                    ListaProgramari listaProgramari = new ListaProgramari();
+                    listaProgramari.create(HomeUI.this);
+                }
             }
         });
 
@@ -312,7 +326,9 @@ public class HomeUI
         scrollContent = new JScrollPane();
         mainFrame.add(scrollContent);
         scrollContent.setVisible(true);
+        scrollContent.setOpaque(true);
         scrollContent.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
+        scrollContent.getViewport().setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
         scrollContent.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         scrollContent.setBounds(200, 140, FRAME_WIDTH - 35 - 190, 610);
         scrollContent.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
