@@ -18,6 +18,9 @@ import java.util.List;
 
 public class AdaugaClient
 {
+    // main panel
+    private JPanel panelContent;
+
     // panel persoana
     protected JPanel panelPersoana;
     protected JLabel labelNume;
@@ -54,16 +57,22 @@ public class AdaugaClient
 
     public void create(HomeUI homeUI)
     {
-        addPanelPersoana(homeUI);
-        addPanelLocatie(homeUI);
-        addPanelButtons(homeUI);
-        homeUI.panelContent.setPreferredSize(new Dimension(1000 - 55 - 190, 600));
+        panelContent = new JPanel();
+        homeUI.scrollContent.setViewportView(panelContent);
+        panelContent.setLayout(null);
+        panelContent.setVisible(true);
+        panelContent.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
+        panelContent.setPreferredSize(new Dimension(1000 - 55 - 190, 590));
+
+        addPanelPersoana();
+        addPanelLocatie();
+        addPanelButtons();
     }
 
-    private void addPanelPersoana(HomeUI homeUI)
+    private void addPanelPersoana()
     {
         panelPersoana = new JPanel();
-        homeUI.panelContent.add(panelPersoana);
+        panelContent.add(panelPersoana);
         panelPersoana.setLayout(null);
         panelPersoana.setVisible(true);
         panelPersoana.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
@@ -103,10 +112,10 @@ public class AdaugaClient
         fieldEmail.setBounds(563, 45, 154, 30);
     }
 
-    private void addPanelLocatie(HomeUI homeUI)
+    private void addPanelLocatie()
     {
         panelLocatie = new JPanel();
-        homeUI.panelContent.add(panelLocatie);
+        panelContent.add(panelLocatie);
         panelLocatie.setLayout(null);
         panelLocatie.setVisible(true);
         panelLocatie.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
@@ -432,14 +441,14 @@ public class AdaugaClient
         });
     }
 
-    private void addPanelButtons(HomeUI homeUI)
+    private void addPanelButtons()
     {
         panelButtons = new JPanel();
-        homeUI.panelContent.add(panelButtons);
+        panelContent.add(panelButtons);
         panelButtons.setLayout(null);
         panelButtons.setVisible(true);
         panelButtons.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
-        panelButtons.setBounds(10, 515, 735, 150);
+        panelButtons.setBounds(10, 495, 735, 150);
 
         separatorButtons = new JSeparator(SwingConstants.HORIZONTAL);
         panelButtons.add(separatorButtons);

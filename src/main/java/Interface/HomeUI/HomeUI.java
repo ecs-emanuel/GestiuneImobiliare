@@ -18,19 +18,23 @@ public class HomeUI
 
     private JFrame mainFrame;
 
+    // panel header
     private JPanel panelHead;
     private JLabel labelHead;
     private JButton buttonLogout;
 
+    // panel user
     private JPanel panelUser;
     private JLabel labelUser;
 
+    // panel menu
     private JPanel panelMenu;
     private ButtonGroup buttonsMenu;
     private JToggleButton buttonProprietati;
     private JToggleButton buttonClienti;
     private JToggleButton buttonProgramari;
 
+    // panel search
     private JPanel panelSearch;
     private JLabel labelSearch;
     private JTextField fieldSearch;
@@ -41,7 +45,7 @@ public class HomeUI
     private JButton buttonModifica;
     private JButton buttonSterge;
 
-    protected JPanel panelContent;
+    // panel content
     protected JScrollPane scrollContent;
 
     public void displayInterface(Agent agent)
@@ -163,7 +167,7 @@ public class HomeUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                clearPanel(panelContent);
+                clearPanel(scrollContent);
                 ListaClienti listaClienti = new ListaClienti();
                 listaClienti.create(HomeUI.this);
 
@@ -252,7 +256,7 @@ public class HomeUI
             {
                 labelSearch.setText("Index");
                 labelSearch.setVisible(true);
-                clearPanel(panelContent);
+                clearPanel(scrollContent);
                 resetSearchPanel();
             }
         });
@@ -272,7 +276,7 @@ public class HomeUI
             {
                 labelSearch.setText("Tel");
                 labelSearch.setVisible(true);
-                clearPanel(panelContent);
+                clearPanel(scrollContent);
                 resetSearchPanel();
             }
         });
@@ -292,7 +296,7 @@ public class HomeUI
             {
                 labelSearch.setText("Data");
                 labelSearch.setVisible(true);
-                clearPanel(panelContent);
+                clearPanel(scrollContent);
                 resetSearchPanel();
             }
         });
@@ -305,27 +309,19 @@ public class HomeUI
 
     private void addPanelContent()
     {
-        panelContent = new JPanel();
-        panelContent.setLayout(null);
-        panelContent.setVisible(true);
-        panelContent.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
-        panelContent.setPreferredSize(new Dimension(FRAME_WIDTH - 55 - 190, 600));
-
-        scrollContent = new JScrollPane(panelContent);
+        scrollContent = new JScrollPane();
         mainFrame.add(scrollContent);
         scrollContent.setVisible(true);
         scrollContent.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
         scrollContent.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         scrollContent.setBounds(200, 140, FRAME_WIDTH - 35 - 190, 610);
         scrollContent.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollContent.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollContent.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     }
 
-    protected void clearPanel(JPanel panel)
+    protected void clearPanel(JScrollPane panel)
     {
-        panel.removeAll();
-        panel.revalidate();
-        panel.repaint();
+        panel.setViewportView(null);
     }
 
     private void resetSearchPanel()

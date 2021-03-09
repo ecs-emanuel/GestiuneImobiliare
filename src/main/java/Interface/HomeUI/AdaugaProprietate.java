@@ -26,6 +26,9 @@ import java.sql.Date;
 
 public class AdaugaProprietate
 {
+    // main panel
+    private JPanel panelContent;
+
     // Panel descriere
     private JPanel panelDescriere;
     private JLabel labelTitlu;
@@ -133,28 +136,36 @@ public class AdaugaProprietate
 
     public void create(HomeUI homeUI)
     {
+        panelContent = new JPanel();
+        homeUI.scrollContent.setViewportView(panelContent);
+        panelContent.setLayout(null);
+        panelContent.setVisible(true);
+        panelContent.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
+        panelContent.setPreferredSize(new Dimension(1000 - 55 - 190, 1185));
+
         // Add sub panels
-        addpanelDescriere(homeUI);
-        addPanelProprietate(homeUI);
-        addPanelTeren(homeUI);
-        addPanelConstructie(homeUI);
-        addPanelCompartimentare(homeUI);
-        addPanelLocatie(homeUI);
+        addpanelDescriere();
+        addPanelProprietate();
+        addPanelTeren();
+        addPanelConstructie();
+        addPanelCompartimentare();
+        addPanelLocatie();
         addButtons(homeUI);
-        homeUI.panelContent.setPreferredSize(new Dimension(1000 - 55 - 190, 1185));
 
         // Disable sub panels
         disablePanelComponents(panelTeren);
         disablePanelComponents(panelConstructie);
         disablePanelComponents(panelCompartimentare);
         disablePanelComponents(panelLocatie);
+
+
     }
 
-    private void addpanelDescriere(HomeUI homeUI)
+    private void addpanelDescriere()
     {
         // panel descriere
         panelDescriere = new JPanel();
-        homeUI.panelContent.add(panelDescriere);
+        panelContent.add(panelDescriere);
         panelDescriere.setLayout(null);
         panelDescriere.setVisible(true);
         panelDescriere.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
@@ -196,11 +207,11 @@ public class AdaugaProprietate
         scrollDescriere.setBounds(15, 100, 703, 80);
     }
 
-    private void addPanelProprietate(HomeUI homeUI)
+    private void addPanelProprietate()
     {
         // panel proprietate
         panelProprietate = new JPanel();
-        homeUI.panelContent.add(panelProprietate);
+        panelContent.add(panelProprietate);
         panelProprietate.setLayout(null);
         panelProprietate.setVisible(true);
         panelProprietate.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
@@ -316,11 +327,11 @@ public class AdaugaProprietate
         }
     }
 
-    private void addPanelTeren(HomeUI homeUI)
+    private void addPanelTeren()
     {
         // panel teren
         panelTeren = new JPanel();
-        homeUI.panelContent.add(panelTeren);
+        panelContent.add(panelTeren);
         panelTeren.setLayout(null);
         panelTeren.setVisible(true);
         panelTeren.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
@@ -375,11 +386,11 @@ public class AdaugaProprietate
         checkbCanalizare.setBounds(563, 100, 154, 20);
     }
 
-    private void addPanelConstructie(HomeUI homeUI)
+    private void addPanelConstructie()
     {
         // panel constructie
         panelConstructie = new JPanel();
-        homeUI.panelContent.add(panelConstructie);
+        panelContent.add(panelConstructie);
         panelConstructie.setLayout(null);
         panelConstructie.setVisible(true);
         panelConstructie.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
@@ -493,11 +504,11 @@ public class AdaugaProprietate
         cboxDispozitiePredare.setSelectedIndex(-1);
     }
 
-    private void addPanelCompartimentare(HomeUI homeUI)
+    private void addPanelCompartimentare()
     {
         // panel compartimentare
         panelCompartimentare = new JPanel();
-        homeUI.panelContent.add(panelCompartimentare);
+        panelContent.add(panelCompartimentare);
         panelCompartimentare.setLayout(null);
         panelCompartimentare.setVisible(true);
         panelCompartimentare.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
@@ -669,11 +680,11 @@ public class AdaugaProprietate
         }
     }
 
-    private void addPanelLocatie(HomeUI homeUI)
+    private void addPanelLocatie()
     {
         // panel locatie
         panelLocatie = new JPanel();
-        homeUI.panelContent.add(panelLocatie);
+        panelContent.add(panelLocatie);
         panelLocatie.setLayout(null);
         panelLocatie.setVisible(true);
         panelLocatie.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
@@ -1003,7 +1014,7 @@ public class AdaugaProprietate
     private void addButtons(HomeUI homeUI)
     {
         panelButtons = new JPanel();
-        homeUI.panelContent.add(panelButtons);
+        panelContent.add(panelButtons);
         panelButtons.setLayout(null);
         panelButtons.setVisible(true);
         panelButtons.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());

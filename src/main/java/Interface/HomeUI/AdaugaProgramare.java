@@ -25,6 +25,9 @@ import java.time.ZoneId;
 
 public class AdaugaProgramare
 {
+    // main panel
+    private JPanel panelContent;
+
     // panel programare
     protected JPanel panelProgramare;
     protected JLabel labelData;
@@ -43,15 +46,21 @@ public class AdaugaProgramare
 
     public void create(HomeUI homeUI)
     {
-        addPanelProgramare(homeUI);
+        panelContent = new JPanel();
+        homeUI.scrollContent.setViewportView(panelContent);
+        panelContent.setLayout(null);
+        panelContent.setVisible(true);
+        panelContent.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
+        panelContent.setPreferredSize(new Dimension(1000 - 55 - 190, 590));
+
+        addPanelProgramare();
         addButtons(homeUI);
-        homeUI.panelContent.setPreferredSize(new Dimension(1000 - 55 - 190, 600));
     }
 
-    private void addPanelProgramare(HomeUI homeUI)
+    private void addPanelProgramare()
     {
         panelProgramare = new JPanel();
-        homeUI.panelContent.add(panelProgramare);
+        panelContent.add(panelProgramare);
         panelProgramare.setLayout(null);
         panelProgramare.setVisible(true);
         panelProgramare.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
@@ -119,11 +128,11 @@ public class AdaugaProgramare
     private void addButtons(HomeUI homeUI)
     {
         panelButtons = new JPanel();
-        homeUI.panelContent.add(panelButtons);
+        panelContent.add(panelButtons);
         panelButtons.setLayout(null);
         panelButtons.setVisible(true);
         panelButtons.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
-        panelButtons.setBounds(10, 515, 735, 150);
+        panelButtons.setBounds(10, 495, 735, 150);
 
         separatorButtons = new JSeparator(SwingConstants.HORIZONTAL);
         panelButtons.add(separatorButtons);
