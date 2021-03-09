@@ -52,7 +52,7 @@ public class TerenRepository
                 );
             }
 
-            statement.addBatch(sqlScript1);
+            statement.executeUpdate(sqlScript1);
 
             // add proprietate
             String sqlScript2 = String.format
@@ -66,20 +66,8 @@ public class TerenRepository
                 teren.getDispozitieProprietate().name(), teren.getDataProprietate()
             );
 
-            // Execute first batch
-            statement.addBatch(sqlScript2);
-            statement.executeBatch();
-
-            // Retrieve indexProprietate for later use
-            String sqlScript3 = "SELECT LAST_INSERT_ID()";
-            
-            try (ResultSet resultSet = statement.executeQuery(sqlScript3))
-            {
-                if (resultSet.first())
-                {
-                    teren.setIndexProprietate(resultSet.getInt(1));
-                }
-            }
+            // retrieve indexProprietate for later use
+            int indexProprietate = statement.executeUpdate(sqlScript2, Statement.RETURN_GENERATED_KEYS);
 
             Parcela parcela = teren.getParcelaTeren();
 
@@ -98,7 +86,7 @@ public class TerenRepository
             (
                 "INSERT INTO terenuri(dispozitieTeren, parcelaTeren, proprietateTeren) VALUES\n" +
                 "('%s', LAST_INSERT_ID(), %d)",
-                teren.getDispozitieTeren().name(), teren.getIndexProprietate()
+                teren.getDispozitieTeren().name(), indexProprietate
             );
 
             statement.addBatch(sqlScript5);
