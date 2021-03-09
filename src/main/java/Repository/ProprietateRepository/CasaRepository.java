@@ -78,7 +78,7 @@ public class CasaRepository
             }
 
             // add parcela
-            Constructie constructie = new Constructie();
+            Constructie constructie = casa.getConstructieCasa();
             Parcela parcela = constructie.getParcelaConstructie();
 
             String sqlScript3 = String.format
@@ -108,7 +108,7 @@ public class CasaRepository
             (
                 "INSERT INTO compartimentari(openSpace, living, dormitor, dressing,\n" +
                 "bucatarie, debara, baie, hol, mansarda, balcon, terasa, gradina, parcare, garaj, boxa, pod) VALUES\n" +
-                "(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d",
+                "(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
                 compartimentare.getOpenspace(), compartimentare.getLiving(),
                 compartimentare.getDormitor(), compartimentare.getDressing(),
                 compartimentare.getBucatarie(), compartimentare.getDebara(),
@@ -124,7 +124,7 @@ public class CasaRepository
             String sqlScript5 = String.format
             (
                 "INSERT INTO constructii (suprafataUtilizabila, suprafataConstructie,\n" +
-                "inaltimeConstructie, anConstructie, structuraConstructie\n" +
+                "inaltimeConstructie, anConstructie, structuraConstructie,\n" +
                 "dispozitieActuala, dispozitiePredare,\n" +
                 "compartimentareConstructie, parcelaConstructie) VALUES\n" +
                 "(%d, %d, %d, %d, '%s', '%s', '%s', LAST_INSERT_ID(), %d)",
@@ -138,7 +138,7 @@ public class CasaRepository
             String sqlScript6 = String.format
             (
                 "INSERT INTO casute (constructieCasa, proprietateCasa) VALUES\n" +
-                "(LAST_INSERT_ID(), %d",
+                "(LAST_INSERT_ID(), %d)",
                 indexProprietate
             );
 
