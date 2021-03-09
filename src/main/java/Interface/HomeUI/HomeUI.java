@@ -158,6 +158,18 @@ public class HomeUI
         buttonCauta.setEnabled(false);
         buttonCauta.setBounds(260, 20, 100, 30);
 
+        buttonCauta.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                clearPanel(panelContent);
+                ListaClienti listaClienti = new ListaClienti();
+                listaClienti.create(HomeUI.this);
+
+            }
+        });
+
         buttonFiltre = new JButton("Filtre");
         panelSearch.add(buttonFiltre);
         buttonFiltre.setLayout(null);
