@@ -6,6 +6,7 @@ import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -64,8 +65,17 @@ public class CasaRepository
                 casa.getDispozitieProprietate().name(), casa.getDataProprietate()
             );
 
+            statement.executeUpdate(sqlScript2, Statement.RETURN_GENERATED_KEYS);
+
             // retrieve indexProprietate for later use
-            int indexProprietate = statement.executeUpdate(sqlScript2, Statement.RETURN_GENERATED_KEYS);
+            int indexProprietate = 0;
+            try (ResultSet resultSet = statement.getGeneratedKeys())
+            {
+                if (resultSet.first())
+                {
+                    indexProprietate = resultSet.getInt(1);
+                }
+            }
 
             // add parcela
             Constructie constructie = new Constructie();
@@ -78,8 +88,18 @@ public class CasaRepository
                 parcela.getSuprafataParcela(), parcela.hasApa(), parcela.hasGaz(), parcela.hasElectricitate(), parcela.hasCanalizare()
             );
 
+            statement.executeUpdate(sqlScript3, Statement.RETURN_GENERATED_KEYS);
+
             // retrieve indexParcela
-            int indexParcela = statement.executeUpdate(sqlScript3, Statement.RETURN_GENERATED_KEYS);
+            int indexParcela = 0;
+
+            try (ResultSet resultSet = statement.getGeneratedKeys())
+            {
+                if (resultSet.first())
+                {
+                    indexParcela = resultSet.getInt(1);
+                }
+            }
 
             // add compartimentare
             Compartimentare compartimentare = constructie.getCompartimentareConstructie();
