@@ -8,6 +8,9 @@ import Entities.Persoana.Client;
 import Utils.QueryMessage;
 import Utils.QueryOutcome;
 import javafx.util.Pair;
+
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -152,8 +155,10 @@ public class AdaugaProgramare
                     Date data = (Date) spinnerData.getValue();
                     Date ora = (Date) spinnerOra.getValue();
 
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
                     LocalDate localDate = data.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    LocalTime localTime = ora.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+                    LocalTime localTime = ora.toInstant().atZone(ZoneId.systemDefault()).toLocalTime().truncatedTo(ChronoUnit.MINUTES);
                     LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
                     Timestamp timeStamp = Timestamp.valueOf(localDateTime);
 
