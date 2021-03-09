@@ -71,7 +71,9 @@ public class TerenRepository
             statement.executeBatch();
 
             // Retrieve indexProprietate for later use
-            try (ResultSet resultSet = statement.executeQuery("SELECT LAST_INSERT_ID()"))
+            String sqlScript3 = "SELECT LAST_INSERT_ID()";
+            
+            try (ResultSet resultSet = statement.executeQuery(sqlScript3))
             {
                 if (resultSet.first())
                 {
@@ -82,24 +84,24 @@ public class TerenRepository
             Parcela parcela = teren.getParcelaTeren();
 
             // add parcela
-            String sqlScript3 = String.format
+            String sqlScript4 = String.format
             (
                 "INSERT INTO parcele (suprafataParcela, hasApa, hasGaz, hasElectricitate, hasCanalizare) VALUES\n" +
                 "(%d, %b, %b, %b, %b);",
                 parcela.getSuprafataParcela(), parcela.hasApa(), parcela.hasGaz(), parcela.hasElectricitate(), parcela.hasCanalizare()
             );
 
-            statement.addBatch(sqlScript3);
+            statement.addBatch(sqlScript4);
 
             // add teren
-            String sqlScript4 = String.format
+            String sqlScript5 = String.format
             (
                 "INSERT INTO terenuri(dispozitieTeren, parcelaTeren, proprietateTeren) VALUES\n" +
                 "('%s', LAST_INSERT_ID(), %d)",
                 teren.getDispozitieTeren().name(), teren.getIndexProprietate()
             );
 
-            statement.addBatch(sqlScript4);
+            statement.addBatch(sqlScript5);
             statement.executeBatch();
             connection.commit();
 
