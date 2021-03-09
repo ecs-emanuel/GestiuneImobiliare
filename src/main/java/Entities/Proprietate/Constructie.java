@@ -13,13 +13,17 @@ public class Constructie
     private StructuraConstructie structuraConstructie;
     private DispozitieConstructie dispozitieActuala;
     private DispozitieConstructie dispozitiePredare;
+    private Compartimentare compartimentareConstructie;
     private Parcela parcelaConstructie;
 
     public Constructie()
     {
     }
 
-    public Constructie(int indexConstructie, int suprafataUtilizabila, int suprafataConstructie, int inaltimeConstructie, int anConstructie, StructuraConstructie structuraConstructie, DispozitieConstructie dispozitieActuala, DispozitieConstructie dispozitiePredare, Parcela parcelaConstructie)
+    public Constructie(int indexConstructie, int suprafataUtilizabila, int suprafataConstructie,
+                       int inaltimeConstructie, int anConstructie, StructuraConstructie structuraConstructie,
+                       DispozitieConstructie dispozitieActuala, DispozitieConstructie dispozitiePredare,
+                       Compartimentare compartimentareConstructie, Parcela parcelaConstructie)
     {
         this.indexConstructie = indexConstructie;
         this.suprafataUtilizabila = suprafataUtilizabila;
@@ -29,6 +33,7 @@ public class Constructie
         this.structuraConstructie = structuraConstructie;
         this.dispozitieActuala = dispozitieActuala;
         this.dispozitiePredare = dispozitiePredare;
+        this.compartimentareConstructie = compartimentareConstructie;
         this.parcelaConstructie = parcelaConstructie;
     }
 
@@ -110,6 +115,16 @@ public class Constructie
     public void setDispozitiePredare(DispozitieConstructie dispozitiePredare)
     {
         this.dispozitiePredare = dispozitiePredare;
+    }
+
+    public Compartimentare getCompartimentareConstructie()
+    {
+        return compartimentareConstructie;
+    }
+
+    public void setCompartimentareConstructie(Compartimentare compartimentareConstructie)
+    {
+        this.compartimentareConstructie = compartimentareConstructie;
     }
 
     public Parcela getParcelaConstructie()

@@ -4,6 +4,7 @@ import Services.LocatieServices.*;
 import Services.PersoanaServices.ClientServices;
 import Utils.CustomColor;
 import Entities.Locatie.*;
+import Utils.QueryMessage;
 import Utils.QueryOutcome;
 import javafx.util.Pair;
 
@@ -44,16 +45,18 @@ public class AdaugaClient
     protected JComboBox<Sat> cboxSat;
     private ButtonGroup rbuttonsLocatie;
 
-    // butoane actiune
+    // panel buttons
+    private JPanel panelButtons;
     private JSeparator separatorButtons;
     private JButton buttonAccepta;
     private JButton buttonAnuleaza;
+    private JLabel labelResult;
 
     public void create(HomeUI homeUI)
     {
         addPanelPersoana(homeUI);
         addPanelLocatie(homeUI);
-        addButtons(homeUI);
+        addPanelButtons(homeUI);
         homeUI.panelContent.setPreferredSize(new Dimension(1000 - 55 - 190, 600));
     }
 
@@ -429,15 +432,22 @@ public class AdaugaClient
         });
     }
 
-    private void addButtons(HomeUI homeUI)
+    private void addPanelButtons(HomeUI homeUI)
     {
+        panelButtons = new JPanel();
+        homeUI.panelContent.add(panelButtons);
+        panelButtons.setLayout(null);
+        panelButtons.setVisible(true);
+        panelButtons.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
+        panelButtons.setBounds(10, 515, 735, 150);
+
         separatorButtons = new JSeparator(SwingConstants.HORIZONTAL);
-        homeUI.panelContent.add(separatorButtons);
-        separatorButtons.setBounds(15, 515, 730, 3);
+        panelButtons.add(separatorButtons);
+        separatorButtons.setBounds(15, 0, 710, 3);
 
         buttonAccepta = new JButton("Accepta");
-        homeUI.panelContent.add(buttonAccepta);
-        buttonAccepta.setBounds(160, 535, 200, 35);
+        panelButtons.add(buttonAccepta);
+        buttonAccepta.setBounds(160, 12, 200, 35);
 
         buttonAccepta.addActionListener(new ActionListener()
         {
@@ -471,18 +481,45 @@ public class AdaugaClient
                     client.setDomiciliuPersoana(locatie);
 
                     ClientServices clientServices = new ClientServices();
-                    clientServices.addClient(client);
+                    QueryOutcome queryOutcome = clientServices.addClient(client);
+
+                    switch (queryOutcome)
+                    {
+                        case SUCCESS:
+                            displayMessage(QueryMessage.INSERT_SUCCESS);
+                            break;
+
+                        case OFFLINE:
+                            displayMessage(QueryMessage.DATABASE_OFFLINE);
+                            break;
+
+                        case ERROR:
+                            displayMessage(QueryMessage.DATABASE_ERROR);
+                            break;
+                    }
                 }
                 else
                 {
-                    System.out.println("failed");
+                    displayMessage(QueryMessage.FORM_INCOMPLETE);
                 }
             }
         });
 
         buttonAnuleaza = new JButton("Anuleaza");
-        homeUI.panelContent.add(buttonAnuleaza);
-        buttonAnuleaza.setBounds(375, 535, 200, 35);
+        panelButtons.add(buttonAnuleaza);
+        buttonAnuleaza.setBounds(375, 12, 200, 35);
+
+        labelResult = new JLabel("", JLabel.CENTER);
+        panelButtons.add(labelResult);
+        labelResult.setBorder(BorderFactory.createLineBorder(CustomColor.GRAY_LIGHTSTEEL.getColor()));
+        labelResult.setBounds(170, 57, 395, 25);
+    }
+
+    private void displayMessage(QueryMessage queryMessage)
+    {
+        labelResult.setText(queryMessage.getMessage());
+        labelResult.setForeground(queryMessage.getColor());
+        labelResult.setVisible(true);
     }
 
     private boolean isFormCompleted()
@@ -491,6 +528,6 @@ public class AdaugaClient
                 !fieldTelefon.getText().isEmpty() && !fieldEmail.getText().isEmpty() &&
                 !fieldLocatie.getText().isEmpty() && cboxJudet.getSelectedItem() instanceof Judet &&
                 ((cboxOras.getSelectedItem() instanceof Oras && cboxCartier.getSelectedItem() instanceof Cartier) ^
-                cboxComuna.getSelectedItem() instanceof Comuna && cboxSat.getSelectedItem() instanceof Sat);
+                (cboxComuna.getSelectedItem() instanceof Comuna && cboxSat.getSelectedItem() instanceof Sat));
     }
 }
