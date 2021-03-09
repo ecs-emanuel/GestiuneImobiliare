@@ -12,30 +12,27 @@ public class Apartament extends Proprietate
 {
     private int indexApartament;
     private EtajApartament etajApartament;
-    Compartimentare compartimentareApartament;
     Constructie constructieApartament;
 
     public Apartament()
     {
     }
 
-    public Apartament(int indexApartament, EtajApartament etajApartament, Compartimentare compartimentareApartament, Constructie constructieApartament)
+    public Apartament(int indexApartament, EtajApartament etajApartament, Constructie constructieApartament)
     {
         this.indexApartament = indexApartament;
         this.etajApartament = etajApartament;
-        this.compartimentareApartament = compartimentareApartament;
         this.constructieApartament = constructieApartament;
     }
 
     public Apartament(int indexProprietate, String titluProprietate, String descriereProprietate, int pretProprietate,
                       Locatie locatieProprietate, Client proprietarProprietate, Agent agentProprietate,
                       DispozitieProprietate dispozitieProprietate, Date dataProprietate,
-                      int indexApartament, EtajApartament etajApartament, Compartimentare compartimentareApartament, Constructie constructieApartament)
+                      int indexApartament, EtajApartament etajApartament, Constructie constructieApartament)
     {
         super(indexProprietate, titluProprietate, descriereProprietate, pretProprietate, locatieProprietate, proprietarProprietate, agentProprietate, dispozitieProprietate, dataProprietate);
         this.indexApartament = indexApartament;
         this.etajApartament = etajApartament;
-        this.compartimentareApartament = compartimentareApartament;
         this.constructieApartament = constructieApartament;
     }
 
@@ -57,16 +54,6 @@ public class Apartament extends Proprietate
     public void setEtajApartament(EtajApartament etajApartament)
     {
         this.etajApartament = etajApartament;
-    }
-
-    public Compartimentare getCompartimentareApartament()
-    {
-        return compartimentareApartament;
-    }
-
-    public void setCompartimentareApartament(Compartimentare compartimentareApartament)
-    {
-        this.compartimentareApartament = compartimentareApartament;
     }
 
     public Constructie getConstructieApartament()

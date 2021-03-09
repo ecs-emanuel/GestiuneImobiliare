@@ -10,28 +10,25 @@ import java.sql.Date;
 public class Casa extends Proprietate
 {
     private int indexCasa;
-    Compartimentare compartimentareCasa;
     Constructie constructieCasa;
 
     public Casa()
     {
     }
 
-    public Casa(int indexCasa, Compartimentare compartimentareCasa, Constructie constructieCasa)
+    public Casa(int indexCasa, Constructie constructieCasa)
     {
         this.indexCasa = indexCasa;
-        this.compartimentareCasa = compartimentareCasa;
         this.constructieCasa = constructieCasa;
     }
 
     public Casa(int indexProprietate, String titluProprietate, String descriereProprietate, int pretProprietate,
                 Locatie locatieProprietate, Client proprietarProprietate, Agent agentProprietate,
-                DispozitieProprietate dispozitieProprietate, Date dataProprietate, int indexCasa,
-                Compartimentare compartimentareCasa, Constructie constructieCasa)
+                DispozitieProprietate dispozitieProprietate, Date dataProprietate,
+                int indexCasa, Constructie constructieCasa)
     {
         super(indexProprietate, titluProprietate, descriereProprietate, pretProprietate, locatieProprietate, proprietarProprietate, agentProprietate, dispozitieProprietate, dataProprietate);
         this.indexCasa = indexCasa;
-        this.compartimentareCasa = compartimentareCasa;
         this.constructieCasa = constructieCasa;
     }
 
@@ -43,16 +40,6 @@ public class Casa extends Proprietate
     public void setIndexCasa(int indexCasa)
     {
         this.indexCasa = indexCasa;
-    }
-
-    public Compartimentare getCompartimentareCasa()
-    {
-        return compartimentareCasa;
-    }
-
-    public void setCompartimentareCasa(Compartimentare compartimentareCasa)
-    {
-        this.compartimentareCasa = compartimentareCasa;
     }
 
     public Constructie getConstructieCasa()
