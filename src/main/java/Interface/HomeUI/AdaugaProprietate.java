@@ -5,6 +5,7 @@ import Entities.Persoana.Client;
 import Entities.Proprietate.*;
 import Services.LocatieServices.*;
 import Services.PersoanaServices.ClientServices;
+import Services.ProprietateServices.ApartamentServices;
 import Services.ProprietateServices.CasaServices;
 import Services.ProprietateServices.TerenServices;
 import Utils.CustomColor;
@@ -1138,7 +1139,8 @@ public class AdaugaProprietate
                             apartament.setDispozitieProprietate(DispozitieProprietate.Activ);
                             apartament.setDataProprietate(new Date(System.currentTimeMillis()));
 
-                            // add
+                            ApartamentServices apartamentServices = new ApartamentServices();
+                            queryOutcome = apartamentServices.addApartament(apartament);
                         }
                     }
 
