@@ -66,8 +66,19 @@ public class TerenRepository
                 teren.getDispozitieProprietate().name(), teren.getDataProprietate()
             );
 
+            statement.executeUpdate(sqlScript2, Statement.RETURN_GENERATED_KEYS);
+
             // retrieve indexProprietate for later use
-            int indexProprietate = statement.executeUpdate(sqlScript2, Statement.RETURN_GENERATED_KEYS);
+            int indexProprietate = 0;
+            try (ResultSet resultSet = statement.getGeneratedKeys())
+            {
+                if (resultSet.first())
+                {
+                    indexProprietate = resultSet.getInt(1);
+                }
+            }
+
+            System.out.println(indexProprietate);
 
             Parcela parcela = teren.getParcelaTeren();
 
