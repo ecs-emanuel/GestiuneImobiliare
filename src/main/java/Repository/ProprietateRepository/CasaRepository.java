@@ -6,7 +6,6 @@ import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -51,7 +50,7 @@ public class CasaRepository
                 );
             }
 
-            int indexLocatie = statement.executeUpdate(sqlScript1, Statement.RETURN_GENERATED_KEYS);
+            statement.executeUpdate(sqlScript1);
 
             // add proprietate
             String sqlScript2 = String.format
@@ -59,9 +58,9 @@ public class CasaRepository
                 "INSERT INTO proprietati (titluProprietate, descriereProprietate, pretProprietate,\n" +
                 "locatieProprietate, proprietarProprietate, agentProprietate,\n" +
                 "dispozitieProprietate, dataProprietate) VALUES\n" +
-                "('%s', '%s', %d, %d, %d, %d, '%s', '%s');",
+                "('%s', '%s', %d, LAST_INSERT_ID(), %d, %d, '%s', '%s');",
                 casa.getTitluProprietate(), casa.getDescriereProprietate(), casa.getPretProprietate(),
-                indexLocatie, casa.getProprietarProprietate().getIndexClient(), casa.getAgentProprietate().getIndexAgent(),
+                casa.getProprietarProprietate().getIndexClient(), casa.getAgentProprietate().getIndexAgent(),
                 casa.getDispozitieProprietate().name(), casa.getDataProprietate()
             );
 
