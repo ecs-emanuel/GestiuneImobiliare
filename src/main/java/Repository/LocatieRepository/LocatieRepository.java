@@ -1,6 +1,7 @@
 package Repository.LocatieRepository;
 
 import Entities.Locatie.Comuna;
+import Entities.Locatie.Judet;
 import Entities.Locatie.Locatie;
 import Repository.DatabaseRepository;
 import Utils.QueryOutcome;

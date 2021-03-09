@@ -1,6 +1,5 @@
 package Repository.LocatieRepository;
 
-import Entities.Locatie.Judet;
 import Entities.Locatie.Sat;
 import Entities.Locatie.Comuna;
 import Repository.DatabaseRepository;
@@ -16,6 +15,52 @@ import java.util.List;
 
 public class SatRepository
 {
+    public Pair<Sat, QueryOutcome> getSat(int indexSat)
+    {
+        Sat sat = new Sat();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(sat, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT *\n" +
+            "FROM sate\n" +
+            "WHERE indexSat = %d",
+            indexSat
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                if (resultSet.first())
+                {
+                    sat.setIndexSat(indexSat);
+                    sat.setDenumireSat(resultSet.getString(2));
+
+                    return new Pair<>(sat, QueryOutcome.SUCCESS);
+                }
+
+                return new Pair<>(sat, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(sat, QueryOutcome.ERROR);
+    }
+
     public Pair<List<Sat>, QueryOutcome> getListaSate(Comuna comuna)
     {
         List<Sat> listaSate = new ArrayList<>();

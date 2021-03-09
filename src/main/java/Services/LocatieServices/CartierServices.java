@@ -10,6 +10,12 @@ import java.util.List;
 
 public class CartierServices
 {
+    public Pair<Cartier, QueryOutcome> getCartier(int indexCartier)
+    {
+        CartierRepository cartierRepository = new CartierRepository();
+        return cartierRepository.getCartier(indexCartier);
+    }
+
     public Pair<List<Cartier>, QueryOutcome> getListaCartiere(Oras oras)
     {
         CartierRepository cartierRepository = new CartierRepository();

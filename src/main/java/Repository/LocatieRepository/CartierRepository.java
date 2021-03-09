@@ -1,6 +1,5 @@
 package Repository.LocatieRepository;
 
-import Entities.Locatie.Judet;
 import Entities.Locatie.Cartier;
 import Entities.Locatie.Oras;
 import Repository.DatabaseRepository;
@@ -16,6 +15,52 @@ import java.util.List;
 
 public class CartierRepository
 {
+    public Pair<Cartier, QueryOutcome> getCartier(int indexCartier)
+    {
+        Cartier cartier = new Cartier();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(cartier, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT *\n" +
+            "FROM cartiere\n" +
+            "WHERE indexCartier = %d",
+            indexCartier
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                if (resultSet.first())
+                {
+                    cartier.setIndexCartier(indexCartier);
+                    cartier.setDenumireCartier(resultSet.getString(2));
+
+                    return new Pair<>(cartier, QueryOutcome.SUCCESS);
+                }
+
+                return new Pair<>(cartier, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(cartier, QueryOutcome.ERROR);
+    }
+
     public Pair<List<Cartier>, QueryOutcome> getListaCartiere(Oras oras)
     {
         List<Cartier> listaCartiere = new ArrayList<>();
