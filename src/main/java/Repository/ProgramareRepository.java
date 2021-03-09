@@ -109,7 +109,7 @@ public class ProgramareRepository
                     client.setIndexClient(resultSet.getInt(3));
                     client.setIndexPersoana(resultSet.getInt(4));
                     client.setNumePersoana(resultSet.getString(5));
-                    client.setPrenumePersoana(resultSet.getString(7));
+                    client.setPrenumePersoana(resultSet.getString(6));
                     client.setTelefonPersoana(resultSet.getString(7));
                     client.setEmailPersoana(resultSet.getString(8));
 
