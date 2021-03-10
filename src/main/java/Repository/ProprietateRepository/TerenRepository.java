@@ -1,10 +1,13 @@
 package Repository.ProprietateRepository;
 
+import Components.DispozitieConstructie;
+import Components.DispozitieTeren;
+import Components.StructuraConstructie;
 import Entities.Locatie.Locatie;
-import Entities.Proprietate.Parcela;
-import Entities.Proprietate.Teren;
+import Entities.Proprietate.*;
 import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -116,5 +119,84 @@ public class TerenRepository
         }
 
         return QueryOutcome.ERROR;
+    }
+
+    public Pair<Teren, QueryOutcome> getTeren(int indexTeren)
+    {
+        Teren teren = new Teren();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(teren, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT *\n" +
+            "FROM terenuri\n" +
+            "WHERE indexTeren = %d",
+            indexTeren
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                if (resultSet.first())
+                {
+                    teren.setIndexTeren(indexTeren);
+                    teren.setDispozitieTeren(DispozitieTeren.valueOf(resultSet.getString(2)));
+
+                    int indexParcela = resultSet.getInt(3);
+                    ParcelaRepository parcelaRepository = new ParcelaRepository();
+                    Pair<Parcela, QueryOutcome> queryOutcomePairParcela = parcelaRepository.getParcela(indexParcela);
+                    QueryOutcome queryOutcome = queryOutcomePairParcela.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(teren, queryOutcome == QueryOutcome.EMPTY ? QueryOutcome.CORRUPT : queryOutcome);
+                    }
+
+                    teren.setParcelaTeren(queryOutcomePairParcela.getKey());
+
+                    int indexProprietate = resultSet.getInt(4);
+                    ProprietateRepository proprietateRepository = new ProprietateRepository();
+                    Pair<Proprietate, QueryOutcome> queryOutcomePairProprietate = proprietateRepository.getProprietate(indexProprietate);
+                    queryOutcome = queryOutcomePairProprietate.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(teren, queryOutcome == QueryOutcome.EMPTY ? QueryOutcome.CORRUPT : queryOutcome);
+                    }
+
+                    Proprietate proprietate = queryOutcomePairProprietate.getKey();
+
+                    teren.setIndexProprietate(proprietate.getIndexProprietate());
+                    teren.setTitluProprietate(proprietate.getTitluProprietate());
+                    teren.setDescriereProprietate(proprietate.getDescriereProprietate());
+                    teren.setPretProprietate(proprietate.getPretProprietate());
+                    teren.setLocatieProprietate(proprietate.getLocatieProprietate());
+                    teren.setProprietarProprietate(proprietate.getProprietarProprietate());
+                    teren.setAgentProprietate(proprietate.getAgentProprietate());
+                    teren.setDispozitieProprietate(proprietate.getDispozitieProprietate());
+                    teren.setDataProprietate(proprietate.getDataProprietate());
+
+                    return new Pair<>(teren, QueryOutcome.SUCCESS);
+                }
+                return new Pair<>(teren, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(teren, QueryOutcome.ERROR);
     }
 }

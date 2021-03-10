@@ -1,9 +1,11 @@
 package Repository.ProprietateRepository;
 
+import Components.DispozitieTeren;
 import Entities.Locatie.Locatie;
 import Entities.Proprietate.*;
 import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -158,5 +160,83 @@ public class CasaRepository
         }
 
         return QueryOutcome.ERROR;
+    }
+
+    public Pair<Casa, QueryOutcome> getCasa(int indexCasa)
+    {
+        Casa casa = new Casa();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(casa, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT *\n" +
+            "FROM casute\n" +
+            "WHERE indexCasa = %d",
+            indexCasa
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                if (resultSet.first())
+                {
+                    casa.setIndexCasa(indexCasa);
+
+                    int indexConstructie = resultSet.getInt(2);
+                    ConstructieRepository constructieRepository = new ConstructieRepository();
+                    Pair<Constructie, QueryOutcome> queryOutcomePairConstructie = constructieRepository.getConstructie(indexConstructie);
+                    QueryOutcome queryOutcome = queryOutcomePairConstructie.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(casa, queryOutcome == QueryOutcome.EMPTY ? QueryOutcome.CORRUPT : queryOutcome);
+                    }
+
+                    casa.setConstructieCasa(queryOutcomePairConstructie.getKey());
+
+                    int indexProprietate = resultSet.getInt(3);
+                    ProprietateRepository proprietateRepository = new ProprietateRepository();
+                    Pair<Proprietate, QueryOutcome> queryOutcomePairProprietate = proprietateRepository.getProprietate(indexProprietate);
+                    queryOutcome = queryOutcomePairProprietate.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(casa, queryOutcome == QueryOutcome.EMPTY ? QueryOutcome.CORRUPT : queryOutcome);
+                    }
+
+                    Proprietate proprietate = queryOutcomePairProprietate.getKey();
+
+                    casa.setIndexProprietate(proprietate.getIndexProprietate());
+                    casa.setTitluProprietate(proprietate.getTitluProprietate());
+                    casa.setDescriereProprietate(proprietate.getDescriereProprietate());
+                    casa.setPretProprietate(proprietate.getPretProprietate());
+                    casa.setLocatieProprietate(proprietate.getLocatieProprietate());
+                    casa.setProprietarProprietate(proprietate.getProprietarProprietate());
+                    casa.setAgentProprietate(proprietate.getAgentProprietate());
+                    casa.setDispozitieProprietate(proprietate.getDispozitieProprietate());
+                    casa.setDataProprietate(proprietate.getDataProprietate());
+
+                    return new Pair<>(casa, QueryOutcome.SUCCESS);
+                }
+                return new Pair<>(casa, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(casa, QueryOutcome.ERROR);
     }
 }

@@ -1,12 +1,11 @@
 package Repository.ProprietateRepository;
 
+import Components.EtajApartament;
 import Entities.Locatie.Locatie;
-import Entities.Proprietate.Apartament;
-import Entities.Proprietate.Compartimentare;
-import Entities.Proprietate.Constructie;
-import Entities.Proprietate.Parcela;
+import Entities.Proprietate.*;
 import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -161,5 +160,84 @@ public class ApartamentRepository
         }
 
         return QueryOutcome.ERROR;
+    }
+
+    public Pair<Apartament, QueryOutcome> getApartament(int indexApartament)
+    {
+        Apartament apartament = new Apartament();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(apartament, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT *\n" +
+            "FROM apartamente\n" +
+            "WHERE indexApartament = %d",
+        indexApartament
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                if (resultSet.first())
+                {
+                    apartament.setIndexApartament(indexApartament);
+                    apartament.setEtajApartament(EtajApartament.valueOf(resultSet.getString(2)));
+
+                    int indexConstructie = resultSet.getInt(3);
+                    ConstructieRepository constructieRepository = new ConstructieRepository();
+                    Pair<Constructie, QueryOutcome> queryOutcomePairConstructie = constructieRepository.getConstructie(indexConstructie);
+                    QueryOutcome queryOutcome = queryOutcomePairConstructie.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(apartament, queryOutcome == QueryOutcome.EMPTY ? QueryOutcome.CORRUPT : queryOutcome);
+                    }
+
+                    apartament.setConstructieApartament(queryOutcomePairConstructie.getKey());
+
+                    int indexProprietate = resultSet.getInt(4);
+                    ProprietateRepository proprietateRepository = new ProprietateRepository();
+                    Pair<Proprietate, QueryOutcome> queryOutcomePairProprietate = proprietateRepository.getProprietate(indexProprietate);
+                    queryOutcome = queryOutcomePairProprietate.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(apartament, queryOutcome == QueryOutcome.EMPTY ? QueryOutcome.CORRUPT : queryOutcome);
+                    }
+
+                    Proprietate proprietate = queryOutcomePairProprietate.getKey();
+
+                    apartament.setIndexProprietate(proprietate.getIndexProprietate());
+                    apartament.setTitluProprietate(proprietate.getTitluProprietate());
+                    apartament.setDescriereProprietate(proprietate.getDescriereProprietate());
+                    apartament.setPretProprietate(proprietate.getPretProprietate());
+                    apartament.setLocatieProprietate(proprietate.getLocatieProprietate());
+                    apartament.setProprietarProprietate(proprietate.getProprietarProprietate());
+                    apartament.setAgentProprietate(proprietate.getAgentProprietate());
+                    apartament.setDispozitieProprietate(proprietate.getDispozitieProprietate());
+                    apartament.setDataProprietate(proprietate.getDataProprietate());
+
+                    return new Pair<>(apartament, QueryOutcome.SUCCESS);
+                }
+                return new Pair<>(apartament, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(apartament, QueryOutcome.ERROR);
     }
 }
