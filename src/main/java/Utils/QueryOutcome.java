@@ -6,6 +6,5 @@ public enum QueryOutcome
     EMPTY,
     ERROR,
     OFFLINE,
-    INFO_CORRUPT,
-    INFO_INCOMPLETE
+    CORRUPT
 }
