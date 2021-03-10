@@ -10,6 +10,12 @@ import java.util.List;
 
 public class AgentServices
 {
+    public Pair<Agent, QueryOutcome> getAgent(int indexAgent)
+    {
+        AgentRepository agentRepository = new AgentRepository();
+        return agentRepository.getAgent(indexAgent);
+    }
+
     public Pair<Agent, QueryOutcome> getAgent(User user)
     {
         AgentRepository agentRepository = new AgentRepository();

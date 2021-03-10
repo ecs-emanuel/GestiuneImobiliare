@@ -1,6 +1,9 @@
 package Repository.PersoanaRepository;
 
 import Entities.Locatie.*;
+import Entities.Persoana.Agent;
+import Entities.Persoana.Persoana;
+import Entities.Persoana.User;
 import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
 import Entities.Persoana.Client;
@@ -89,6 +92,69 @@ public class ClientRepository
         }
 
         return QueryOutcome.ERROR;
+    }
+
+    public Pair<Client, QueryOutcome> getClient(int indexClient)
+    {
+        Client client = new Client();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(client, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT *\n" +
+            "FROM clienti\n" +
+            "WHERE indexClient = %d",
+            indexClient
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                if (resultSet.first())
+                {
+                    client.setIndexClient(indexClient);
+
+                    int indexPersoana = resultSet.getInt(2);
+
+                    PersoanaRepository persoanaRepository = new PersoanaRepository();
+                    Pair<Persoana, QueryOutcome> queryOutcomePairPersoana = persoanaRepository.getPersoana(indexPersoana);
+                    QueryOutcome queryOutcome = queryOutcomePairPersoana.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(client, queryOutcome == QueryOutcome.EMPTY ? QueryOutcome.CORRUPT : queryOutcome);
+                    }
+
+                    Persoana persoana = queryOutcomePairPersoana.getKey();
+
+                    client.setNumePersoana(persoana.getNumePersoana());
+                    client.setPrenumePersoana(persoana.getPrenumePersoana());
+                    client.setTelefonPersoana(persoana.getTelefonPersoana());
+                    client.setEmailPersoana(persoana.getEmailPersoana());
+                    client.setDomiciliuPersoana(persoana.getDomiciliuPersoana());
+
+                    return new Pair<>(client, QueryOutcome.SUCCESS);
+                }
+                return new Pair<>(client, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(client, QueryOutcome.ERROR);
     }
 
     public Pair<List<Client>, QueryOutcome> getListaClienti()

@@ -1,6 +1,7 @@
 package Repository.PersoanaRepository;
 
 import Entities.Locatie.*;
+import Entities.Persoana.Persoana;
 import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
 import Entities.Persoana.Agent;
@@ -15,6 +16,82 @@ import java.util.List;
 
 public class AgentRepository
 {
+    public Pair<Agent, QueryOutcome> getAgent(int indexAgent)
+    {
+        Agent agent = new Agent();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(agent, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT *\n" +
+            "FROM agenti\n" +
+            "WHERE indexAgent = %d",
+            indexAgent
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                if (resultSet.first())
+                {
+                    agent.setIndexAgent(indexAgent);
+
+                    int indexUser = resultSet.getInt(2);
+
+                    UserRepository userRepository = new UserRepository();
+                    Pair<User, QueryOutcome> queryOutcomePairUser = userRepository.getUser(indexUser);
+                    QueryOutcome queryOutcome = queryOutcomePairUser.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(agent, queryOutcome == QueryOutcome.EMPTY ? QueryOutcome.CORRUPT : queryOutcome);
+                    }
+
+                    agent.setUserAgent(queryOutcomePairUser.getKey());
+
+                    int indexPersoana = resultSet.getInt(3);
+
+                    PersoanaRepository persoanaRepository = new PersoanaRepository();
+                    Pair<Persoana, QueryOutcome> queryOutcomePairPersoana = persoanaRepository.getPersoana(indexPersoana);
+                    queryOutcome = queryOutcomePairPersoana.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(agent, queryOutcome == QueryOutcome.EMPTY ? QueryOutcome.CORRUPT : queryOutcome);
+                    }
+
+                    Persoana persoana = queryOutcomePairPersoana.getKey();
+
+                    agent.setNumePersoana(persoana.getNumePersoana());
+                    agent.setPrenumePersoana(persoana.getPrenumePersoana());
+                    agent.setTelefonPersoana(persoana.getTelefonPersoana());
+                    agent.setEmailPersoana(persoana.getEmailPersoana());
+                    agent.setDomiciliuPersoana(persoana.getDomiciliuPersoana());
+
+                    return new Pair<>(agent, QueryOutcome.SUCCESS);
+                }
+                return new Pair<>(agent, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(agent, QueryOutcome.ERROR);
+    }
+
     public Pair<Agent, QueryOutcome> getAgent(User user)
     {
         Agent agent = new Agent();
