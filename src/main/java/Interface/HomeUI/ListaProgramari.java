@@ -8,8 +8,16 @@ import Services.ProgramareServices;
 import Utils.QueryOutcome;
 import javafx.util.Pair;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.time.ZoneId;
 import java.util.List;
 
@@ -25,7 +33,17 @@ public class ListaProgramari
     public void addLista(HomeUI homeUI)
     {
         ProgramareServices programareServices = new ProgramareServices();
-        Pair<List<Programare>, QueryOutcome> queryOutcomePair = programareServices.getListaProgramari(homeUI.mainAgent);
+        Pair<List<Programare>, QueryOutcome> queryOutcomePair;
+
+        // toate programarile - else - doar programarile valabile
+        if (homeUI.checkboxSearch.isSelected())
+        {
+            queryOutcomePair = programareServices.getListaProgramari(homeUI.mainAgent, true);
+        }
+        else
+        {
+            queryOutcomePair = programareServices.getListaProgramari(homeUI.mainAgent, false);
+        }
 
         List<Programare> listaProgramari = queryOutcomePair.getKey();
 
@@ -69,6 +87,58 @@ public class ListaProgramari
             tableContent.setValueAt(client.getTelefonPersoana(), i, 4);
             tableContent.setValueAt(client.getEmailPersoana(), i, 5);
         }
+
+        tableContent.addMouseListener(new MouseListener()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                if (tableContent.getSelectedRow() >= 0)
+                {
+                    homeUI.buttonSterge.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e)
+            {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e)
+            {
+
+            }
+        });
+
+        homeUI.buttonSterge.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                int itemIndex = tableContent.getSelectedRow();
+
+                if (itemIndex >= 0)
+                {
+                    programareServices.delProgramare(listaProgramari.get(itemIndex));
+                    homeUI.buttonCauta.doClick();
+                }
+            }
+        });
+
         homeUI.scrollContent.setViewportView(tableContent);
     }
 }

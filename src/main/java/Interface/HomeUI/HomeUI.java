@@ -30,20 +30,20 @@ public class HomeUI
     // panel menu
     private JPanel panelMenu;
     private ButtonGroup buttonsMenu;
-    private JToggleButton buttonProprietati;
-    private JToggleButton buttonClienti;
-    private JToggleButton buttonProgramari;
+    protected JToggleButton buttonProprietati;
+    protected JToggleButton buttonClienti;
+    protected JToggleButton buttonProgramari;
 
     // panel search
     private JPanel panelSearch;
     private JLabel labelSearch;
     private JTextField fieldSearch;
-    private JCheckBox checkboxSearch;
-    private JButton buttonCauta;
+    protected JCheckBox checkboxSearch;
+    protected JButton buttonCauta;
     private JButton buttonFiltre;
     private JButton buttonAdauga;
     private JButton buttonModifica;
-    private JButton buttonSterge;
+    protected JButton buttonSterge;
 
     // panel content
     protected JScrollPane scrollContent;
@@ -135,12 +135,14 @@ public class HomeUI
         panelSearch.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         panelSearch.setBounds(200, 70, FRAME_WIDTH - 35 - 190, 60);
 
+
         labelSearch = new JLabel("");
         panelSearch.add(labelSearch);
         labelSearch.setLayout(null);
         labelSearch.setVisible(false);
         labelSearch.setFont(new Font("Tahoma", Font.PLAIN, 11));
         labelSearch.setBounds(15, 5, 160, 15);
+
 
         fieldSearch = new JTextField(10);
         panelSearch.add(fieldSearch);
@@ -152,26 +154,32 @@ public class HomeUI
         panelSearch.add(checkboxSearch);
         checkboxSearch.setLayout(null);
         checkboxSearch.setVisible(true);
-        //checkboxSearch.setEnabled(false);
-        checkboxSearch.setBounds(190, 20, 60, 30);
+        checkboxSearch.setEnabled(false);
+        //checkboxSearch.setBounds(190, 20, 60, 30);
+        checkboxSearch.setBounds(285, 20, 60, 30);
 
         buttonCauta = new JButton("Cauta");
         panelSearch.add(buttonCauta);
         buttonCauta.setLayout(null);
         buttonCauta.setVisible(true);
         buttonCauta.setEnabled(false);
-        buttonCauta.setBounds(260, 20, 100, 30);
+        //buttonCauta.setBounds(10, 20, 120, 30);
+        //buttonCauta.setBounds(260, 20, 100, 30);
+        buttonCauta.setBounds(180, 20, 100, 30);
 
         buttonCauta.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                buttonSterge.setEnabled(false);
+
                 ButtonModel selectedButtonModel = buttonsMenu.getSelection();
 
                 if (selectedButtonModel == buttonProprietati.getModel())
                 {
-
+                    ListaProprietati listaProprietati = new ListaProprietati();
+                    listaProprietati.create(HomeUI.this);
                 }
 
                 else if (selectedButtonModel == buttonClienti.getModel())
@@ -188,12 +196,13 @@ public class HomeUI
             }
         });
 
+        /*
         buttonFiltre = new JButton("Filtre");
         panelSearch.add(buttonFiltre);
         buttonFiltre.setLayout(null);
         buttonFiltre.setVisible(true);
         buttonFiltre.setEnabled(false);
-        buttonFiltre.setBounds(360, 20, 100, 30);
+        buttonFiltre.setBounds(360, 20, 100, 30);*/
 
         buttonAdauga = new JButton("Adauga");
         panelSearch.add(buttonAdauga);
@@ -207,6 +216,8 @@ public class HomeUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                buttonSterge.setEnabled(false);
+
                 ButtonModel selectedButtonModel = buttonsMenu.getSelection();
 
                 if (selectedButtonModel == buttonProprietati.getModel())
@@ -268,6 +279,7 @@ public class HomeUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
+
                 labelSearch.setText("Index");
                 labelSearch.setVisible(true);
                 clearPanel(scrollContent);
@@ -288,10 +300,12 @@ public class HomeUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
+
                 labelSearch.setText("Tel");
                 labelSearch.setVisible(true);
                 clearPanel(scrollContent);
                 resetSearchPanel();
+                checkboxSearch.setEnabled(false);
             }
         });
 
@@ -308,7 +322,8 @@ public class HomeUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                labelSearch.setText("Data");
+
+                labelSearch.setText("Nume");
                 labelSearch.setVisible(true);
                 clearPanel(scrollContent);
                 resetSearchPanel();
@@ -347,7 +362,7 @@ public class HomeUI
         checkboxSearch.setSelected(false);
         checkboxSearch.setEnabled(true);
         buttonCauta.setEnabled(true);
-        buttonFiltre.setEnabled(true);
+        //buttonFiltre.setEnabled(true);
         buttonAdauga.setEnabled(true);
         buttonModifica.setEnabled(false);
         buttonSterge.setEnabled(false);

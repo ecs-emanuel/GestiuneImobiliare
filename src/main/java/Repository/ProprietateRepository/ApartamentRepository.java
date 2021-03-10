@@ -2,15 +2,19 @@ package Repository.ProprietateRepository;
 
 import Components.EtajApartament;
 import Entities.Locatie.Locatie;
+import Entities.Persoana.Agent;
 import Entities.Proprietate.*;
 import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
 import javafx.util.Pair;
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApartamentRepository
 {
@@ -162,6 +166,89 @@ public class ApartamentRepository
         return QueryOutcome.ERROR;
     }
 
+    public QueryOutcome delApartament(Apartament apartament)
+    {
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return QueryOutcome.OFFLINE;
+        }
+
+        try (Statement statement = connection.createStatement())
+        {
+            connection.setAutoCommit(false);
+
+            int totalScripts = 6;
+            String[] sqlScripts = new String[totalScripts];
+
+            sqlScripts[0] = String.format
+            (
+                "DELETE FROM apartamente\n" +
+                "WHERE indexApartament = %d",
+                apartament.getIndexApartament()
+            );
+
+            sqlScripts[1] = String.format
+            (
+                "DELETE FROM proprietati\n" +
+                "WHERE indexProprietate = %d",
+                apartament.getIndexProprietate()
+            );
+
+            sqlScripts[2] = String.format
+            (
+                "DELETE FROM locatii\n" +
+                "WHERE indexLocatie = %d",
+                apartament.getLocatieProprietate().getIndexLocatie()
+            );
+
+            Constructie constructie = apartament.getConstructieApartament();
+
+            sqlScripts[3] = String.format
+            (
+                "DELETE FROM constructii\n" +
+                "WHERE indexConstructie = %d",
+                constructie.getIndexConstructie()
+            );
+
+            sqlScripts[4] = String.format
+            (
+                "DELETE FROM compartimentari\n" +
+                "WHERE indexCompartimentare = %d",
+                constructie.getCompartimentareConstructie().getIndexCompartimentare()
+            );
+
+            sqlScripts[5] = String.format
+            (
+                "DELETE FROM parcele\n" +
+                "WHERE indexParcela = %d",
+                constructie.getParcelaConstructie().getIndexParcela()
+            );
+
+            for (String sqlScript : sqlScripts)
+            {
+                statement.addBatch(sqlScript);
+            }
+
+            statement.executeBatch();
+            connection.commit();
+
+            return QueryOutcome.SUCCESS;
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+
+        return QueryOutcome.ERROR;
+    }
+
     public Pair<Apartament, QueryOutcome> getApartament(int indexApartament)
     {
         Apartament apartament = new Apartament();
@@ -179,7 +266,7 @@ public class ApartamentRepository
             "SELECT *\n" +
             "FROM apartamente\n" +
             "WHERE indexApartament = %d",
-        indexApartament
+            indexApartament
         );
 
         try (Statement statement = connection.createStatement())
@@ -239,5 +326,119 @@ public class ApartamentRepository
             databaseRepository.closeConnection(connection);
         }
         return new Pair<>(apartament, QueryOutcome.ERROR);
+    }
+
+    public Pair<List<Apartament>, QueryOutcome> getListaApartamente()
+    {
+        List<Apartament> listaApartamente = new ArrayList<>();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(listaApartamente, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT indexApartament\n" +
+            "FROM apartamente"
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                while (resultSet.next())
+                {
+                    int indexApartament = resultSet.getInt(1);
+                    Pair<Apartament, QueryOutcome> queryOutcomePairApartament = getApartament(indexApartament);
+                    QueryOutcome queryOutcome = queryOutcomePairApartament.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(listaApartamente, QueryOutcome.CORRUPT);
+                    }
+
+                    listaApartamente.add(queryOutcomePairApartament.getKey());
+                }
+
+                if (listaApartamente.size() <= 0)
+                {
+                    return new Pair<>(listaApartamente, QueryOutcome.EMPTY);
+                }
+
+                return new Pair<>(listaApartamente, QueryOutcome.SUCCESS);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(listaApartamente, QueryOutcome.ERROR);
+    }
+
+    public Pair<List<Apartament>, QueryOutcome> getListaApartamente(Agent agent)
+    {
+        List<Apartament> listaApartamente = new ArrayList<>();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(listaApartamente, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT indexApartament\n" +
+            "FROM apartamente\n" +
+            "JOIN proprietati\n" +
+            "ON proprietateApartament = indexProprietate\n" +
+            "WHERE agentProprietate = %d",
+            agent.getIndexAgent()
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                while (resultSet.next())
+                {
+                    int indexApartament = resultSet.getInt(1);
+                    Pair<Apartament, QueryOutcome> queryOutcomePairApartament = getApartament(indexApartament);
+                    QueryOutcome queryOutcome = queryOutcomePairApartament.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(listaApartamente, QueryOutcome.CORRUPT);
+                    }
+
+                    listaApartamente.add(queryOutcomePairApartament.getKey());
+                }
+
+                if (listaApartamente.size() <= 0)
+                {
+                    return new Pair<>(listaApartamente, QueryOutcome.EMPTY);
+                }
+
+                return new Pair<>(listaApartamente, QueryOutcome.SUCCESS);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(listaApartamente, QueryOutcome.ERROR);
     }
 }

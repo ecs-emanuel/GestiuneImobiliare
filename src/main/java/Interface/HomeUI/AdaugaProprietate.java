@@ -1181,6 +1181,16 @@ public class AdaugaProprietate
         panelButtons.add(buttonAnuleaza);
         buttonAnuleaza.setBounds(375, 12, 200, 35);
 
+        buttonAnuleaza.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                homeUI.clearPanel(homeUI.scrollContent);
+            }
+        });
+
+
         labelResult = new JLabel("", JLabel.CENTER);
         panelButtons.add(labelResult);
         labelResult.setBorder(BorderFactory.createLineBorder(CustomColor.GRAY_LIGHTSTEEL.getColor()));

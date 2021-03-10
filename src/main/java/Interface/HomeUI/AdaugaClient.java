@@ -66,7 +66,7 @@ public class AdaugaClient
 
         addPanelPersoana();
         addPanelLocatie();
-        addPanelButtons();
+        addPanelButtons(homeUI);
     }
 
     private void addPanelPersoana()
@@ -441,7 +441,7 @@ public class AdaugaClient
         });
     }
 
-    private void addPanelButtons()
+    private void addPanelButtons(HomeUI homeUI)
     {
         panelButtons = new JPanel();
         panelContent.add(panelButtons);
@@ -517,6 +517,15 @@ public class AdaugaClient
         buttonAnuleaza = new JButton("Anuleaza");
         panelButtons.add(buttonAnuleaza);
         buttonAnuleaza.setBounds(375, 12, 200, 35);
+
+        buttonAnuleaza.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                homeUI.clearPanel(homeUI.scrollContent);
+            }
+        });
 
         labelResult = new JLabel("", JLabel.CENTER);
         panelButtons.add(labelResult);

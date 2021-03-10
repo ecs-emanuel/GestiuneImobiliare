@@ -16,9 +16,15 @@ public class ProgramareServices
         return programareRepository.addProgramare(programare);
     }
 
-    public Pair<List<Programare>, QueryOutcome> getListaProgramari(Agent agent)
+    public QueryOutcome delProgramare(Programare programare)
     {
         ProgramareRepository programareRepository = new ProgramareRepository();
-        return programareRepository.getListaProgramari(agent);
+        return programareRepository.delProgramare(programare);
+    }
+
+    public Pair<List<Programare>, QueryOutcome> getListaProgramari(Agent agent, boolean istoricComplet)
+    {
+        ProgramareRepository programareRepository = new ProgramareRepository();
+        return programareRepository.getListaProgramari(agent, istoricComplet);
     }
 }

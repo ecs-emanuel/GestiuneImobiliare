@@ -50,7 +50,40 @@ public class ProgramareRepository
         return QueryOutcome.ERROR;
     }
 
-    public Pair<List<Programare>, QueryOutcome> getListaProgramari(Agent agent)
+    public QueryOutcome delProgramare(Programare programare)
+    {
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return QueryOutcome.OFFLINE;
+        }
+
+        String sqlScript = String.format
+        (
+            "DELETE FROM programari\n" +
+            "WHERE indexProgramare = %d",
+            programare.getIndexProgramare()
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            statement.executeUpdate(sqlScript);
+            return QueryOutcome.SUCCESS;
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return QueryOutcome.ERROR;
+    }
+
+    public Pair<List<Programare>, QueryOutcome> getListaProgramari(Agent agent, boolean istoricComplet)
     {
         List<Programare> listaProgramari = new ArrayList<>();
 
@@ -60,6 +93,13 @@ public class ProgramareRepository
         if (connection == null)
         {
             return new Pair<>(listaProgramari, QueryOutcome.OFFLINE);
+        }
+
+        String sqlExtraCondition = "";
+
+        if (!istoricComplet)
+        {
+            sqlExtraCondition = "AND pr.dataProgramare >= CURRENT_DATE\n";
         }
 
         String sqlScript = String.format
@@ -91,8 +131,10 @@ public class ProgramareRepository
             "LEFT JOIN sate s\n" +
             "ON s.indexSat = d.satLocatie\n" +
             "WHERE pr.agentProgramare = %d\n" +
-            "ORDER BY pr.dataProgramare DESC", agent.getIndexAgent()
+            "%s" +
+            "ORDER BY pr.dataProgramare DESC", agent.getIndexAgent(), sqlExtraCondition
         );
+
 
         try (Statement statement = connection.createStatement())
         {

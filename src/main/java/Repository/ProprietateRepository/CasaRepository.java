@@ -2,6 +2,7 @@ package Repository.ProprietateRepository;
 
 import Components.DispozitieTeren;
 import Entities.Locatie.Locatie;
+import Entities.Persoana.Agent;
 import Entities.Proprietate.*;
 import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
@@ -11,6 +12,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CasaRepository
 {
@@ -162,6 +165,89 @@ public class CasaRepository
         return QueryOutcome.ERROR;
     }
 
+    public QueryOutcome delCasa(Casa casa)
+    {
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return QueryOutcome.OFFLINE;
+        }
+
+        try (Statement statement = connection.createStatement())
+        {
+            connection.setAutoCommit(false);
+
+            int totalScripts = 6;
+            String[] sqlScripts = new String[totalScripts];
+
+            sqlScripts[0] = String.format
+            (
+                "DELETE FROM casute\n" +
+                "WHERE indexCasa = %d",
+                casa.getIndexCasa()
+            );
+
+            sqlScripts[1] = String.format
+            (
+                "DELETE FROM proprietati\n" +
+                "WHERE indexProprietate = %d",
+                casa.getIndexProprietate()
+            );
+
+            sqlScripts[2] = String.format
+            (
+                "DELETE FROM locatii\n" +
+                "WHERE indexLocatie = %d",
+                casa.getLocatieProprietate().getIndexLocatie()
+            );
+
+            Constructie constructie = casa.getConstructieCasa();
+
+            sqlScripts[3] = String.format
+            (
+                "DELETE FROM constructii\n" +
+                "WHERE indexConstructie = %d",
+                constructie.getIndexConstructie()
+            );
+
+            sqlScripts[4] = String.format
+            (
+                "DELETE FROM compartimentari\n" +
+                "WHERE indexCompartimentare = %d",
+                constructie.getCompartimentareConstructie().getIndexCompartimentare()
+            );
+
+            sqlScripts[5] = String.format
+            (
+                "DELETE FROM parcele\n" +
+                "WHERE indexParcela = %d",
+                constructie.getParcelaConstructie().getIndexParcela()
+            );
+
+            for (String sqlScript : sqlScripts)
+            {
+                statement.addBatch(sqlScript);
+            }
+
+            statement.executeBatch();
+            connection.commit();
+
+            return QueryOutcome.SUCCESS;
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+
+        return QueryOutcome.ERROR;
+    }
+
     public Pair<Casa, QueryOutcome> getCasa(int indexCasa)
     {
         Casa casa = new Casa();
@@ -238,5 +324,121 @@ public class CasaRepository
             databaseRepository.closeConnection(connection);
         }
         return new Pair<>(casa, QueryOutcome.ERROR);
+    }
+
+    public Pair<List<Casa>, QueryOutcome> getListaCase()
+    {
+        List<Casa> listaCase = new ArrayList<>();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(listaCase, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT indexCasa\n" +
+            "FROM casute"
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                while (resultSet.next())
+                {
+                    int indexCasa = resultSet.getInt(1);
+                    Pair<Casa, QueryOutcome> queryOutcomePairCasa = getCasa(indexCasa);
+                    QueryOutcome queryOutcome = queryOutcomePairCasa.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(listaCase, QueryOutcome.CORRUPT);
+                    }
+
+                    listaCase.add(queryOutcomePairCasa.getKey());
+                }
+
+                if (listaCase.size() <= 0)
+                {
+                    return new Pair<>(listaCase, QueryOutcome.EMPTY);
+                }
+
+                return new Pair<>(listaCase, QueryOutcome.SUCCESS);
+            }
+
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(listaCase, QueryOutcome.ERROR);
+    }
+
+    public Pair<List<Casa>, QueryOutcome> getListaCase(Agent agent)
+    {
+        List<Casa> listaCase = new ArrayList<>();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(listaCase, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT indexCasa\n" +
+            "FROM casute\n" +
+            "JOIN proprietati\n" +
+            "ON proprietateCasa = indexProprietate\n" +
+            "WHERE agentProprietate = %d",
+            agent.getIndexAgent()
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                while (resultSet.next())
+                {
+                    int indexCasa = resultSet.getInt(1);
+                    Pair<Casa, QueryOutcome> queryOutcomePairCasa = getCasa(indexCasa);
+                    QueryOutcome queryOutcome = queryOutcomePairCasa.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(listaCase, QueryOutcome.CORRUPT);
+                    }
+
+                    listaCase.add(queryOutcomePairCasa.getKey());
+                }
+
+                if (listaCase.size() <= 0)
+                {
+                    return new Pair<>(listaCase, QueryOutcome.EMPTY);
+                }
+
+                return new Pair<>(listaCase, QueryOutcome.SUCCESS);
+            }
+
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(listaCase, QueryOutcome.ERROR);
     }
 }

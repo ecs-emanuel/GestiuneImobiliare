@@ -4,6 +4,7 @@ import Components.DispozitieConstructie;
 import Components.DispozitieTeren;
 import Components.StructuraConstructie;
 import Entities.Locatie.Locatie;
+import Entities.Persoana.Agent;
 import Entities.Proprietate.*;
 import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
@@ -13,6 +14,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TerenRepository
 {
@@ -121,6 +124,73 @@ public class TerenRepository
         return QueryOutcome.ERROR;
     }
 
+    public QueryOutcome delTeren(Teren teren)
+    {
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return QueryOutcome.OFFLINE;
+        }
+
+        try (Statement statement = connection.createStatement())
+        {
+            connection.setAutoCommit(false);
+
+            int totalScripts = 4;
+            String[] sqlScripts = new String[totalScripts];
+
+            sqlScripts[0] = String.format
+            (
+                "DELETE FROM terenuri\n" +
+                "WHERE indexTeren = %d",
+                teren.getIndexTeren()
+            );
+
+            sqlScripts[1] = String.format
+            (
+                "DELETE FROM proprietati\n" +
+                "WHERE indexProprietate = %d",
+                teren.getIndexProprietate()
+            );
+
+            sqlScripts[2] = String.format
+            (
+                "DELETE FROM locatii\n" +
+                "WHERE indexLocatie = %d",
+                teren.getLocatieProprietate().getIndexLocatie()
+            );
+
+            sqlScripts[3] = String.format
+            (
+                "DELETE FROM parcele\n" +
+                "WHERE indexParcela = %d",
+                teren.getParcelaTeren().getIndexParcela()
+            );
+
+            for (String sqlScript : sqlScripts)
+            {
+                statement.addBatch(sqlScript);
+            }
+
+            statement.executeBatch();
+            connection.commit();
+
+            return QueryOutcome.SUCCESS;
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+
+        return QueryOutcome.ERROR;
+    }
+
     public Pair<Teren, QueryOutcome> getTeren(int indexTeren)
     {
         Teren teren = new Teren();
@@ -198,5 +268,119 @@ public class TerenRepository
             databaseRepository.closeConnection(connection);
         }
         return new Pair<>(teren, QueryOutcome.ERROR);
+    }
+
+    public Pair<List<Teren>, QueryOutcome> getListaTerenuri()
+    {
+        List<Teren> listaTerenuri = new ArrayList<>();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(listaTerenuri, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT indexTeren\n" +
+            "FROM terenuri"
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                while (resultSet.next())
+                {
+                    int indexTeren = resultSet.getInt(1);
+                    Pair<Teren, QueryOutcome> queryOutcomePairTeren = getTeren(indexTeren);
+                    QueryOutcome queryOutcome = queryOutcomePairTeren.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(listaTerenuri, QueryOutcome.CORRUPT);
+                    }
+
+                    listaTerenuri.add(queryOutcomePairTeren.getKey());
+                }
+
+                if (listaTerenuri.size() <= 0)
+                {
+                    return new Pair<>(listaTerenuri, QueryOutcome.EMPTY);
+                }
+
+                return new Pair<>(listaTerenuri, QueryOutcome.SUCCESS);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(listaTerenuri, QueryOutcome.ERROR);
+    }
+
+    public Pair<List<Teren>, QueryOutcome> getListaTerenuri(Agent agent)
+    {
+        List<Teren> listaTerenuri = new ArrayList<>();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(listaTerenuri, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT indexTeren\n" +
+            "FROM terenuri\n" +
+            "JOIN proprietati\n" +
+            "ON proprietateTeren = indexProprietate\n" +
+            "WHERE agentProprietate = %d",
+            agent.getIndexAgent()
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                while (resultSet.next())
+                {
+                    int indexTeren = resultSet.getInt(1);
+                    Pair<Teren, QueryOutcome> queryOutcomePairTeren = getTeren(indexTeren);
+                    QueryOutcome queryOutcome = queryOutcomePairTeren.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(listaTerenuri, QueryOutcome.CORRUPT);
+                    }
+
+                    listaTerenuri.add(queryOutcomePairTeren.getKey());
+                }
+
+                if (listaTerenuri.size() <= 0)
+                {
+                    return new Pair<>(listaTerenuri, QueryOutcome.EMPTY);
+                }
+
+                return new Pair<>(listaTerenuri, QueryOutcome.SUCCESS);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(listaTerenuri, QueryOutcome.ERROR);
     }
 }
