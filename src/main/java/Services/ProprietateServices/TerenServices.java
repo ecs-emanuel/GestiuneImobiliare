@@ -16,6 +16,12 @@ public class TerenServices
         return terenRepository.addTeren(teren);
     }
 
+    public QueryOutcome modTeren(Teren oldTeren, Teren newTeren)
+    {
+        TerenRepository terenRepository = new TerenRepository();
+        return terenRepository.modTeren(oldTeren, newTeren);
+    }
+
     public QueryOutcome delTeren(Teren teren)
     {
         TerenRepository terenRepository = new TerenRepository();

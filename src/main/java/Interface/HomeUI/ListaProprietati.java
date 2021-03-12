@@ -35,6 +35,9 @@ public class ListaProprietati
 
     public void create(HomeUI homeUI)
     {
+        homeUI.clearPanel(homeUI.scrollContent);
+        homeUI.buttonSterge.setEnabled(false);
+        homeUI.buttonModifica.setEnabled(false);
         addLista(homeUI);
     }
 
@@ -75,12 +78,33 @@ public class ListaProprietati
         listaProprietati.addAll(queryOutcomePairCasa.getKey());
         listaProprietati.addAll(queryOutcomePairTeren.getKey());
 
+        List<Proprietate> listaProprietatiFiltrate = new ArrayList<>();
+
+        if (homeUI.fieldSearch.getText().isEmpty())
+        {
+            listaProprietatiFiltrate.addAll(listaProprietati);
+        }
+        else
+        {
+            for (int i = 0; i < listaProprietati.size(); i++)
+            {
+                Proprietate proprietate = listaProprietati.get(i);
+                String textIndex = proprietate.getIndexProprietate() + "";
+
+                if (textIndex.contains(homeUI.fieldSearch.getText()))
+                {
+                    listaProprietatiFiltrate.add(proprietate);
+                }
+            }
+        }
+
+
         String[] columnNames = {"Index", "Titlu", "Pret", "Proprietate", "Localitate"};
 
         int[] columnSizes = {80, 400, 80, 80, 118 };
         int totalColumns = columnNames.length;
 
-        tableContent = new JTable(listaProprietati.size(), totalColumns)
+        tableContent = new JTable(listaProprietatiFiltrate.size(), totalColumns)
         {
             public boolean isCellEditable(int row, int column)
             {
@@ -103,9 +127,9 @@ public class ListaProprietati
             column.setMaxWidth(columnSizes[i]);
         }
 
-        for (int i = 0; i < listaProprietati.size(); i++)
+        for (int i = 0; i < listaProprietatiFiltrate.size(); i++)
         {
-            Proprietate proprietate = listaProprietati.get(i);
+            Proprietate proprietate = listaProprietatiFiltrate.get(i);
 
             tableContent.setValueAt(proprietate.getIndexProprietate(), i, 0);
             tableContent.setValueAt(proprietate.getTitluProprietate(), i , 1);
@@ -141,6 +165,7 @@ public class ListaProprietati
                 if (tableContent.getSelectedRow() >= 0)
                 {
                     homeUI.buttonSterge.setEnabled(true);
+                    homeUI.buttonModifica.setEnabled(true);
                 }
             }
 
@@ -172,7 +197,7 @@ public class ListaProprietati
 
                 if (itemIndex >= 0)
                 {
-                    Proprietate proprietate = listaProprietati.get(itemIndex);
+                    Proprietate proprietate = listaProprietatiFiltrate.get(itemIndex);
 
                     if (proprietate instanceof Apartament)
                     {
@@ -187,6 +212,25 @@ public class ListaProprietati
                         terenServices.delTeren((Teren) proprietate);
                     }
                     homeUI.buttonCauta.doClick();
+                    homeUI.buttonSterge.removeActionListener(this);
+                }
+            }
+        });
+
+        homeUI.buttonModifica.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                int itemIndex = tableContent.getSelectedRow();
+
+                if (itemIndex >= 0)
+                {
+                    homeUI.buttonModifica.setEnabled(false);
+                    Proprietate proprietate = listaProprietatiFiltrate.get(itemIndex);
+                    AdaugaProprietate adaugaProprietate = new AdaugaProprietate();
+                    adaugaProprietate.create(homeUI, proprietate);
+                    homeUI.buttonModifica.removeActionListener(this);
                 }
             }
         });

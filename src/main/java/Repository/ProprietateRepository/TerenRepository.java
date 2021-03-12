@@ -84,8 +84,6 @@ public class TerenRepository
                 }
             }
 
-            System.out.println(indexProprietate);
-
             Parcela parcela = teren.getParcelaTeren();
 
             // add parcela
@@ -107,6 +105,130 @@ public class TerenRepository
             );
 
             statement.addBatch(sqlScript5);
+            statement.executeBatch();
+            connection.commit();
+
+            return QueryOutcome.SUCCESS;
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+
+        return QueryOutcome.ERROR;
+    }
+
+    public QueryOutcome modTeren(Teren oldTeren, Teren newTeren)
+    {
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return QueryOutcome.OFFLINE;
+        }
+
+        try (Statement statement = connection.createStatement())
+        {
+            connection.setAutoCommit(false);
+
+            // update locatie
+            String sqlScript1 = "";
+            Locatie oldLocatie = oldTeren.getLocatieProprietate();
+            Locatie newLocatie = newTeren.getLocatieProprietate();
+
+            if (newLocatie.getOrasLocatie() != null)
+            {
+                sqlScript1 = String.format
+                (
+                "UPDATE locatii SET\n" +
+                "judetLocatie = %d,\n" +
+                "orasLocatie = %d,\n" +
+                "cartierLocatie = %d,\n" +
+                "comunaLocatie = NULL,\n" +
+                "satLocatie = NULL,\n" +
+                "denumireLocatie = '%s'\n" +
+                "WHERE indexLocatie = %d",
+                newLocatie.getJudetLocatie().getIndexJudet(),
+                newLocatie.getOrasLocatie().getIndexOras(), newLocatie.getCartierLocatie().getIndexCartier(),
+                newLocatie.getDenumireLocatie(),
+                oldLocatie.getIndexLocatie()
+                );
+            }
+            else
+            {
+                sqlScript1 = String.format
+                (
+                "UPDATE locatii SET\n" +
+                "judetLocatie = %d,\n" +
+                "orasLocatie = NULL,\n" +
+                "cartierLocatie = NULL,\n" +
+                "comunaLocatie = %d,\n" +
+                "satLocatie = %d,\n" +
+                "denumireLocatie = '%s'\n" +
+                "WHERE indexLocatie = %d",
+                newLocatie.getJudetLocatie().getIndexJudet(),
+                newLocatie.getComunaLocatie().getIndexComuna(), newLocatie.getSatLocatie().getIndexSat(),
+                newLocatie.getDenumireLocatie(),
+                oldLocatie.getIndexLocatie()
+                );
+            }
+
+            statement.addBatch(sqlScript1);
+
+            // update proprietate
+            String sqlScript2 = String.format
+            (
+                "UPDATE proprietati SET\n" +
+                "titluProprietate = '%s',\n" +
+                "descriereProprietate = '%s',\n" +
+                "pretProprietate = %d,\n" +
+                "proprietarProprietate = %d,\n" +
+                "dispozitieProprietate = '%s'\n" +
+                "WHERE indexProprietate = %d",
+                newTeren.getTitluProprietate(), newTeren.getDescriereProprietate(), newTeren.getPretProprietate(),
+                newTeren.getProprietarProprietate().getIndexClient(), newTeren.getDispozitieProprietate().name(),
+                oldTeren.getIndexProprietate()
+            );
+
+            statement.addBatch(sqlScript2);
+
+            // update parcela
+            Parcela oldParcela = oldTeren.getParcelaTeren();
+            Parcela newParcela = newTeren.getParcelaTeren();
+
+            String sqlScript3 = String.format
+            (
+                "UPDATE parcele SET\n" +
+                "suprafataParcela = %d,\n" +
+                "hasApa = %b,\n" +
+                "hasGaz = %b,\n" +
+                "hasElectricitate = %b,\n" +
+                "hasCanalizare = %b\n" +
+                "WHERE indexParcela = %d",
+                newParcela.getSuprafataParcela(),
+                newParcela.hasApa(), newParcela.hasGaz(),
+                newParcela.hasElectricitate(), newParcela.hasCanalizare(),
+                oldParcela.getIndexParcela()
+            );
+
+            statement.addBatch(sqlScript3);
+
+            // update teren
+            String sqlScript4 = String.format
+            (
+                "UPDATE terenuri SET\n" +
+                "dispozitieTeren = '%s'\n" +
+                "WHERE indexTeren = %d",
+                newTeren.getDispozitieTeren().name(), oldTeren.getIndexTeren()
+            );
+
+            statement.addBatch(sqlScript4);
+
             statement.executeBatch();
             connection.commit();
 

@@ -16,6 +16,12 @@ public class ApartamentServices
         return apartamentRepository.addApartament(apartament);
     }
 
+    public QueryOutcome modApartament(Apartament oldApartament, Apartament newApartament)
+    {
+        ApartamentRepository apartamentRepository = new ApartamentRepository();
+        return apartamentRepository.modApartament(oldApartament, newApartament);
+    }
+
     public QueryOutcome delApartament(Apartament apartament)
     {
         ApartamentRepository apartamentRepository = new ApartamentRepository();

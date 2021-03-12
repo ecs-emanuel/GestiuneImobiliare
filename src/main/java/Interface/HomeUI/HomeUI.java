@@ -37,12 +37,12 @@ public class HomeUI
     // panel search
     private JPanel panelSearch;
     private JLabel labelSearch;
-    private JTextField fieldSearch;
+    protected JTextField fieldSearch;
     protected JCheckBox checkboxSearch;
     protected JButton buttonCauta;
     private JButton buttonFiltre;
-    private JButton buttonAdauga;
-    private JButton buttonModifica;
+    protected JButton buttonAdauga;
+    protected JButton buttonModifica;
     protected JButton buttonSterge;
 
     // panel content
@@ -217,6 +217,7 @@ public class HomeUI
             public void actionPerformed(ActionEvent e)
             {
                 buttonSterge.setEnabled(false);
+                buttonModifica.setEnabled(false);
 
                 ButtonModel selectedButtonModel = buttonsMenu.getSelection();
 
@@ -352,6 +353,16 @@ public class HomeUI
 
     protected void clearPanel(JScrollPane panel)
     {
+        for (ActionListener al : buttonSterge.getActionListeners())
+        {
+            buttonSterge.removeActionListener(al);
+        }
+
+        for (ActionListener al : buttonModifica.getActionListeners())
+        {
+            buttonModifica.removeActionListener(al);
+        }
+
         panel.setViewportView(null);
     }
 

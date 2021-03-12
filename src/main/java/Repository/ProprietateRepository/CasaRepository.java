@@ -165,6 +165,164 @@ public class CasaRepository
         return QueryOutcome.ERROR;
     }
 
+    public QueryOutcome modCasa(Casa oldCasa, Casa newCasa)
+    {
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return QueryOutcome.OFFLINE;
+        }
+
+        try (Statement statement = connection.createStatement())
+        {
+            connection.setAutoCommit(false);
+
+            // update locatie
+            String sqlScript1 = "";
+            Locatie oldLocatie = oldCasa.getLocatieProprietate();
+            Locatie newLocatie = newCasa.getLocatieProprietate();
+
+            if (newLocatie.getOrasLocatie() != null)
+            {
+                sqlScript1 = String.format
+                (
+                    "UPDATE locatii SET\n" +
+                    "judetLocatie = %d,\n" +
+                    "orasLocatie = %d,\n" +
+                    "cartierLocatie = %d,\n" +
+                    "comunaLocatie = NULL,\n" +
+                    "satLocatie = NULL,\n" +
+                    "denumireLocatie = '%s'\n" +
+                    "WHERE indexLocatie = %d",
+                    newLocatie.getJudetLocatie().getIndexJudet(),
+                    newLocatie.getOrasLocatie().getIndexOras(), newLocatie.getCartierLocatie().getIndexCartier(),
+                    newLocatie.getDenumireLocatie(),
+                    oldLocatie.getIndexLocatie()
+                );
+            }
+            else
+            {
+                sqlScript1 = String.format
+                (
+                    "UPDATE locatii SET\n" +
+                    "judetLocatie = %d,\n" +
+                    "orasLocatie = NULL,\n" +
+                    "cartierLocatie = NULL,\n" +
+                    "comunaLocatie = %d,\n" +
+                    "satLocatie = %d,\n" +
+                    "denumireLocatie = '%s'\n" +
+                    "WHERE indexLocatie = %d",
+                    newLocatie.getJudetLocatie().getIndexJudet(),
+                    newLocatie.getComunaLocatie().getIndexComuna(), newLocatie.getSatLocatie().getIndexSat(),
+                    newLocatie.getDenumireLocatie(),
+                    oldLocatie.getIndexLocatie()
+                );
+            }
+
+            statement.addBatch(sqlScript1);
+
+            // update proprietate
+            String sqlScript2 = String.format
+            (
+                "UPDATE proprietati SET\n" +
+                "titluProprietate = '%s',\n" +
+                "descriereProprietate = '%s',\n" +
+                "pretProprietate = %d,\n" +
+                "proprietarProprietate = %d,\n" +
+                "dispozitieProprietate = '%s'\n" +
+                "WHERE indexProprietate = %d",
+                newCasa.getTitluProprietate(), newCasa.getDescriereProprietate(), newCasa.getPretProprietate(),
+                newCasa.getProprietarProprietate().getIndexClient(), newCasa.getDispozitieProprietate().name(),
+                oldCasa.getIndexProprietate()
+            );
+
+            statement.addBatch(sqlScript2);
+
+            // constructie
+            Constructie oldConstructie = oldCasa.getConstructieCasa();
+            Constructie newConstructie = newCasa.getConstructieCasa();
+
+            // update parcela
+            Parcela oldParcela = oldConstructie.getParcelaConstructie();
+            Parcela newParcela = newConstructie.getParcelaConstructie();
+
+            String sqlScript3 = String.format
+            (
+                "UPDATE parcele SET\n" +
+                "suprafataParcela = %d,\n" +
+                "hasApa = %b,\n" +
+                "hasGaz = %b,\n" +
+                "hasElectricitate = %b,\n" +
+                "hasCanalizare = %b\n" +
+                "WHERE indexParcela = %d",
+                newParcela.getSuprafataParcela(),
+                newParcela.hasApa(), newParcela.hasGaz(),
+                newParcela.hasElectricitate(), newParcela.hasCanalizare(),
+                oldParcela.getIndexParcela()
+            );
+
+            statement.addBatch(sqlScript3);
+
+            // update compartimentare
+            Compartimentare oldCompartimentare = oldConstructie.getCompartimentareConstructie();
+            Compartimentare newCompartimentare = newConstructie.getCompartimentareConstructie();
+
+            String sqlScript4 = String.format
+            (
+                "UPDATE compartimentari SET\n" +
+                "openspace = %d, living = %d, dormitor = %d, dressing = %d,\n" +
+                "bucatarie = %d, debara = %d, baie = %d, hol = %d,\n" +
+                "mansarda = %d, balcon = %d, terasa = %d, gradina = %d,\n" +
+                "parcare = %d, garaj = %d, boxa = %d, pod = %d\n" +
+                "WHERE indexCompartimentare = %d",
+                newCompartimentare.getOpenspace(), newCompartimentare.getLiving(),
+                newCompartimentare.getDormitor(), newCompartimentare.getDressing(),
+                newCompartimentare.getBucatarie(), newCompartimentare.getDebara(),
+                newCompartimentare.getBaie(), newCompartimentare.getHol(),
+                newCompartimentare.getMansarda(), newCompartimentare.getBalcon(),
+                newCompartimentare.getTerasa(), newCompartimentare.getGradina(),
+                newCompartimentare.getParcare(), newCompartimentare.getGaraj(),
+                newCompartimentare.getBoxa(), newCompartimentare.getPod(),
+                oldCompartimentare.getIndexCompartimentare()
+            );
+
+            statement.addBatch(sqlScript4);
+
+            // update constructie
+            String sqlScript5 = String.format
+            (
+                "UPDATE constructii SET\n" +
+                "suprafataUtilizabila = %d, suprafataConstructie = %d,\n" +
+                "inaltimeConstructie = %d, anConstructie = %d, structuraConstructie = '%s',\n" +
+                "dispozitieActuala = '%s', dispozitiePredare = '%s'\n" +
+                "WHERE indexConstructie = %d",
+                newConstructie.getSuprafataUtilizabila(), newConstructie.getSuprafataConstructie(),
+                newConstructie.getInaltimeConstructie(), newConstructie.getAnConstructie(), newConstructie.getStructuraConstructie().name(),
+                newConstructie.getDispozitieActuala().name(), newConstructie.getDispozitiePredare().name(),
+                oldConstructie.getIndexConstructie()
+            );
+
+            statement.addBatch(sqlScript5);
+
+            statement.executeBatch();
+            connection.commit();
+
+            return QueryOutcome.SUCCESS;
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+
+        return QueryOutcome.ERROR;
+    }
+
     public QueryOutcome delCasa(Casa casa)
     {
         DatabaseRepository databaseRepository = new DatabaseRepository();

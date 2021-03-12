@@ -27,6 +27,9 @@ public class ListaProgramari
 
     public void create(HomeUI homeUI)
     {
+        homeUI.clearPanel(homeUI.scrollContent);
+        homeUI.buttonSterge.setEnabled(false);
+        homeUI.buttonModifica.setEnabled(false);
         addLista(homeUI);
     }
 
@@ -36,13 +39,14 @@ public class ListaProgramari
         Pair<List<Programare>, QueryOutcome> queryOutcomePair;
 
         // toate programarile - else - doar programarile valabile
-        if (homeUI.checkboxSearch.isSelected())
+
+        if (homeUI.fieldSearch.getText().isEmpty())
         {
-            queryOutcomePair = programareServices.getListaProgramari(homeUI.mainAgent, true);
+            queryOutcomePair = programareServices.getListaProgramari(homeUI.mainAgent, homeUI.checkboxSearch.isSelected());
         }
         else
         {
-            queryOutcomePair = programareServices.getListaProgramari(homeUI.mainAgent, false);
+            queryOutcomePair = programareServices.getListaProgramari(homeUI.mainAgent, homeUI.checkboxSearch.isSelected(), homeUI.fieldSearch.getText());
         }
 
         List<Programare> listaProgramari = queryOutcomePair.getKey();
@@ -102,6 +106,7 @@ public class ListaProgramari
                 if (tableContent.getSelectedRow() >= 0)
                 {
                     homeUI.buttonSterge.setEnabled(true);
+                    homeUI.buttonModifica.setEnabled(true);
                 }
             }
 
@@ -129,12 +134,33 @@ public class ListaProgramari
             @Override
             public void actionPerformed(ActionEvent e)
             {
+
                 int itemIndex = tableContent.getSelectedRow();
 
                 if (itemIndex >= 0)
                 {
                     programareServices.delProgramare(listaProgramari.get(itemIndex));
                     homeUI.buttonCauta.doClick();
+                    homeUI.buttonSterge.removeActionListener(this);
+                }
+            }
+        });
+
+        homeUI.buttonModifica.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                int itemIndex = tableContent.getSelectedRow();
+
+                if (itemIndex >= 0)
+                {
+                    homeUI.buttonModifica.setEnabled(false);
+                    homeUI.buttonSterge.setEnabled(false);
+                    Programare programare = listaProgramari.get(itemIndex);
+                    AdaugaProgramare adaugaProgramare = new AdaugaProgramare();
+                    adaugaProgramare.create(homeUI, programare);
+                    homeUI.buttonModifica.removeActionListener(this);
                 }
             }
         });

@@ -55,8 +55,23 @@ public class AdaugaClient
     private JButton buttonAnuleaza;
     private JLabel labelResult;
 
+    private boolean updateForm = false;
+    private Client oldClient;
+
     public void create(HomeUI homeUI)
     {
+        handleForm(homeUI);
+    }
+
+    public void create(HomeUI homeUI, Client client)
+    {
+        handleForm(homeUI);
+        updateForm(client);
+    }
+
+    public void handleForm(HomeUI homeUI)
+    {
+        homeUI.clearPanel(homeUI.scrollContent);
         panelContent = new JPanel();
         homeUI.scrollContent.setViewportView(panelContent);
         panelContent.setLayout(null);
@@ -67,6 +82,72 @@ public class AdaugaClient
         addPanelPersoana();
         addPanelLocatie();
         addPanelButtons(homeUI);
+    }
+
+    public void updateForm(Client client)
+    {
+        updateForm = true;
+        oldClient = client;
+
+        fieldNume.setText(client.getNumePersoana());
+        fieldPrenume.setText(client.getPrenumePersoana());
+        fieldTelefon.setText(client.getTelefonPersoana());
+        fieldEmail.setText(client.getEmailPersoana());
+
+        Locatie oldDomiciliu = client.getDomiciliuPersoana();
+
+        fieldLocatie.setText(oldDomiciliu.getDenumireLocatie());
+
+        for (int i = 0; i < cboxJudet.getItemCount(); i++)
+        {
+            if (cboxJudet.getItemAt(i).getIndexJudet() == oldDomiciliu.getJudetLocatie().getIndexJudet())
+            {
+                cboxJudet.setSelectedIndex(i);
+            }
+        }
+
+        if (oldDomiciliu.getOrasLocatie() != null)
+        {
+            rbuttonOras.doClick();
+
+            for (int i = 0; i < cboxOras.getItemCount(); i++)
+            {
+                if (cboxOras.getItemAt(i).getIndexOras() == oldDomiciliu.getOrasLocatie().getIndexOras())
+                {
+                    cboxOras.setSelectedIndex(i);
+                }
+            }
+
+            for (int i = 0; i < cboxCartier.getItemCount(); i++)
+            {
+                if (cboxCartier.getItemAt(i).getIndexCartier() == oldDomiciliu.getCartierLocatie().getIndexCartier())
+                {
+                    cboxCartier.setSelectedIndex(i);
+                }
+            }
+        }
+        else if (oldDomiciliu.getComunaLocatie() != null)
+        {
+            rbuttonComuna.doClick();
+
+            for (int i = 0; i < cboxComuna.getItemCount(); i++)
+            {
+                if (cboxComuna.getItemAt(i).getIndexComuna() == oldDomiciliu.getComunaLocatie().getIndexComuna())
+                {
+                    cboxComuna.setSelectedIndex(i);
+                }
+            }
+
+            for (int i = 0; i < cboxSat.getItemCount(); i++)
+            {
+                if (cboxSat.getItemAt(i).getIndexSat() == oldDomiciliu.getSatLocatie().getIndexSat())
+                {
+                    cboxSat.setSelectedIndex(i);
+                }
+            }
+        }
+
+        buttonAccepta.setText("Modifica");
     }
 
     private void addPanelPersoana()
@@ -490,7 +571,16 @@ public class AdaugaClient
                     client.setDomiciliuPersoana(locatie);
 
                     ClientServices clientServices = new ClientServices();
-                    QueryOutcome queryOutcome = clientServices.addClient(client);
+                    QueryOutcome queryOutcome;
+
+                    if (updateForm && oldClient != null)
+                    {
+                        queryOutcome = clientServices.modClient(oldClient, client);
+                    }
+                    else
+                    {
+                        queryOutcome = clientServices.addClient(client);
+                    }
 
                     switch (queryOutcome)
                     {

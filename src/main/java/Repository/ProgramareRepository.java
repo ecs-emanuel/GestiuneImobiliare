@@ -50,6 +50,43 @@ public class ProgramareRepository
         return QueryOutcome.ERROR;
     }
 
+    public QueryOutcome modProgramare(Programare oldProgramare, Programare newProgramare)
+    {
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return QueryOutcome.OFFLINE;
+        }
+
+        String sqlScript = String.format
+        (
+            "UPDATE programari SET\n" +
+            "dataProgramare = '%s',\n" +
+            "agentProgramare = %d,\n" +
+            "clientProgramare = %d\n" +
+            "WHERE indexProgramare = %d",
+            newProgramare.getData(), newProgramare.getAgent().getIndexAgent(), newProgramare.getClient().getIndexClient(),
+            oldProgramare.getIndexProgramare()
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            statement.executeUpdate(sqlScript);
+            return QueryOutcome.SUCCESS;
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return QueryOutcome.ERROR;
+    }
+
     public QueryOutcome delProgramare(Programare programare)
     {
         DatabaseRepository databaseRepository = new DatabaseRepository();

@@ -2,6 +2,7 @@ package Interface.HomeUI;
 
 import Entities.Locatie.Locatie;
 import Entities.Persoana.Client;
+import Entities.Programare;
 import Services.PersoanaServices.ClientServices;
 import Utils.CustomColor;
 import Utils.QueryOutcome;
@@ -13,6 +14,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -23,13 +28,26 @@ public class ListaClienti
 
     public void create(HomeUI homeUI)
     {
+        homeUI.clearPanel(homeUI.scrollContent);
+        homeUI.buttonSterge.setEnabled(false);
+        homeUI.buttonModifica.setEnabled(false);
         addLista(homeUI);
     }
 
     public void addLista(HomeUI homeUI)
     {
         ClientServices clientServices = new ClientServices();
-        Pair<List<Client>, QueryOutcome> queryOutcomePair = clientServices.getListaClienti();
+        Pair<List<Client>, QueryOutcome> queryOutcomePair;
+
+        if (homeUI.fieldSearch.getText().isEmpty())
+        {
+            queryOutcomePair = clientServices.getListaClienti();
+        }
+        else
+        {
+            queryOutcomePair = clientServices.getListaClient(homeUI.fieldSearch.getText());
+        }
+
 
         List<Client> listaClienti = queryOutcomePair.getKey();
 
@@ -81,6 +99,61 @@ public class ListaClienti
                 tableContent.setValueAt(domiciliu.getComunaLocatie().getDenumireComuna(), i, 5);
             }
         }
+
+        tableContent.addMouseListener(new MouseListener()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                if (tableContent.getSelectedRow() >= 0)
+                {
+                    homeUI.buttonModifica.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e)
+            {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e)
+            {
+
+            }
+        });
+
+        homeUI.buttonModifica.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                int itemIndex = tableContent.getSelectedRow();
+
+                if (itemIndex >= 0)
+                {
+                    homeUI.buttonModifica.setEnabled(false);
+                    Client client = listaClienti.get(itemIndex);
+                    AdaugaClient adaugaClient = new AdaugaClient();
+                    adaugaClient.create(homeUI, client);
+                    homeUI.buttonModifica.removeActionListener(this);
+                }
+            }
+        });
+
         homeUI.scrollContent.setViewportView(tableContent);
     }
 }

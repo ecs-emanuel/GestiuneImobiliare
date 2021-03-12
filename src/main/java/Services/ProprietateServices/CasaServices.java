@@ -20,6 +20,12 @@ public class CasaServices
         return casaRepository.addCasa(casa);
     }
 
+    public QueryOutcome modCasa(Casa oldCasa, Casa newCasa)
+    {
+        CasaRepository casaRepository = new CasaRepository();
+        return casaRepository.modCasa(oldCasa, newCasa);
+    }
+
     public QueryOutcome delCasa(Casa casa)
     {
         CasaRepository casaRepository = new CasaRepository();

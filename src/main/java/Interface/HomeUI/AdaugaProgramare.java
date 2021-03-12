@@ -47,9 +47,25 @@ public class AdaugaProgramare
     private JButton buttonAnuleaza;
     private JLabel labelResult;
 
+    private boolean updateForm = false;
+    private Programare oldProgramare;
+
     public void create(HomeUI homeUI)
     {
+        handleForm(homeUI);
+    }
+
+    public void create(HomeUI homeUI, Programare programare)
+    {
+        handleForm(homeUI);
+        updateForm(programare);
+    }
+
+    private void handleForm(HomeUI homeUI)
+    {
+        homeUI.clearPanel(homeUI.scrollContent);
         panelContent = new JPanel();
+        homeUI.clearPanel(homeUI.scrollContent);
         homeUI.scrollContent.setViewportView(panelContent);
         panelContent.setLayout(null);
         panelContent.setVisible(true);
@@ -58,6 +74,27 @@ public class AdaugaProgramare
 
         addPanelProgramare();
         addButtons(homeUI);
+    }
+
+    private void updateForm(Programare programare)
+    {
+        updateForm = true;
+        oldProgramare = programare;
+
+        Client client = programare.getClient();
+
+        for (int i = 0; i < cboxClient.getItemCount(); i++)
+        {
+            if (cboxClient.getItemAt(i).getIndexClient() == client.getIndexClient())
+            {
+                cboxClient.setSelectedIndex(i);
+            }
+        }
+
+        spinnerData.setValue(new Date(programare.getData().getTime()));
+        spinnerOra.setValue(new Date(programare.getData().getTime()));
+
+        buttonAccepta.setText("Modifica");
     }
 
     private void addPanelProgramare()
@@ -170,7 +207,16 @@ public class AdaugaProgramare
                     programare.setData(timeStamp);
 
                     ProgramareServices programareServices = new ProgramareServices();
-                    QueryOutcome queryOutcome = programareServices.addProgramare(programare);
+                    QueryOutcome queryOutcome;
+
+                    if (updateForm && oldProgramare != null)
+                    {
+                        queryOutcome = programareServices.modProgramare(oldProgramare, programare);
+                    }
+                    else
+                    {
+                        queryOutcome = programareServices.addProgramare(programare);
+                    }
 
                     switch (queryOutcome)
                     {
