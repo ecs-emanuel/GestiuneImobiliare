@@ -1,5 +1,6 @@
 package Repository.PersoanaRepository;
 
+import Entities.Locatie.Cartier;
 import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
 import Entities.Persoana.User;
@@ -10,6 +11,51 @@ import java.sql.*;
 
 public class UserRepository
 {
+    public Pair<User, QueryOutcome> getUser(int indexUser)
+    {
+        User user = new User();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(user, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT isAdminUser\n" +
+            "FROM useri\n" +
+            "WHERE indexUser = %d",
+            indexUser
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                if (resultSet.first())
+                {
+                    user.setIndexUser(indexUser);
+                    user.setAdminUser(resultSet.getBoolean(1));
+
+                    return new Pair<>(user, QueryOutcome.SUCCESS);
+                }
+                return new Pair<>(user, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(user, QueryOutcome.ERROR);
+    }
+
     public Pair<User, QueryOutcome> authenticate(User user)
     {
         String sqlScript = String.format

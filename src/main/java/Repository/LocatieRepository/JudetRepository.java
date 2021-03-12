@@ -14,6 +14,52 @@ import java.util.List;
 
 public class JudetRepository
 {
+    public Pair<Judet, QueryOutcome> getJudet(int indexJudet)
+    {
+        Judet judet = new Judet();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(judet, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT *\n" +
+            "FROM judete\n" +
+            "WHERE indexJudet = %d",
+            indexJudet
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                if (resultSet.first())
+                {
+                    judet.setIndexJudet(indexJudet);
+                    judet.setDenumireJudet(resultSet.getString(2));
+
+                    return new Pair<>(judet, QueryOutcome.SUCCESS);
+                }
+
+                return new Pair<>(judet, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(judet, QueryOutcome.ERROR);
+    }
+
     public Pair<List<Judet>, QueryOutcome> getListaJudete()
     {
         List<Judet> listaJudete = new ArrayList<>();

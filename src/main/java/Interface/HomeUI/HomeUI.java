@@ -18,30 +18,34 @@ public class HomeUI
 
     private JFrame mainFrame;
 
+    // panel header
     private JPanel panelHead;
     private JLabel labelHead;
     private JButton buttonLogout;
 
+    // panel user
     private JPanel panelUser;
     private JLabel labelUser;
 
+    // panel menu
     private JPanel panelMenu;
     private ButtonGroup buttonsMenu;
-    private JToggleButton buttonProprietati;
-    private JToggleButton buttonClienti;
-    private JToggleButton buttonProgramari;
+    protected JToggleButton buttonProprietati;
+    protected JToggleButton buttonClienti;
+    protected JToggleButton buttonProgramari;
 
+    // panel search
     private JPanel panelSearch;
     private JLabel labelSearch;
-    private JTextField fieldSearch;
-    private JCheckBox checkboxSearch;
-    private JButton buttonCauta;
+    protected JTextField fieldSearch;
+    protected JCheckBox checkboxSearch;
+    protected JButton buttonCauta;
     private JButton buttonFiltre;
-    private JButton buttonAdauga;
-    private JButton buttonModifica;
-    private JButton buttonSterge;
+    protected JButton buttonAdauga;
+    protected JButton buttonModifica;
+    protected JButton buttonSterge;
 
-    protected JPanel panelContent;
+    // panel content
     protected JScrollPane scrollContent;
 
     public void displayInterface(Agent agent)
@@ -131,12 +135,14 @@ public class HomeUI
         panelSearch.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         panelSearch.setBounds(200, 70, FRAME_WIDTH - 35 - 190, 60);
 
+
         labelSearch = new JLabel("");
         panelSearch.add(labelSearch);
         labelSearch.setLayout(null);
         labelSearch.setVisible(false);
         labelSearch.setFont(new Font("Tahoma", Font.PLAIN, 11));
         labelSearch.setBounds(15, 5, 160, 15);
+
 
         fieldSearch = new JTextField(10);
         panelSearch.add(fieldSearch);
@@ -148,34 +154,55 @@ public class HomeUI
         panelSearch.add(checkboxSearch);
         checkboxSearch.setLayout(null);
         checkboxSearch.setVisible(true);
-        //checkboxSearch.setEnabled(false);
-        checkboxSearch.setBounds(190, 20, 60, 30);
+        checkboxSearch.setEnabled(false);
+        //checkboxSearch.setBounds(190, 20, 60, 30);
+        checkboxSearch.setBounds(285, 20, 60, 30);
 
         buttonCauta = new JButton("Cauta");
         panelSearch.add(buttonCauta);
         buttonCauta.setLayout(null);
         buttonCauta.setVisible(true);
         buttonCauta.setEnabled(false);
-        buttonCauta.setBounds(260, 20, 100, 30);
+        //buttonCauta.setBounds(10, 20, 120, 30);
+        //buttonCauta.setBounds(260, 20, 100, 30);
+        buttonCauta.setBounds(180, 20, 100, 30);
 
         buttonCauta.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                clearPanel(panelContent);
-                ListaClienti listaClienti = new ListaClienti();
-                listaClienti.create(HomeUI.this);
+                buttonSterge.setEnabled(false);
 
+                ButtonModel selectedButtonModel = buttonsMenu.getSelection();
+
+                if (selectedButtonModel == buttonProprietati.getModel())
+                {
+                    ListaProprietati listaProprietati = new ListaProprietati();
+                    listaProprietati.create(HomeUI.this);
+                }
+
+                else if (selectedButtonModel == buttonClienti.getModel())
+                {
+                    ListaClienti listaClienti = new ListaClienti();
+                    listaClienti.create(HomeUI.this);
+                }
+
+                else if (selectedButtonModel == buttonProgramari.getModel())
+                {
+                    ListaProgramari listaProgramari = new ListaProgramari();
+                    listaProgramari.create(HomeUI.this);
+                }
             }
         });
 
+        /*
         buttonFiltre = new JButton("Filtre");
         panelSearch.add(buttonFiltre);
         buttonFiltre.setLayout(null);
         buttonFiltre.setVisible(true);
         buttonFiltre.setEnabled(false);
-        buttonFiltre.setBounds(360, 20, 100, 30);
+        buttonFiltre.setBounds(360, 20, 100, 30);*/
 
         buttonAdauga = new JButton("Adauga");
         panelSearch.add(buttonAdauga);
@@ -189,6 +216,9 @@ public class HomeUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                buttonSterge.setEnabled(false);
+                buttonModifica.setEnabled(false);
+
                 ButtonModel selectedButtonModel = buttonsMenu.getSelection();
 
                 if (selectedButtonModel == buttonProprietati.getModel())
@@ -250,9 +280,10 @@ public class HomeUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
+
                 labelSearch.setText("Index");
                 labelSearch.setVisible(true);
-                clearPanel(panelContent);
+                clearPanel(scrollContent);
                 resetSearchPanel();
             }
         });
@@ -270,10 +301,12 @@ public class HomeUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
+
                 labelSearch.setText("Tel");
                 labelSearch.setVisible(true);
-                clearPanel(panelContent);
+                clearPanel(scrollContent);
                 resetSearchPanel();
+                checkboxSearch.setEnabled(false);
             }
         });
 
@@ -290,9 +323,10 @@ public class HomeUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                labelSearch.setText("Data");
+
+                labelSearch.setText("Nume");
                 labelSearch.setVisible(true);
-                clearPanel(panelContent);
+                clearPanel(scrollContent);
                 resetSearchPanel();
             }
         });
@@ -305,27 +339,31 @@ public class HomeUI
 
     private void addPanelContent()
     {
-        panelContent = new JPanel();
-        panelContent.setLayout(null);
-        panelContent.setVisible(true);
-        panelContent.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
-        panelContent.setPreferredSize(new Dimension(FRAME_WIDTH - 55 - 190, 600));
-
-        scrollContent = new JScrollPane(panelContent);
+        scrollContent = new JScrollPane();
         mainFrame.add(scrollContent);
         scrollContent.setVisible(true);
+        scrollContent.setOpaque(true);
         scrollContent.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
+        scrollContent.getViewport().setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
         scrollContent.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         scrollContent.setBounds(200, 140, FRAME_WIDTH - 35 - 190, 610);
         scrollContent.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollContent.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollContent.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     }
 
-    protected void clearPanel(JPanel panel)
+    protected void clearPanel(JScrollPane panel)
     {
-        panel.removeAll();
-        panel.revalidate();
-        panel.repaint();
+        for (ActionListener al : buttonSterge.getActionListeners())
+        {
+            buttonSterge.removeActionListener(al);
+        }
+
+        for (ActionListener al : buttonModifica.getActionListeners())
+        {
+            buttonModifica.removeActionListener(al);
+        }
+
+        panel.setViewportView(null);
     }
 
     private void resetSearchPanel()
@@ -335,7 +373,7 @@ public class HomeUI
         checkboxSearch.setSelected(false);
         checkboxSearch.setEnabled(true);
         buttonCauta.setEnabled(true);
-        buttonFiltre.setEnabled(true);
+        //buttonFiltre.setEnabled(true);
         buttonAdauga.setEnabled(true);
         buttonModifica.setEnabled(false);
         buttonSterge.setEnabled(false);

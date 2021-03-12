@@ -15,6 +15,52 @@ import java.util.List;
 
 public class ComunaRepository
 {
+    public Pair<Comuna, QueryOutcome> getComuna(int indexComuna)
+    {
+        Comuna comuna = new Comuna();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(comuna, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT *\n" +
+            "FROM comune\n" +
+            "WHERE indexComuna = %d",
+            indexComuna
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                if (resultSet.first())
+                {
+                    comuna.setIndexComuna(indexComuna);
+                    comuna.setDenumireComuna(resultSet.getString(2));
+
+                    return new Pair<>(comuna, QueryOutcome.SUCCESS);
+                }
+
+                return new Pair<>(comuna, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(comuna, QueryOutcome.ERROR);
+    }
+
     public Pair<List<Comuna>, QueryOutcome> getListaComune(Judet judet)
     {
         List<Comuna> listaComune = new ArrayList<>();

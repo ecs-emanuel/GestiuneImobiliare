@@ -9,6 +9,12 @@ import java.util.List;
 
 public class JudetServices
 {
+    public Pair<Judet, QueryOutcome> getJudet(int indexJudet)
+    {
+        JudetRepository judetRepository = new JudetRepository();
+        return judetRepository.getJudet(indexJudet);
+    }
+
     public Pair<List<Judet>, QueryOutcome> getListaJudete()
     {
         JudetRepository judetRepository = new JudetRepository();

@@ -15,6 +15,52 @@ import java.util.List;
 
 public class OrasRepository
 {
+    public Pair<Oras, QueryOutcome> getOras(int indexOras)
+    {
+        Oras oras = new Oras();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(oras, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT *\n" +
+            "FROM orase\n" +
+            "WHERE indexOras = %d",
+            indexOras
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                if (resultSet.first())
+                {
+                    oras.setIndexOras(indexOras);
+                    oras.setDenumireOras(resultSet.getString(2));
+
+                    return new Pair<>(oras, QueryOutcome.SUCCESS);
+                }
+
+                return new Pair<>(oras, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(oras, QueryOutcome.ERROR);
+    }
+
     public Pair<List<Oras>, QueryOutcome> getListaOrase(Judet judet)
     {
         List<Oras> listaOrase = new ArrayList<>();

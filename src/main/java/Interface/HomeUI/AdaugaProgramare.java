@@ -8,6 +8,9 @@ import Entities.Persoana.Client;
 import Utils.QueryMessage;
 import Utils.QueryOutcome;
 import javafx.util.Pair;
+
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +28,9 @@ import java.time.ZoneId;
 
 public class AdaugaProgramare
 {
+    // main panel
+    private JPanel panelContent;
+
     // panel programare
     protected JPanel panelProgramare;
     protected JLabel labelData;
@@ -41,17 +47,60 @@ public class AdaugaProgramare
     private JButton buttonAnuleaza;
     private JLabel labelResult;
 
+    private boolean updateForm = false;
+    private Programare oldProgramare;
+
     public void create(HomeUI homeUI)
     {
-        addPanelProgramare(homeUI);
-        addButtons(homeUI);
-        homeUI.panelContent.setPreferredSize(new Dimension(1000 - 55 - 190, 600));
+        handleForm(homeUI);
     }
 
-    private void addPanelProgramare(HomeUI homeUI)
+    public void create(HomeUI homeUI, Programare programare)
+    {
+        handleForm(homeUI);
+        updateForm(programare);
+    }
+
+    private void handleForm(HomeUI homeUI)
+    {
+        homeUI.clearPanel(homeUI.scrollContent);
+        panelContent = new JPanel();
+        homeUI.clearPanel(homeUI.scrollContent);
+        homeUI.scrollContent.setViewportView(panelContent);
+        panelContent.setLayout(null);
+        panelContent.setVisible(true);
+        panelContent.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
+        panelContent.setPreferredSize(new Dimension(1000 - 55 - 190, 590));
+
+        addPanelProgramare();
+        addButtons(homeUI);
+    }
+
+    private void updateForm(Programare programare)
+    {
+        updateForm = true;
+        oldProgramare = programare;
+
+        Client client = programare.getClient();
+
+        for (int i = 0; i < cboxClient.getItemCount(); i++)
+        {
+            if (cboxClient.getItemAt(i).getIndexClient() == client.getIndexClient())
+            {
+                cboxClient.setSelectedIndex(i);
+            }
+        }
+
+        spinnerData.setValue(new Date(programare.getData().getTime()));
+        spinnerOra.setValue(new Date(programare.getData().getTime()));
+
+        buttonAccepta.setText("Modifica");
+    }
+
+    private void addPanelProgramare()
     {
         panelProgramare = new JPanel();
-        homeUI.panelContent.add(panelProgramare);
+        panelContent.add(panelProgramare);
         panelProgramare.setLayout(null);
         panelProgramare.setVisible(true);
         panelProgramare.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
@@ -119,11 +168,11 @@ public class AdaugaProgramare
     private void addButtons(HomeUI homeUI)
     {
         panelButtons = new JPanel();
-        homeUI.panelContent.add(panelButtons);
+        panelContent.add(panelButtons);
         panelButtons.setLayout(null);
         panelButtons.setVisible(true);
         panelButtons.setBackground(CustomColor.GRAY_VERYLIGHT.getColor());
-        panelButtons.setBounds(10, 515, 735, 150);
+        panelButtons.setBounds(10, 495, 735, 150);
 
         separatorButtons = new JSeparator(SwingConstants.HORIZONTAL);
         panelButtons.add(separatorButtons);
@@ -143,8 +192,10 @@ public class AdaugaProgramare
                     Date data = (Date) spinnerData.getValue();
                     Date ora = (Date) spinnerOra.getValue();
 
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
                     LocalDate localDate = data.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    LocalTime localTime = ora.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+                    LocalTime localTime = ora.toInstant().atZone(ZoneId.systemDefault()).toLocalTime().truncatedTo(ChronoUnit.MINUTES);
                     LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
                     Timestamp timeStamp = Timestamp.valueOf(localDateTime);
 
@@ -156,7 +207,16 @@ public class AdaugaProgramare
                     programare.setData(timeStamp);
 
                     ProgramareServices programareServices = new ProgramareServices();
-                    QueryOutcome queryOutcome = programareServices.addProgramare(programare);
+                    QueryOutcome queryOutcome;
+
+                    if (updateForm && oldProgramare != null)
+                    {
+                        queryOutcome = programareServices.modProgramare(oldProgramare, programare);
+                    }
+                    else
+                    {
+                        queryOutcome = programareServices.addProgramare(programare);
+                    }
 
                     switch (queryOutcome)
                     {
@@ -183,6 +243,15 @@ public class AdaugaProgramare
         buttonAnuleaza = new JButton("Anuleaza");
         panelButtons.add(buttonAnuleaza);
         buttonAnuleaza.setBounds(375, 12, 200, 35);
+
+        buttonAnuleaza.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                homeUI.clearPanel(homeUI.scrollContent);
+            }
+        });
 
         labelResult = new JLabel("", JLabel.CENTER);
         panelButtons.add(labelResult);

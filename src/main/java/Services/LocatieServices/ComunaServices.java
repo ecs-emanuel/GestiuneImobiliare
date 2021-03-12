@@ -10,6 +10,12 @@ import java.util.List;
 
 public class ComunaServices
 {
+    public Pair<Comuna, QueryOutcome> getComuna(int indexComuna)
+    {
+        ComunaRepository comunaRepository = new ComunaRepository();
+        return comunaRepository.getComuna(indexComuna);
+    }
+
     public Pair<List<Comuna>, QueryOutcome> getListaComune(Judet judet)
     {
         ComunaRepository comunaRepository = new ComunaRepository();

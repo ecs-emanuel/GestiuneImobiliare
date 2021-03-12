@@ -1,6 +1,10 @@
 package Repository.PersoanaRepository;
 
 import Entities.Locatie.*;
+import Entities.Persoana.Agent;
+import Entities.Persoana.Persoana;
+import Entities.Persoana.User;
+import Entities.Programare;
 import Repository.DatabaseRepository;
 import Utils.QueryOutcome;
 import Entities.Persoana.Client;
@@ -89,6 +93,161 @@ public class ClientRepository
         }
 
         return QueryOutcome.ERROR;
+    }
+
+    public QueryOutcome modClient(Client oldClient, Client newClient)
+    {
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return QueryOutcome.OFFLINE;
+        }
+
+        try (Statement statement = connection.createStatement())
+        {
+            connection.setAutoCommit(false);
+
+            String sqlScript1 = null;
+            Locatie oldDomiciliu = oldClient.getDomiciliuPersoana();
+            Locatie newDomiciliu = newClient.getDomiciliuPersoana();
+
+            // update locatie
+            if (newDomiciliu.getOrasLocatie() != null)
+            {
+                sqlScript1 = String.format
+                (
+                    "UPDATE locatii SET\n" +
+                    "judetLocatie = %d,\n" +
+                    "orasLocatie = %d,\n" +
+                    "cartierLocatie = %d,\n" +
+                    "comunaLocatie = NULL,\n" +
+                    "satLocatie = NULL,\n" +
+                    "denumireLocatie = '%s'\n" +
+                    "WHERE indexLocatie = %d",
+                    newDomiciliu.getJudetLocatie().getIndexJudet(),
+                    newDomiciliu.getOrasLocatie().getIndexOras(), newDomiciliu.getCartierLocatie().getIndexCartier(),
+                    newDomiciliu.getDenumireLocatie(),
+                    oldDomiciliu.getIndexLocatie()
+                );
+            }
+            else
+            {
+                sqlScript1 = String.format
+                (
+                    "UPDATE locatii SET\n" +
+                    "judetLocatie = %d,\n" +
+                    "orasLocatie = NULL,\n" +
+                    "cartierLocatie = NULL,\n" +
+                    "comunaLocatie = %d,\n" +
+                    "satLocatie = %d,\n" +
+                    "denumireLocatie = '%s'\n" +
+                    "WHERE indexLocatie = %d",
+                    newDomiciliu.getJudetLocatie().getIndexJudet(),
+                    newDomiciliu.getComunaLocatie().getIndexComuna(), newDomiciliu.getSatLocatie().getIndexSat(),
+                    newDomiciliu.getDenumireLocatie(),
+                    oldDomiciliu.getIndexLocatie()
+                );
+            }
+
+            statement.addBatch(sqlScript1);
+
+            // update persoana
+            String sqlScript2 = String.format
+            (
+                "UPDATE persoane SET\n" +
+                "numePersoana = '%s',\n" +
+                "prenumePersoana = '%s',\n" +
+                "telefonPersoana = '%s',\n" +
+                "emailPersoana = '%s'\n" +
+                "WHERE indexPersoana = %d",
+                newClient.getNumePersoana(), newClient.getPrenumePersoana(),
+                newClient.getTelefonPersoana(), newClient.getEmailPersoana(),
+                oldClient.getIndexPersoana()
+            );
+
+            statement.addBatch(sqlScript2);
+
+            statement.executeBatch();
+            connection.commit();
+
+            return QueryOutcome.SUCCESS;
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+
+        return QueryOutcome.ERROR;
+    }
+
+
+    public Pair<Client, QueryOutcome> getClient(int indexClient)
+    {
+        Client client = new Client();
+
+        DatabaseRepository databaseRepository = new DatabaseRepository();
+        Connection connection = databaseRepository.createConnection();
+
+        if (connection == null)
+        {
+            return new Pair<>(client, QueryOutcome.OFFLINE);
+        }
+
+        String sqlScript = String.format
+        (
+            "SELECT *\n" +
+            "FROM clienti\n" +
+            "WHERE indexClient = %d",
+            indexClient
+        );
+
+        try (Statement statement = connection.createStatement())
+        {
+            try (ResultSet resultSet = statement.executeQuery(sqlScript))
+            {
+                if (resultSet.first())
+                {
+                    client.setIndexClient(indexClient);
+
+                    int indexPersoana = resultSet.getInt(2);
+
+                    PersoanaRepository persoanaRepository = new PersoanaRepository();
+                    Pair<Persoana, QueryOutcome> queryOutcomePairPersoana = persoanaRepository.getPersoana(indexPersoana);
+                    QueryOutcome queryOutcome = queryOutcomePairPersoana.getValue();
+
+                    if (queryOutcome != QueryOutcome.SUCCESS)
+                    {
+                        return new Pair<>(client, queryOutcome == QueryOutcome.EMPTY ? QueryOutcome.CORRUPT : queryOutcome);
+                    }
+
+                    Persoana persoana = queryOutcomePairPersoana.getKey();
+
+                    client.setNumePersoana(persoana.getNumePersoana());
+                    client.setPrenumePersoana(persoana.getPrenumePersoana());
+                    client.setTelefonPersoana(persoana.getTelefonPersoana());
+                    client.setEmailPersoana(persoana.getEmailPersoana());
+                    client.setDomiciliuPersoana(persoana.getDomiciliuPersoana());
+
+                    return new Pair<>(client, QueryOutcome.SUCCESS);
+                }
+                return new Pair<>(client, QueryOutcome.EMPTY);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+        finally
+        {
+            databaseRepository.closeConnection(connection);
+        }
+        return new Pair<>(client, QueryOutcome.ERROR);
     }
 
     public Pair<List<Client>, QueryOutcome> getListaClienti()

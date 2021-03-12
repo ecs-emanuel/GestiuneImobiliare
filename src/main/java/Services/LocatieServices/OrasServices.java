@@ -10,6 +10,12 @@ import java.util.List;
 
 public class OrasServices
 {
+    public Pair<Oras, QueryOutcome> getOras(int indexOras)
+    {
+        OrasRepository orasRepository = new OrasRepository();
+        return orasRepository.getOras(indexOras);
+    }
+
     public Pair<List<Oras>, QueryOutcome> getListaOrase(Judet judet)
     {
         OrasRepository orasRepository = new OrasRepository();

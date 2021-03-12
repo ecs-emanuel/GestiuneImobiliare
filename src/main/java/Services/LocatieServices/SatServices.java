@@ -10,6 +10,12 @@ import java.util.List;
 
 public class SatServices
 {
+    public Pair<Sat, QueryOutcome> getSat(int indexSat)
+    {
+        SatRepository satRepository = new SatRepository();
+        return satRepository.getSat(indexSat);
+    }
+
     public Pair<List<Sat>, QueryOutcome> getListaSate(Comuna comuna)
     {
         SatRepository satRepository = new SatRepository();

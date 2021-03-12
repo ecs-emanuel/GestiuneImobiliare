@@ -7,6 +7,12 @@ import javafx.util.Pair;
 
 public class UserServices
 {
+    public Pair<User, QueryOutcome> getUser(int indexUser)
+    {
+        UserRepository userRepository = new UserRepository();
+        return userRepository.getUser(indexUser);
+    }
+
     public Pair<User, QueryOutcome> authenticate(User user)
     {
         UserRepository userRepository = new UserRepository();

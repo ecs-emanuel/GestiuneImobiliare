@@ -4,25 +4,24 @@ import Entities.Locatie.Locatie;
 import Entities.Persoana.Client;
 import Entities.Programare;
 import Services.PersoanaServices.ClientServices;
-import Utils.CustomColor;
+import Services.ProgramareServices;
 import Utils.QueryOutcome;
 import javafx.util.Pair;
-
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.List;
 
-public class ListaClienti
+public class ListaProgramari
 {
     private JTable tableContent;
 
@@ -36,27 +35,28 @@ public class ListaClienti
 
     public void addLista(HomeUI homeUI)
     {
-        ClientServices clientServices = new ClientServices();
-        Pair<List<Client>, QueryOutcome> queryOutcomePair;
+        ProgramareServices programareServices = new ProgramareServices();
+        Pair<List<Programare>, QueryOutcome> queryOutcomePair;
+
+        // toate programarile - else - doar programarile valabile
 
         if (homeUI.fieldSearch.getText().isEmpty())
         {
-            queryOutcomePair = clientServices.getListaClienti();
+            queryOutcomePair = programareServices.getListaProgramari(homeUI.mainAgent, homeUI.checkboxSearch.isSelected());
         }
         else
         {
-            queryOutcomePair = clientServices.getListaClient(homeUI.fieldSearch.getText());
+            queryOutcomePair = programareServices.getListaProgramari(homeUI.mainAgent, homeUI.checkboxSearch.isSelected(), homeUI.fieldSearch.getText());
         }
 
+        List<Programare> listaProgramari = queryOutcomePair.getKey();
 
-        List<Client> listaClienti = queryOutcomePair.getKey();
+        String[] columnNames = {"Data", "Ora", "Nume", "Prenume", "Telefon", "Email"};
 
-        String[] columnNames = {"Nume", "Prenume", "Telefon", "Email", "Judet", "Oras/Comuna"};
-
-        int[] columnSizes = {100, 150, 120, 200, 80, 108 };
+        int[] columnSizes = {100, 80, 120, 150, 120, 188 };
         int totalColumns = columnNames.length;
 
-        tableContent = new JTable(listaClienti.size(), totalColumns)
+        tableContent = new JTable(listaProgramari.size(), totalColumns)
         {
             public boolean isCellEditable(int row, int column)
             {
@@ -79,25 +79,17 @@ public class ListaClienti
             column.setMaxWidth(columnSizes[i]);
         }
 
-        for (int i = 0; i < listaClienti.size(); i++)
+        for (int i = 0; i < listaProgramari.size(); i++)
         {
-            Client client = listaClienti.get(i);
-            Locatie domiciliu = client.getDomiciliuPersoana();
+            Programare programare = listaProgramari.get(i);
+            Client client = programare.getClient();
 
-            tableContent.setValueAt(client.getNumePersoana(), i , 0);
-            tableContent.setValueAt(client.getPrenumePersoana(), i, 1);
-            tableContent.setValueAt(client.getTelefonPersoana(), i, 2);
-            tableContent.setValueAt(client.getEmailPersoana(), i, 3);
-            tableContent.setValueAt(domiciliu.getJudetLocatie().getDenumireJudet(), i, 4);
-
-            if (domiciliu.getOrasLocatie() != null)
-            {
-                tableContent.setValueAt(domiciliu.getOrasLocatie().getDenumireOras(), i, 5);
-            }
-            else if (domiciliu.getComunaLocatie() != null)
-            {
-                tableContent.setValueAt(domiciliu.getComunaLocatie().getDenumireComuna(), i, 5);
-            }
+            tableContent.setValueAt(programare.getData().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), i , 0);
+            tableContent.setValueAt(programare.getData().toInstant().atZone(ZoneId.systemDefault()).toLocalTime(), i, 1);
+            tableContent.setValueAt(client.getNumePersoana(), i, 2);
+            tableContent.setValueAt(client.getPrenumePersoana(), i, 3);
+            tableContent.setValueAt(client.getTelefonPersoana(), i, 4);
+            tableContent.setValueAt(client.getEmailPersoana(), i, 5);
         }
 
         tableContent.addMouseListener(new MouseListener()
@@ -113,6 +105,7 @@ public class ListaClienti
             {
                 if (tableContent.getSelectedRow() >= 0)
                 {
+                    homeUI.buttonSterge.setEnabled(true);
                     homeUI.buttonModifica.setEnabled(true);
                 }
             }
@@ -136,6 +129,23 @@ public class ListaClienti
             }
         });
 
+        homeUI.buttonSterge.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+
+                int itemIndex = tableContent.getSelectedRow();
+
+                if (itemIndex >= 0)
+                {
+                    programareServices.delProgramare(listaProgramari.get(itemIndex));
+                    homeUI.buttonCauta.doClick();
+                    homeUI.buttonSterge.removeActionListener(this);
+                }
+            }
+        });
+
         homeUI.buttonModifica.addActionListener(new ActionListener()
         {
             @Override
@@ -146,9 +156,10 @@ public class ListaClienti
                 if (itemIndex >= 0)
                 {
                     homeUI.buttonModifica.setEnabled(false);
-                    Client client = listaClienti.get(itemIndex);
-                    AdaugaClient adaugaClient = new AdaugaClient();
-                    adaugaClient.create(homeUI, client);
+                    homeUI.buttonSterge.setEnabled(false);
+                    Programare programare = listaProgramari.get(itemIndex);
+                    AdaugaProgramare adaugaProgramare = new AdaugaProgramare();
+                    adaugaProgramare.create(homeUI, programare);
                     homeUI.buttonModifica.removeActionListener(this);
                 }
             }
